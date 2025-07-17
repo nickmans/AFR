@@ -1,4 +1,0 @@
-../Core/Src/cmd.c:69:6:cmdlinego	15
-../Core/Src/cmd.c:139:6:uartt_init	1
-../Core/Src/cmd.c:149:6:cmd_line_init	1
-../Core/Src/cmd.c:154:6:HAL_UART_RxCpltCallback	3

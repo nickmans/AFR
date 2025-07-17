@@ -187,3 +187,15 @@ org.xml.sax.SAXParseException; lineNumber: 179; columnNumber: 1; Content is not 
 
 !ENTRY org.eclipse.core.resources 4 567 2025-07-17 22:02:13.411
 !MESSAGE Failed to read project description file from location 'C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_WAYPOINTER\CM4\.project'.
+
+!ENTRY org.eclipse.cdt.dsf 4 10005 2025-07-18 01:06:57.003
+!MESSAGE Request for monitor: 'RequestMonitor (org.eclipse.cdt.dsf.gdb.internal.ui.actions.DsfTerminateCommand$3$1@7518b739): Status OK: unknown code=0 OK' resulted in a rejected execution exception.
+
+!ENTRY org.eclipse.cdt.core 1 0 2025-07-18 01:22:13.493
+!MESSAGE Indexed 'WAYPOINTIFICATION_CM4' (29 sources, 90 headers) in 1.84 sec: 8,695 declarations; 66,717 references; 0 unresolved inclusions; 1 syntax errors; 2 unresolved names (0.0027%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2025-07-18 01:22:14.841
+!MESSAGE Indexed 'WAYPOINTIFICATION_CM7' (29 sources, 90 headers) in 1.35 sec: 8,790 declarations; 67,933 references; 0 unresolved inclusions; 1 syntax errors; 2 unresolved names (0.0026%)
+
+!ENTRY org.eclipse.cdt.dsf 4 10005 2025-07-18 01:39:47.137
+!MESSAGE Request for monitor: 'RequestMonitor (org.eclipse.cdt.dsf.gdb.internal.ui.actions.DsfTerminateCommand$3$1@311a6322): Status OK: unknown code=0 OK' resulted in a rejected execution exception.

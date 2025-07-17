@@ -1,0 +1,10 @@
+01:39:46 **** Incremental Build of configuration Debug for project WAYPOINTIFICATION_CM4 ****
+make -j16 all 
+arm-none-eabi-size  WAYPOINTIFICATION_CM4.elf 
+   text	   data	    bss	    dec	    hex	filename
+  14632	     32	  20344	  35008	   88c0	WAYPOINTIFICATION_CM4.elf
+Finished building: default.size.stdout
+ 
+
+01:39:46 Build Finished. 0 errors, 0 warnings. (took 301ms)
+
