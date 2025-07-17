@@ -1,0 +1,45 @@
+!SESSION 2025-07-17 20:02:56.800 -----------------------------------------------
+eclipse.buildId=Version 1.19.0
+java.version=21.0.3
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_AU
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -data C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2025-07-17 20:03:00.762
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2025-07-17 20:03:00.763
+!MESSAGE Log4j2 initialized with config file C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2025-07-17 20:03:03.457
+!MESSAGE Started RMI Server, listening on port 41337
+!SESSION 2025-07-17 20:06:10.233 -----------------------------------------------
+eclipse.buildId=Version 1.19.0
+java.version=21.0.3
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_AU
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -data C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2025-07-17 20:06:13.610
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2025-07-17 20:06:13.611
+!MESSAGE Log4j2 initialized with config file C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2025-07-17 20:06:16.263
+!MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY org.eclipse.cdt.core 1 0 2025-07-17 20:16:22.075
+!MESSAGE Indexed 'AFR_PIL_CM4' (29 sources, 90 headers) in 2.38 sec: 8,695 declarations; 66,720 references; 0 unresolved inclusions; 1 syntax errors; 2 unresolved names (0.0027%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2025-07-17 20:16:25.748
+!MESSAGE Indexed 'AFR_PIL_CM7' (61 sources, 258 headers) in 3.63 sec: 23,161 declarations; 119,224 references; 0 unresolved inclusions; 41 syntax errors; 10 unresolved names (0.007%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2025-07-17 20:17:35.512
+!MESSAGE Indexed 'nodemcu' (36 sources, 152 headers) in 1.65 sec: 16,474 declarations; 62,476 references; 14 unresolved inclusions; 1,218 syntax errors; 1,520 unresolved names (1.9%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2025-07-17 20:28:11.538
+!MESSAGE Indexed 'AFR_WAYPOINTER_CM7' (29 sources, 90 headers) in 1.96 sec: 8,790 declarations; 67,933 references; 0 unresolved inclusions; 1 syntax errors; 2 unresolved names (0.0026%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2025-07-17 20:28:12.815
+!MESSAGE Indexed 'AFR_WAYPOINTER_CM4' (29 sources, 90 headers) in 1.27 sec: 8,695 declarations; 66,717 references; 0 unresolved inclusions; 1 syntax errors; 2 unresolved names (0.0027%)
