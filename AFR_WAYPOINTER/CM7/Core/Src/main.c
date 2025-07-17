@@ -26,7 +26,14 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+typedef struct {
+    uint32_t    cmd;           // or a flag
+    float       payload[10];   // up to 10 floats (or adjust size)
+} Mailbox_t;
 
+/* Place it in the “.mailbox” section that lands in D2 SRAM */
+__attribute__((section(".mailbox")))
+volatile Mailbox_t Mailbox;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -130,7 +137,9 @@ Error_Handler();
 /* USER CODE END Boot_Mode_Sequence_2 */
 
   /* USER CODE BEGIN SysInit */
-
+	HAL_NVIC_SetPriority(HSEM2_IRQn, 10, 0);
+	HAL_NVIC_EnableIRQ(HSEM2_IRQn);
+	HAL_HSEM_ActivateNotification(__HAL_HSEM_SEMID_TO_MASK(0));
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -162,7 +171,8 @@ Error_Handler();
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
+	  BSP_LED_Toggle(LED_YELLOW);
+	  HAL_Delay(333);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -293,7 +303,10 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+int _write(int file, char *ptr, int len) {
+    HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)ptr, len, HAL_MAX_DELAY);
+    return len;
+}
 /* USER CODE END 4 */
 
 /**

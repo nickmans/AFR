@@ -1,0 +1,18 @@
+/*
+ * cmd.h
+ *
+ *  Created on: Jun 30, 2025
+ *      Author: nicks
+ */
+
+#ifndef INC_CMD_H_
+#define INC_CMD_H_
+void cmd_line_init(void);
+void uartt_init(void);
+
+extern uint8_t rx_from_hc05;
+extern #define HC05_BUF_SIZE 256
+extern uint8_t  hc05_rx_buffer[HC05_BUF_SIZE];
+extern volatile uint16_t hc05_rx_write_idx = 0;
+
+#endif /* INC_CMD_H_ */

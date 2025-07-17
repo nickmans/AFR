@@ -1,0 +1,18 @@
+#ifndef INC_MAILBOX_H_
+#define INC_MAILBOX_H_
+
+#pragma once
+
+// 1) choose your element type and max count
+typedef float    mbuf_t;        // or “double” if you really need 8‑byte
+#define MAX_MAIL_CNT  10
+
+// 2) compute sizes & base address of D3_SRAM
+#define SHMEM_BASE_ADDR  0x38000000U
+#define SHMEM_DATA       ((mbuf_t*)SHMEM_BASE_ADDR)
+#define SHMEM_COUNT      (*(volatile uint8_t*)(SHMEM_BASE_ADDR + MAX_MAIL_CNT*sizeof(mbuf_t)))
+
+// 3) IPCC channel you’ll use
+#define MAILBOX_CHANNEL  1
+
+#endif

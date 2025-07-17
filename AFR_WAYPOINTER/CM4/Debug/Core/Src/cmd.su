@@ -1,0 +1,4 @@
+../Core/Src/cmd.c:69:6:cmdlinego	48	static
+../Core/Src/cmd.c:139:6:uartt_init	8	static
+../Core/Src/cmd.c:149:6:cmd_line_init	8	static
+../Core/Src/cmd.c:154:6:HAL_UART_RxCpltCallback	16	static
