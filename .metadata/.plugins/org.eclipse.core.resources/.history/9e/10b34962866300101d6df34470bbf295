@@ -1,0 +1,14 @@
+/*
+ * shared_mem.h
+ *
+ *  Created on: Jul 18, 2025
+ *      Author: nicks
+ */
+
+#ifndef SHARED_MEM_H
+#define SHARED_MEM_H
+
+extern volatile float shared_buffer[16];
+extern volatile uint8_t shared_flag;
+
+#endif

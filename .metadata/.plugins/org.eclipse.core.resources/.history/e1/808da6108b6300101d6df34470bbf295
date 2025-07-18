@@ -1,0 +1,9 @@
+/*
+ * shared_mem.c
+ *
+ *  Created on: Jul 18, 2025
+ *      Author: nicks
+ */
+
+#define CORE_CM4
+#include "shared_mem.h"

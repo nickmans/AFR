@@ -1,0 +1,24 @@
+/*
+ * shared_mem.h
+ *
+ *  Created on: Jul 18, 2025
+ *      Author: nicks
+ */
+
+#ifndef SHARED_MEM_H
+#define SHARED_MEM_H
+
+#ifdef CORE_CM4
+// Actual variable definitions (CM4 writes)
+__attribute__((section(".shared_memory"))) __attribute__((used))
+volatile float shared_buffer[16];
+
+__attribute__((section(".shared_memory"))) __attribute__((used))
+volatile int shared_flag;
+#else
+// Declarations only (CM7 reads)
+extern volatile float shared_buffer[16];
+extern volatile int shared_flag;
+#endif
+
+#endif // SHARED_MEM_H

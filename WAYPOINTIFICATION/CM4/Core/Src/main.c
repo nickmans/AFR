@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "shared_mem.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -258,11 +258,19 @@ static void MX_GPIO_Init(void)
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
+	osDelay(2000);
   /* Infinite loop */
   for(;;)
   {
-    osDelay(333);
-    BSP_LED_Toggle(LED_YELLOW);
+	// Example: Send 16 floats
+	BSP_LED_Toggle(LED_YELLOW);
+	for (int i = 0; i < 16; ++i)
+		SHARED_MEM->buffer[i] = i * 1.1f;
+	SHARED_MEM->flag = 1;
+	__DSB();    // ensure the write completes
+
+    osDelay(1000);
+
   }
   /* USER CODE END 5 */
 }

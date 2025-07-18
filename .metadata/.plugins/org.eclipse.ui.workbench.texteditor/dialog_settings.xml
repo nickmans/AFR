@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item key="hasShownOverlayPopupBefore" value="true"/>
+	<item key="replaceBarOpen" value="false"/>
+	<list key="searchhistory">
+		<item value="xCoreMessageBuffer"/>
+		<item value="Mailbox_t"/>
+		<item value="StartDefaultTask"/>
+		<item value="10"/>
+		<item value="clear"/>
+		<item value="MEMORY"/>
+		<item value="HAL_HSEM_ActivateNotification"/>
+		<item value="__HAL_RCC_HSEM_CLK_ENABLE"/>
+		<item value="HAL_HSEM_FastTake"/>
+		<item value="HAL_HSEM_FreeCallback"/>
+		<item value="BspCOMInit"/>
+		<item value="COM1"/>
+		<item value="hcom_uart"/>
+		<item value="hcom_uart[COM1]"/>
+		<item value="com"/>
+	</list>
+</section>

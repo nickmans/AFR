@@ -26,8 +26,8 @@
 #include "string.h"
 #include "FreeRTOS.h"
 #include "task.h"
-#include "message_buffer.h"
-#include "MessageBufferAMP.h"
+
+#include "shared_mem.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -394,7 +394,10 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+int _write(int file, char *ptr, int len) {
+    HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)ptr, len, HAL_MAX_DELAY);
+    return len;
+}
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -407,11 +410,26 @@ static void MX_GPIO_Init(void)
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
+	int count = 0;
+	SHARED_MEM->flag = 0;
+
   /* Infinite loop */
   for(;;)
   {
-		BSP_LED_Toggle(LED_RED);
-		osDelay(333);
+	if (SHARED_MEM->flag) {
+	  BSP_LED_Toggle(LED_RED);
+	  for (int i = 0; i < 16; ++i)
+		printf("Got: %f\n", SHARED_MEM->buffer[i]);
+	  SHARED_MEM->flag = 0;
+	  __DSB();
+	}
+	if ((count == 333)&&(!(SHARED_MEM->flag)))
+	{
+		BSP_LED_Toggle(LED_GREEN);
+		count = 0;
+	}
+	count++;
+	osDelay(1);
   }
   /* USER CODE END 5 */
 }

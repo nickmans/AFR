@@ -1,10 +1,17 @@
-01:39:46 **** Incremental Build of configuration Debug for project WAYPOINTIFICATION_CM4 ****
+15:09:31 **** Incremental Build of configuration Debug for project WAYPOINTIFICATION_CM4 ****
 make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DCORE_CM4 -DUSE_HAL_DRIVER -DSTM32H755xx -DUSE_PWR_DIRECT_SMPS_SUPPLY -DUSE_NUCLEO_64 -c -I../Core/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../../Drivers/BSP/STM32H7xx_Nucleo -I../../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../../Drivers/CMSIS/Include -I../../Middlewares/Third_Party/FreeRTOS/Source/include -I../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "WAYPOINTIFICATION_CM4.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\WAYPOINTIFICATION\CM4\STM32H755ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="WAYPOINTIFICATION_CM4.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: WAYPOINTIFICATION_CM4.elf
+ 
 arm-none-eabi-size  WAYPOINTIFICATION_CM4.elf 
+arm-none-eabi-objdump -h -S WAYPOINTIFICATION_CM4.elf  > "WAYPOINTIFICATION_CM4.list"
    text	   data	    bss	    dec	    hex	filename
-  14632	     32	  20344	  35008	   88c0	WAYPOINTIFICATION_CM4.elf
+  28968	     32	  20488	  49488	   c150	WAYPOINTIFICATION_CM4.elf
 Finished building: default.size.stdout
  
+Finished building: WAYPOINTIFICATION_CM4.list
+ 
 
-01:39:46 Build Finished. 0 errors, 0 warnings. (took 301ms)
+15:09:32 Build Finished. 0 errors, 0 warnings. (took 893ms)
 

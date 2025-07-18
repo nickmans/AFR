@@ -1,0 +1,16 @@
+/*
+ * shared_mem.c
+ *
+ *  Created on: Jul 18, 2025
+ *      Author: nicks
+ */
+
+#define CORE_CM4
+#include "shared_mem.h"
+
+// Place in shared memory section
+__attribute__((section(".shared_memory"))) __attribute__((used))
+volatile float shared_buffer[16];
+
+__attribute__((section(".shared_memory"))) __attribute__((used))
+volatile int shared_flag;

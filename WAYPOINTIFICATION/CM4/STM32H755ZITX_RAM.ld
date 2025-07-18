@@ -45,6 +45,7 @@ MEMORY
 {
 RAM_EXEC (rx)  : ORIGIN = 0x10000000, LENGTH = 128K
 RAM (xrw)      : ORIGIN = 0x10020000, LENGTH = 160K
+SHARED    (xrw) : ORIGIN = 0x30000000, LENGTH = 256  /* reserve first 256 bytes */
 }
 
 /* Define output sections */
@@ -132,8 +133,7 @@ SECTIONS
     . = ALIGN(4);
     _edata = .;        /* define a global symbol at data end */
   } >RAM AT> RAM_EXEC
-
-
+  
   /* Uninitialized data section */
   . = ALIGN(4);
   .bss :
@@ -161,7 +161,12 @@ SECTIONS
     . = ALIGN(8);
   } >RAM
 
-
+	    .shared_dummy (NOLOAD) :
+  {
+    . = ALIGN(4);
+    KEEP(*(.shared_dummy))
+    . = ALIGN(4);
+  } >SHARED
 
   /* Remove information from the standard libraries */
   /DISCARD/ :

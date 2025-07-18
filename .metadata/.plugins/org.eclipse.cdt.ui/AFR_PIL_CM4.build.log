@@ -1,10 +1,12 @@
-01:07:39 **** Incremental Build of configuration Debug for project AFR_PIL_CM4 ****
+14:11:56 **** Incremental Build of configuration Debug for project AFR_PIL_CM4 ****
 make -j16 all 
-arm-none-eabi-size  AFR_PIL_CM4.elf 
-   text	   data	    bss	    dec	    hex	filename
-   3448	     28	   1572	   5048	   13b8	AFR_PIL_CM4.elf
-Finished building: default.size.stdout
- 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DCORE_CM4 -DUSE_HAL_DRIVER -DSTM32H755xx -DUSE_PWR_DIRECT_SMPS_SUPPLY -DUSE_NUCLEO_64 -c -I../Core/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../../Drivers/BSP/STM32H7xx_Nucleo -I../../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c:24:10: fatal error: shared_mem.h: No such file or directory
+   24 | #include "shared_mem.h"
+      |          ^~~~~~~~~~~~~~
+compilation terminated.
+make: *** [Core/Src/subdir.mk:31: Core/Src/main.o] Error 1
+"make -j16 all" terminated with exit code 2. Build might be incomplete.
 
-01:07:39 Build Finished. 0 errors, 0 warnings. (took 394ms)
+14:11:56 Build Failed. 2 errors, 0 warnings. (took 348ms)
 

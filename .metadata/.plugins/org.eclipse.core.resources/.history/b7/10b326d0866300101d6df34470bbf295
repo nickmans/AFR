@@ -1,0 +1,3 @@
+#include "shared_mem.h"
+__attribute__((section(".shared_memory"))) volatile float shared_buffer[16];
+__attribute__((section(".shared_memory"))) volatile uint8_t shared_flag = 0;
