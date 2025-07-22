@@ -22,22 +22,24 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdlib.h>
 #include "stdio.h"
 #include "string.h"
 #include "FreeRTOS.h"
 #include "task.h"
-
+#include <stdbool.h>
 #include "shared_mem.h"
+#include <math.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+#include "rplidar_parser.h"
+static uint8_t rx_byte;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
 /* DUAL_CORE_BOOT_SYNC_SEQUENCE: Define for dual core boot synchronization    */
 /*                             demonstration code based on hardware semaphore */
 /* This define is present in both CM7/CM4 projects                            */
@@ -54,29 +56,30 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 
 COM_InitTypeDef BspCOMInit;
 
-UART_HandleTypeDef huart4;
+UART_HandleTypeDef huart2;
+DMA_HandleTypeDef hdma_usart2_rx;
 
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
-  .stack_size = 128 * 4,
+  .stack_size = 3028 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* USER CODE BEGIN PV */
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
+static void MX_USART2_UART_Init(void);
 void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
@@ -85,7 +88,8 @@ void StartDefaultTask(void *argument);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+#define DMA_BUF_SIZE 500
+uint8_t dma_rx_buf[DMA_BUF_SIZE];
 /* USER CODE END 0 */
 
 /**
@@ -152,8 +156,9 @@ Error_Handler();
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -196,7 +201,7 @@ Error_Handler();
   BSP_PB_Init(BUTTON_USER, BUTTON_MODE_EXTI);
 
   /* Initialize COM1 port (115200, 8 bits (7-bit data + 1 stop bit), no parity */
-  BspCOMInit.BaudRate   = 115200;
+  BspCOMInit.BaudRate   = 460800;
   BspCOMInit.WordLength = COM_WORDLENGTH_8B;
   BspCOMInit.StopBits   = COM_STOPBITS_1;
   BspCOMInit.Parity     = COM_PARITY_NONE;
@@ -238,7 +243,7 @@ void SystemClock_Config(void)
 
   /** Configure the main internal regulator output voltage
   */
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE2);
 
   while(!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {}
 
@@ -250,14 +255,14 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLM = 4;
-  RCC_OscInitStruct.PLL.PLLN = 41;
+  RCC_OscInitStruct.PLL.PLLM = 5;
+  RCC_OscInitStruct.PLL.PLLN = 46;
   RCC_OscInitStruct.PLL.PLLP = 2;
   RCC_OscInitStruct.PLL.PLLQ = 5;
   RCC_OscInitStruct.PLL.PLLR = 2;
   RCC_OscInitStruct.PLL.PLLRGE = RCC_PLL1VCIRANGE_3;
   RCC_OscInitStruct.PLL.PLLVCOSEL = RCC_PLL1VCOWIDE;
-  RCC_OscInitStruct.PLL.PLLFRACN = 2048;
+  RCC_OscInitStruct.PLL.PLLFRACN = 640;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -283,50 +288,66 @@ void SystemClock_Config(void)
 }
 
 /**
-  * @brief UART4 Initialization Function
+  * @brief USART2 Initialization Function
   * @param None
   * @retval None
   */
-void MX_UART4_Init(void)
+static void MX_USART2_UART_Init(void)
 {
 
-  /* USER CODE BEGIN UART4_Init 0 */
+  /* USER CODE BEGIN USART2_Init 0 */
 
-  /* USER CODE END UART4_Init 0 */
+  /* USER CODE END USART2_Init 0 */
 
-  /* USER CODE BEGIN UART4_Init 1 */
+  /* USER CODE BEGIN USART2_Init 1 */
 
-  /* USER CODE END UART4_Init 1 */
-  huart4.Instance = UART4;
-  huart4.Init.BaudRate = 115200;
-  huart4.Init.WordLength = UART_WORDLENGTH_8B;
-  huart4.Init.StopBits = UART_STOPBITS_1;
-  huart4.Init.Parity = UART_PARITY_NONE;
-  huart4.Init.Mode = UART_MODE_TX_RX;
-  huart4.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart4.Init.OverSampling = UART_OVERSAMPLING_16;
-  huart4.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
-  huart4.Init.ClockPrescaler = UART_PRESCALER_DIV1;
-  huart4.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
-  if (HAL_UART_Init(&huart4) != HAL_OK)
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 460800;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  huart2.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart2.Init.ClockPrescaler = UART_PRESCALER_DIV1;
+  huart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
   {
     Error_Handler();
   }
-  if (HAL_UARTEx_SetTxFifoThreshold(&huart4, UART_TXFIFO_THRESHOLD_1_8) != HAL_OK)
+  if (HAL_UARTEx_SetTxFifoThreshold(&huart2, UART_TXFIFO_THRESHOLD_1_8) != HAL_OK)
   {
     Error_Handler();
   }
-  if (HAL_UARTEx_SetRxFifoThreshold(&huart4, UART_RXFIFO_THRESHOLD_1_8) != HAL_OK)
+  if (HAL_UARTEx_SetRxFifoThreshold(&huart2, UART_RXFIFO_THRESHOLD_1_8) != HAL_OK)
   {
     Error_Handler();
   }
-  if (HAL_UARTEx_DisableFifoMode(&huart4) != HAL_OK)
+  if (HAL_UARTEx_DisableFifoMode(&huart2) != HAL_OK)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN UART4_Init 2 */
+  /* USER CODE BEGIN USART2_Init 2 */
 
-  /* USER CODE END UART4_Init 2 */
+  /* USER CODE END USART2_Init 2 */
+
+}
+
+/**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA1_Stream0_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream0_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream0_IRQn);
 
 }
 
@@ -346,6 +367,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOG_CLK_ENABLE();
 
   /*Configure GPIO pins : PC1 PC4 PC5 */
@@ -398,6 +420,76 @@ int _write(int file, char *ptr, int len) {
     HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)ptr, len, HAL_MAX_DELAY);
     return len;
 }
+int startstop = 0;
+const uint8_t start_cmd[] = {0xA5, 0x20};  // legacy scan start
+const uint8_t motor_speed_cmd[] = {
+    0xA5,       // start flag
+    0xA8,       // MOTOR_SPEED_CTRL
+    0x02,       // payload length
+	0x58, 0x02, // RPM = 300
+    0x87        // checksum = 0xA8 ^ 0x02 ^ 0x2C ^ 0x01
+};
+
+const uint8_t stop_cmd[]  = {0xA5, 0x25};  // stop
+const uint8_t health_cmd[]  = {0xA5, 0x52};  // health
+const uint8_t info_cmd[]  = {0xA5, 0x50};  // info
+
+void BSP_PB_Callback(Button_TypeDef Button)
+{
+    if (Button == BUTTON_USER)
+    {
+    	if (startstop == 0)
+    	{
+    		BSP_LED_Toggle(LED_RED);
+    	    // Send start scan
+    		rplidar_parser_init();
+	        SCB_InvalidateDCache_by_Addr((uint32_t*)dma_rx_buf, DMA_BUF_SIZE);
+    	    HAL_UART_Receive_DMA(&huart2, dma_rx_buf, DMA_BUF_SIZE);
+            HAL_UART_Transmit(&huart2, (uint8_t*)start_cmd, sizeof(start_cmd), HAL_MAX_DELAY);
+    	    startstop = 1;
+    	}
+    	else if (startstop == 1)
+    	{
+    		BSP_LED_Toggle(LED_RED);
+    		//HAL_UART_Transmit(&huart2, (uint8_t*)motor_speed_cmd, sizeof(motor_speed_cmd), HAL_MAX_DELAY);
+			// Send stop scan
+			HAL_UART_Transmit(&huart2, (uint8_t*)stop_cmd, sizeof(stop_cmd), HAL_MAX_DELAY);
+    	    startstop = 0;
+    	}
+    }
+}
+#define buffasize DMA_BUF_SIZE
+uint8_t buffa[buffasize];
+static int header = 0;
+static const uint8_t header_bytes[7] = {
+    0xA5, 0x5A, 0x05, 0x00, 0x00, 0x40, 0x81
+};
+static int i = 0;
+// Called when the DMA buffer has been completely filled
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+    if (huart == &huart2)
+    {
+		SCB_InvalidateDCache_by_Addr((uint32_t*)dma_rx_buf, DMA_BUF_SIZE);
+		memcpy(buffa, dma_rx_buf, buffasize);
+		if (!header)
+		{
+
+			for (int j = 7; j < buffasize; j++)
+			{
+				rplidar_parser_feed(buffa[j]);
+			}
+			header = 1;
+		}
+		else
+		{
+			for (int j = 0; j < buffasize; j++)
+				rplidar_parser_feed(buffa[j]);
+		}
+    }
+}
+
+static LidarPoint_t pts[RPLIDAR_MAX_POINTS];
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -411,25 +503,42 @@ void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
 	int count = 0;
+	/*
 	SHARED_MEM->flag = 0;
-
+	SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
+	__DSB();
+	*/
   /* Infinite loop */
   for(;;)
   {
-	if (SHARED_MEM->flag) {
+	  /*
+	SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
+	if (SHARED_MEM->flag)
+	{
 	  BSP_LED_Toggle(LED_RED);
+
+	  SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
 	  for (int i = 0; i < 16; ++i)
 		printf("Got: %f\n", SHARED_MEM->buffer[i]);
+	  osDelay(5500);
 	  SHARED_MEM->flag = 0;
+	  SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
 	  __DSB();
 	}
-	if ((count == 333)&&(!(SHARED_MEM->flag)))
-	{
-		BSP_LED_Toggle(LED_GREEN);
-		count = 0;
-	}
-	count++;
-	osDelay(1);
+	*/
+	  if (startstop)
+	  {
+		uint16_t     cnt;
+		rplidar_parser_get_scan(pts, &cnt);
+
+		// print every point's X, Y
+		for (uint16_t i = 0; i < cnt; i++)
+		{
+			printf("(%.2f, %.2f),\n",pts[i].x,pts[i].y);
+		}
+	  }
+
+		osDelay(1000);
   }
   /* USER CODE END 5 */
 }

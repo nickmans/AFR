@@ -14,8 +14,8 @@ typedef struct {
   int   flag;
 } SharedMem_t;
 
-// The mailbox lives at 0x3000_0000
-#define SHARED_MEM_BASE  ((uintptr_t)0x30000000U)
+// The mailbox lives at 0x3002_0000
+#define SHARED_MEM_BASE  ((uintptr_t)0x30020000U)
 #define SHARED_MEM       ((volatile SharedMem_t*)SHARED_MEM_BASE)
 
 #endif

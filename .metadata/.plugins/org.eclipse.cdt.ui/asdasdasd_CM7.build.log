@@ -1,0 +1,23 @@
+04:35:57 **** Build of configuration Debug for project asdasdasd_CM7 ****
+make -j16 all 
+arm-none-eabi-gcc -mcpu=cortex-m7 -g3 -DDEBUG -c -x assembler-with-cpp -MMD -MP -MF"Startup/startup_stm32h755zitx.d" -MT"Startup/startup_stm32h755zitx.o" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "Startup/startup_stm32h755zitx.o" "../Startup/startup_stm32h755zitx.s"
+arm-none-eabi-gcc "../Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DSTM32H755ZITx -DSTM32 -DSTM32H7DUAL -DSTM32H7 -DNUCLEO_H755ZI_Q -c -I../Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/main.d" -MT"Src/main.o" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "Src/main.o"
+arm-none-eabi-gcc "../Src/syscalls.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DSTM32H755ZITx -DSTM32 -DSTM32H7DUAL -DSTM32H7 -DNUCLEO_H755ZI_Q -c -I../Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/syscalls.d" -MT"Src/syscalls.o" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "Src/syscalls.o"
+arm-none-eabi-gcc "../Src/sysmem.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DSTM32H755ZITx -DSTM32 -DSTM32H7DUAL -DSTM32H7 -DNUCLEO_H755ZI_Q -c -I../Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/sysmem.d" -MT"Src/sysmem.o" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "Src/sysmem.o"
+../Src/main.c:22:4: warning: #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use." [-Wcpp]
+   22 |   #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
+      |    ^~~~~~~
+arm-none-eabi-gcc -o "asdasdasd_CM7.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\asdasdasd\CM7\STM32H755ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="asdasdasd_CM7.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: asdasdasd_CM7.elf
+ 
+arm-none-eabi-size  asdasdasd_CM7.elf 
+arm-none-eabi-objdump -h -S asdasdasd_CM7.elf  > "asdasdasd_CM7.list"
+   text	   data	    bss	    dec	    hex	filename
+    924	      0	   1568	   2492	    9bc	asdasdasd_CM7.elf
+Finished building: default.size.stdout
+ 
+Finished building: asdasdasd_CM7.list
+ 
+
+04:35:57 Build Finished. 0 errors, 1 warnings. (took 442ms)
+

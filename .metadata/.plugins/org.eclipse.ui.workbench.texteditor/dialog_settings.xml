@@ -3,20 +3,20 @@
 	<item key="hasShownOverlayPopupBefore" value="true"/>
 	<item key="replaceBarOpen" value="false"/>
 	<list key="searchhistory">
-		<item value="xCoreMessageBuffer"/>
-		<item value="Mailbox_t"/>
+		<item value="dma"/>
 		<item value="StartDefaultTask"/>
-		<item value="10"/>
-		<item value="clear"/>
-		<item value="MEMORY"/>
-		<item value="HAL_HSEM_ActivateNotification"/>
-		<item value="__HAL_RCC_HSEM_CLK_ENABLE"/>
-		<item value="HAL_HSEM_FastTake"/>
-		<item value="HAL_HSEM_FreeCallback"/>
-		<item value="BspCOMInit"/>
-		<item value="COM1"/>
-		<item value="hcom_uart"/>
-		<item value="hcom_uart[COM1]"/>
-		<item value="com"/>
+		<item value="RPLIDAR_MAX_POINTS"/>
+		<item value="uart2_dma_buf"/>
+		<item value="__HAL_LINKDMA"/>
+		<item value="DTCMRAM"/>
+		<item value="__HAL_DMA_ENABLE_IT"/>
+		<item value="HAL_UART_Receive_DMA"/>
+		<item value="MX_DMA_Init"/>
+		<item value="HAL_UART_RxCpltCallback"/>
+		<item value="HAL_UART_Receive_IT"/>
+		<item value="scan_idx"/>
+		<item value="HAL_UART_Receive_IT "/>
+		<item value="pkt"/>
+		<item value="last_scan"/>
 	</list>
 </section>
