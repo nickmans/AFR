@@ -1,0 +1,16 @@
+/*
+ * sensor.h
+ *
+ *  Created on: Jul 23, 2025
+ *      Author: nicks
+ */
+
+#ifndef INC_SENSOR_H_
+#define INC_SENSOR_H_
+
+#include <stdbool.h>
+	void bno055_CONFIG(void);
+	void bno055_NDOF(void);
+	bool BNO055_ReadEuler(double *heading, double *roll, double *pitch);
+
+#endif /* INC_SENSOR_H_ */

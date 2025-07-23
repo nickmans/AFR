@@ -1,0 +1,19 @@
+/*
+ * sensor.h
+ *
+ *  Created on: Jul 23, 2025
+ *      Author: nicks
+ */
+
+#ifndef INC_SENSOR_H_
+#define INC_SENSOR_H_
+
+#include <stdbool.h>
+void bno055_CONFIG(void);
+void bno055_NDOF(void);
+bool BNO055_ApplyAccelOffsets(const uint8_t offsets[6]);
+bool BNO055_ReadEuler(double *heading, double *roll, double *pitch);
+bool BNO055_ReadLinAccel_D(double *ax, double *ay, double *az);
+bool BNO055_CalibrateAccelOnce(uint8_t offsets[6], uint32_t timeout_ms);
+
+#endif /* INC_SENSOR_H_ */

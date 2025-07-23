@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<item key="hasShownOverlayPopupBefore" value="true"/>
-	<item key="replaceBarOpen" value="false"/>
+	<item key="replaceBarOpen" value="true"/>
 	<list key="searchhistory">
+		<item value="LidarPoint_t"/>
+		<item value="f"/>
+		<item value="float"/>
+		<item value="RPLIDAR_MAX_POINTS"/>
+		<item value="bins_filled_count"/>
+		<item value="NUM_BINS"/>
 		<item value="dma"/>
 		<item value="StartDefaultTask"/>
-		<item value="RPLIDAR_MAX_POINTS"/>
 		<item value="uart2_dma_buf"/>
 		<item value="__HAL_LINKDMA"/>
 		<item value="DTCMRAM"/>
@@ -13,10 +18,8 @@
 		<item value="HAL_UART_Receive_DMA"/>
 		<item value="MX_DMA_Init"/>
 		<item value="HAL_UART_RxCpltCallback"/>
-		<item value="HAL_UART_Receive_IT"/>
-		<item value="scan_idx"/>
-		<item value="HAL_UART_Receive_IT "/>
-		<item value="pkt"/>
-		<item value="last_scan"/>
+	</list>
+	<list key="replacehistory">
+		<item value="double"/>
 	</list>
 </section>

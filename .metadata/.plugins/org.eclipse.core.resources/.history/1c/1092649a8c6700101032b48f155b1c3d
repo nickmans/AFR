@@ -1,0 +1,73 @@
+/*
+ * IMU.c
+ *
+ *  Created on: Jul 23, 2025
+ *      Author: nicks
+ */
+
+#include "stm32h7xx_hal.h"
+#include <stdbool.h>
+// BNO055 device address & registers
+#define BNO055_ADDR        (0x28 << 1)    // or 0x29<<1 if ADR pin = HIGH
+#define REG_OPR_MODE       0x3D
+#define MODE_CONFIG        0x00
+#define MODE_NDOF          0x0C
+#define REG_EUL_HEADING_L  0x1A
+
+extern I2C_HandleTypeDef hi2c2;          // from i2c.c
+
+// Simple write 1‑byte
+static HAL_StatusTypeDef bno055_write(uint8_t reg, uint8_t val) {
+    return HAL_I2C_Mem_Write(
+        &hi2c2,
+        BNO055_ADDR,
+        reg,
+        I2C_MEMADD_SIZE_8BIT,
+        &val,
+        1,
+        HAL_MAX_DELAY
+    );
+}
+
+// Simple read N‑bytes
+static HAL_StatusTypeDef bno055_read(uint8_t reg, uint8_t *buf, uint16_t len) {
+    return HAL_I2C_Mem_Read(
+        &hi2c2,
+        BNO055_ADDR,
+        reg,
+        I2C_MEMADD_SIZE_8BIT,
+        buf,
+        len,
+        HAL_MAX_DELAY
+    );
+}
+
+// Call once at startup (after MX_I2C2_Init and HAL_Init)
+void BNO055_Init(void) {
+    // 1) Go to CONFIG mode
+    bno055_write(REG_OPR_MODE, MODE_CONFIG);
+    osDelay(25);
+
+    // 2) (Optional) configure units / axis remap here...
+
+    // 3) Switch to NDOF fused mode
+    bno055_write(REG_OPR_MODE, MODE_NDOF);
+    osDelay(20);
+}
+
+// Read fused Euler angles (°) into floating outputs
+// Returns true on success
+bool BNO055_ReadEuler(double *heading, double *roll, double *pitch) {
+    uint8_t buf[6];
+    if (bno055_read(REG_EUL_HEADING_L, buf, 6) != HAL_OK) {
+        return false;
+    }
+    int16_t raw_h = (int16_t)(buf[1] << 8 | buf[0]);
+    int16_t raw_r = (int16_t)(buf[3] << 8 | buf[2]);
+    int16_t raw_p = (int16_t)(buf[5] << 8 | buf[4]);
+
+    *heading = raw_h / 16.0;   // each LSB = 1/16°
+    *roll    = raw_r / 16.0;
+    *pitch   = raw_p / 16.0;
+    return true;
+}

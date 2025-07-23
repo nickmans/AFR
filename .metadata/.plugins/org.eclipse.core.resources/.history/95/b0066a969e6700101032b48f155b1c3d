@@ -1,0 +1,286 @@
+/*
+ * IMU.c
+ *
+ *  Created on: Jul 23, 2025
+ *      Author: nicks
+ */
+
+#include "stm32h7xx_hal.h"
+#include "sensor.h"
+#include "main.h"
+// BNO055 device address & registers
+#define BNO055_ADDR        (0x28 << 1)    // or 0x29<<1 if ADR pin = HIGH
+#define REG_OPR_MODE       0x3D
+#define MODE_CONFIG        0x00
+#define MODE_NDOF          0x0C
+#define REG_EUL_HEADING_L  0x1A
+#define REG_LIA_DATA_X_LSB    0x28
+#define REG_CALIB_STAT           0x35
+#define REG_ACC_OFFSET_X_LSB     0x55
+#define REG_OFFSET_START   0x55
+#define OFFSET_LEN         22
+
+extern I2C_HandleTypeDef hi2c2;          // from i2c.c
+
+// Simple write 1‑byte
+static HAL_StatusTypeDef bno055_write(uint8_t reg, uint8_t val) {
+    return HAL_I2C_Mem_Write(
+        &hi2c2,
+        BNO055_ADDR,
+        reg,
+        I2C_MEMADD_SIZE_8BIT,
+        &val,
+        1,
+        HAL_MAX_DELAY
+    );
+}
+
+// Simple read N‑bytes
+static HAL_StatusTypeDef bno055_read(uint8_t reg, uint8_t *buf, uint16_t len) {
+    return HAL_I2C_Mem_Read(
+        &hi2c2,
+        BNO055_ADDR,
+        reg,
+        I2C_MEMADD_SIZE_8BIT,
+        buf,
+        len,
+        HAL_MAX_DELAY
+    );
+}
+
+// Call once at startup (after MX_I2C2_Init and HAL_Init)
+void bno055_CONFIG(void)
+{
+	bno055_write(REG_OPR_MODE, MODE_CONFIG);
+	HAL_Delay(25);
+}
+void bno055_NDOF(void)
+{
+    bno055_write(REG_OPR_MODE, MODE_NDOF);
+    HAL_Delay(20);
+}
+
+// Read fused Euler angles (°) into floating outputs
+// Returns true on success
+bool BNO055_ReadEuler(double *heading, double *roll, double *pitch) {
+    uint8_t buf[6];
+    if (bno055_read(REG_EUL_HEADING_L, buf, 6) != HAL_OK) {
+        return false;
+    }
+    int16_t raw_h = (int16_t)(buf[1] << 8 | buf[0]);
+    int16_t raw_r = (int16_t)(buf[3] << 8 | buf[2]);
+    int16_t raw_p = (int16_t)(buf[5] << 8 | buf[4]);
+
+    *heading = raw_h / 16.0;   // each LSB = 1/16°
+    *roll    = raw_r / 16.0;
+    *pitch   = raw_p / 16.0;
+    return true;
+}
+
+/**
+ * @param  ax  X-axis lin. accel [m/s²]
+ * @param  ay  Y-axis lin. accel [m/s²]
+ * @param  az  Z-axis lin. accel [m/s²]
+ */
+bool BNO055_ReadLinAccel_D(double *ax, double *ay, double *az) {
+    uint8_t buf[6];
+    if (bno055_read(REG_LIA_DATA_X_LSB, buf, 6) != HAL_OK) {
+        return false;
+    }
+    int16_t rx = (int16_t)(buf[1] << 8 | buf[0]);
+    int16_t ry = (int16_t)(buf[3] << 8 | buf[2]);
+    int16_t rz = (int16_t)(buf[5] << 8 | buf[4]);
+
+    // 1 LSB = 1 m/s²
+    *ax = (double)rx;
+    *ay = (double)ry;
+    *az = (double)rz;
+    return true;
+}
+// Registers for raw accel (LSB = 1 mg)
+#define REG_ACC_DATA_X_LSB  0x08
+
+bool BNO055_ReadRawAccelMS2(float *ax, float *ay, float *az) {
+    uint8_t buf[6];
+    if (HAL_I2C_Mem_Read(&hi2c2,
+                         BNO055_ADDR,
+                         REG_ACC_DATA_X_LSB,
+                         I2C_MEMADD_SIZE_8BIT,
+                         buf, 6,
+                         HAL_MAX_DELAY) != HAL_OK)
+        return false;
+    int16_t rx =  (int16_t)(buf[1]<<8 | buf[0]);
+    int16_t ry =  (int16_t)(buf[3]<<8 | buf[2]);
+    int16_t rz =  (int16_t)(buf[5]<<8 | buf[4]);
+    // 1 LSB = 1 mg = 0.001 g; g=9.80665 m/s²
+    const float mg2ms2 = 0.001f * 9.80665f;
+    *ax = rx * mg2ms2;
+    *ay = ry * mg2ms2;
+    *az = rz * mg2ms2;
+    return true;
+}
+void ComputeLinearAccel(float *ax_lin, float *ay_lin, float *az_lin) {
+    float ax_raw, ay_raw, az_raw;
+    float heading, roll, pitch;
+
+    // 1) grab raw accel
+    BNO055_ReadRawAccelMS2(&ax_raw, &ay_raw, &az_raw);
+
+    // 2) grab orientation
+    BNO055_ReadEuler(&heading, &roll, &pitch);
+
+    // 3) convert to radians
+    float φ = roll  * (M_PI/180.0f);
+    float θ = pitch * (M_PI/180.0f);
+    const float g = 9.80665f;
+
+    // 4) compute gravity vector in body frame
+    float gx =  +g *  sinf(θ);
+    float gy =  -g *  sinf(φ)*cosf(θ);
+    float gz =  -g *  cosf(φ)*cosf(θ);
+
+    // 5) subtract
+    *ax_lin = ax_raw - gx;
+    *ay_lin = ay_raw - gy;
+    *az_lin = az_raw - gz;
+}
+void PrintCalBits(void)
+{
+    uint8_t cal = 0;
+    if (HAL_I2C_Mem_Read(&hi2c2,
+                         BNO055_ADDR,
+                         REG_CALIB_STAT,
+                         I2C_MEMADD_SIZE_8BIT,
+                         &cal, 1,
+                         HAL_MAX_DELAY) != HAL_OK)
+    {
+        printf("Error reading CALIB_STAT\r\n");
+        return;
+    }
+
+    uint8_t sys = (cal >> 6) & 0x03;
+    uint8_t gyr = (cal >> 4) & 0x03;
+    uint8_t acc = (cal >> 2) & 0x03;
+    uint8_t mag =  cal       & 0x03;
+
+    printf("CALIB_STAT = 0x%02X  bits:\r\n", cal);
+    printf("  SYS = %u (bits 7:6)\r\n", sys);
+    printf("  GYR = %u (bits 5:4)\r\n", gyr);
+    printf("  ACC = %u (bits 3:2)\r\n", acc);
+    printf("  MAG = %u (bits 1:0)\r\n", mag);
+}
+void BNO055_PrintAllOffsets(void)
+{
+    uint8_t offs[OFFSET_LEN];
+    if (HAL_I2C_Mem_Read(&hi2c2,
+                         BNO055_ADDR,
+                         REG_OFFSET_START,
+                         I2C_MEMADD_SIZE_8BIT,
+                         offs,
+                         OFFSET_LEN,
+                         HAL_MAX_DELAY) != HAL_OK)
+    {
+        printf("I2C error reading all offsets\r\n");
+        return;
+    }
+
+    // ACC offsets
+    int16_t ax_off = (int16_t)(offs[1]<<8 | offs[0]);
+    int16_t ay_off = (int16_t)(offs[3]<<8 | offs[2]);
+    int16_t az_off = (int16_t)(offs[5]<<8 | offs[4]);
+    // MAG offsets
+    int16_t mx_off = (int16_t)(offs[7]<<8 | offs[6]);
+    int16_t my_off = (int16_t)(offs[9]<<8 | offs[8]);
+    int16_t mz_off = (int16_t)(offs[11]<<8 | offs[10]);
+    // GYR offsets
+    int16_t gx_off = (int16_t)(offs[13]<<8 | offs[12]);
+    int16_t gy_off = (int16_t)(offs[15]<<8 | offs[14]);
+    int16_t gz_off = (int16_t)(offs[17]<<8 | offs[16]);
+    // Radius registers
+    uint16_t acc_radius = (uint16_t)(offs[19]<<8 | offs[18]);
+    uint16_t mag_radius = (uint16_t)(offs[21]<<8 | offs[20]);
+
+    printf("Offsets (LSB units):\n");
+    printf("  ACC X=%d  Y=%d  Z=%d\n", ax_off, ay_off, az_off);
+    printf("  MAG X=%d  Y=%d  Z=%d\n", mx_off, my_off, mz_off);
+    printf("  GYR X=%d  Y=%d  Z=%d\n", gx_off, gy_off, gz_off);
+    printf("  ACC Radius = %u\n", acc_radius);
+    printf("  MAG Radius = %u\n", mag_radius);
+}
+static uint8_t calData[22] = {
+    /* ACC */ 0xF3, 0xFF,  0xDF, 0xFF,  0xC8, 0xFF,
+    /* MAG */ 0xE5, 0x00,  0x80, 0xFF,  0x8B, 0xF8,
+    /* GYR */ 0xFF, 0xFF,  0xFE, 0xFF,  0xFE, 0xFF,
+    /* ACC Radius */ 0xE8, 0x03,
+    /* MAG Radius */ 0x1D, 0x03
+};
+bool BNO055_ApplyAllCalibration()
+{
+    if (HAL_I2C_Mem_Write(&hi2c2,
+                          BNO055_ADDR,
+                          0x55,                  // first offset reg
+                          I2C_MEMADD_SIZE_8BIT,
+                          calData,
+                          22,
+                          HAL_MAX_DELAY) != HAL_OK)
+    {
+        //printf("Error applying full calibration!\r\n");
+        return false;
+    }
+    HAL_Delay(10);  // allow the chip to internalize them
+    return true;
+}
+
+bool BNO055_CalibrateAccelOnce(uint8_t offsets[6], uint32_t timeout_ms)
+{
+    uint8_t cal;
+    uint32_t start = HAL_GetTick();
+
+    // Poll at ~10 Hz until ACC bits == 3
+    do {
+        if (HAL_I2C_Mem_Read(&hi2c2,
+                             BNO055_ADDR,
+                             REG_CALIB_STAT,
+                             I2C_MEMADD_SIZE_8BIT,
+                             &cal, 1,
+                             HAL_MAX_DELAY) != HAL_OK)
+        {
+            printf("I2C error reading CALIB_STAT\r\n");
+            return false;
+        }
+
+        // Print the four fields
+        printf("CAL: 0x%02X | SYS=%u GYR=%u ACC=%u MAG=%u\r\n",
+               cal,
+               (cal>>6)&3,
+               (cal>>4)&3,
+               (cal>>2)&3,
+               cal    &3);
+
+        if (((cal>>2)&3) == 3)  // ACC == 3?
+            break;
+
+        HAL_Delay(100);  // give UART & I2C bus time to settle
+
+    } while ((HAL_GetTick() - start) < timeout_ms);
+
+    if (((cal>>2)&3) != 3) {
+        printf("ACC did not hit 3 in %lu ms\r\n", timeout_ms);
+        return false;
+    }
+
+    // Read the 6 accelerometer offset registers
+    if (HAL_I2C_Mem_Read(&hi2c2,
+                         BNO055_ADDR,
+                         REG_ACC_OFFSET_X_LSB,
+                         I2C_MEMADD_SIZE_8BIT,
+                         offsets, 6,
+                         HAL_MAX_DELAY) != HAL_OK)
+    {
+        printf("I2C error reading ACC offsets\r\n");
+        return false;
+    }
+
+    BNO055_PrintAllOffsets();
+    return true;
+}

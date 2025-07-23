@@ -1,0 +1,13 @@
+/*
+ * sensor.h
+ *
+ *  Created on: Jul 23, 2025
+ *      Author: nicks
+ */
+
+#ifndef INC_SENSOR_H_
+#define INC_SENSOR_H_
+
+void BNO055_Init(void);
+
+#endif /* INC_SENSOR_H_ */
