@@ -124,8 +124,7 @@ Error_Handler();
 	bno055_CONFIG();;
 	bno055_NDOF();
 	BNO055_ApplyAllCalibration();
-*/
-
+ */
  /* USER CODE END 2 */
  /* Init scheduler */
  osKernelInitialize();
@@ -556,6 +555,17 @@ void StartDefaultTask(void *argument)
 		ComputeLinearAccel(&ax, &ay, &az);
 		BSP_LED_Toggle(LED_YELLOW);
 		printf("%.3f %.3f %.3f\n",ax,ay,az);
+		*/
+		/*
+		printf("hey\n");
+	    uint8_t acc_offsets[6];
+	    if (!BNO055_CalibrateAccelOnce(acc_offsets, 60000)) {
+	        printf("Accel calibration failed!\r\n");
+	    } else {
+	        printf("Accel calibration succeeded.\r\n");
+	        // save acc_offsets[] to flash here
+	    }
+		osDelay(1000000);
 		*/
 		BSP_LED_Toggle(LED_YELLOW);
 		osDelay(100);
