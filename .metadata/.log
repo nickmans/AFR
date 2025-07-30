@@ -1587,3 +1587,30 @@ org.eclipse.core.internal.resources.ResourceException: Could not read metadata f
 	at org.eclipse.jface.operation.ModalContext$ModalContextThread.run(ModalContext.java:124)
 !SUBENTRY 3 org.eclipse.core.resources 4 567 2025-07-30 14:13:21.604
 !MESSAGE Could not read metadata for 'C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\.metadata\.plugins\org.eclipse.core.resources\.projects\AFR_SENSORS_CM7\.indexes\properties.index'. Unexpected version: 0.
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 4 0 2025-07-30 14:15:09.377
+!MESSAGE STM32CubeMx project generation failure
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 4 0 2025-07-30 14:15:49.546
+!MESSAGE STM32CubeMx project generation failure
+!SESSION 2025-07-30 14:17:25.878 -----------------------------------------------
+eclipse.buildId=Version 1.19.0
+java.version=21.0.3
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_AU
+Command-line arguments:  -os win32 -ws win32 -arch x86_64
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2025-07-30 14:17:28.937
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2025-07-30 14:17:28.938
+!MESSAGE Log4j2 initialized with config file C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2025-07-30 14:17:32.481
+!MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY org.eclipse.cdt.core 1 0 2025-07-30 14:18:28.246
+!MESSAGE Indexed 'AFR_SENSHORRS_CM4' (29 sources, 90 headers) in 2.55 sec: 8,695 declarations; 66,717 references; 0 unresolved inclusions; 1 syntax errors; 2 unresolved names (0.0027%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2025-07-30 14:18:29.586
+!MESSAGE Indexed 'AFR_SENSHORRS_CM7' (29 sources, 90 headers) in 1.34 sec: 8,790 declarations; 67,933 references; 0 unresolved inclusions; 1 syntax errors; 2 unresolved names (0.0026%)
