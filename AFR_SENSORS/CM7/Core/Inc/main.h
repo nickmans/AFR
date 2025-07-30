@@ -90,10 +90,26 @@ void Error_Handler(void);
 #define IMU_SCL_GPIO_Port GPIOB
 #define IMU_SDA_Pin GPIO_PIN_11
 #define IMU_SDA_GPIO_Port GPIOB
+#define ENC_4_Pin GPIO_PIN_11
+#define ENC_4_GPIO_Port GPIOD
+#define ENC_4_EXTI_IRQn EXTI15_10_IRQn
+#define ENC_1_Pin GPIO_PIN_12
+#define ENC_1_GPIO_Port GPIOD
+#define ENC_1_EXTI_IRQn EXTI15_10_IRQn
+#define ENC_2_Pin GPIO_PIN_14
+#define ENC_2_GPIO_Port GPIOD
+#define ENC_2_EXTI_IRQn EXTI15_10_IRQn
+#define ENC_3_Pin GPIO_PIN_15
+#define ENC_3_GPIO_Port GPIOD
+#define ENC_3_EXTI_IRQn EXTI15_10_IRQn
 #define M34STBY_Pin GPIO_PIN_6
 #define M34STBY_GPIO_Port GPIOG
 #define M12STBY_Pin GPIO_PIN_8
 #define M12STBY_GPIO_Port GPIOG
+#define LIDAR_TX_Pin GPIO_PIN_5
+#define LIDAR_TX_GPIO_Port GPIOD
+#define LIDAR_RX_Pin GPIO_PIN_6
+#define LIDAR_RX_GPIO_Port GPIOD
 
 /* USER CODE BEGIN Private defines */
 

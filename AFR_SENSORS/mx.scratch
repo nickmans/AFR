@@ -521,13 +521,7 @@
                                     
             <file>
                                           
-              <name>Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_usart.c</name>
-                                                              
-            </file>
-                                    
-            <file>
-                                          
-              <name>Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_usart_ex.c</name>
+              <name>Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_uart.c</name>
                                                               
             </file>
                                     
@@ -539,7 +533,13 @@
                                     
             <file>
                                           
-              <name>Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_uart.c</name>
+              <name>Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_usart.c</name>
+                                                              
+            </file>
+                                    
+            <file>
+                                          
+              <name>Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_usart_ex.c</name>
                                                               
             </file>
                     
@@ -1082,13 +1082,7 @@
                                     
             <file>
                                           
-              <name>Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_usart.c</name>
-                                                              
-            </file>
-                                    
-            <file>
-                                          
-              <name>Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_usart_ex.c</name>
+              <name>Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_uart.c</name>
                                                               
             </file>
                                     
@@ -1100,7 +1094,13 @@
                                     
             <file>
                                           
-              <name>Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_uart.c</name>
+              <name>Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_usart.c</name>
+                                                              
+            </file>
+                                    
+            <file>
+                                          
+              <name>Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_usart_ex.c</name>
                                                               
             </file>
                     
