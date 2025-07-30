@@ -3550,3 +3550,276 @@
 2025-07-30 13:36:19,964 [INFO] ProjectBuilder:5496 - Time for Generating toolchain IDE Files: 674mS.
 2025-07-30 13:36:19,965 [INFO] ProjectBuilder:3463 - Time for Copy CMSIS : 1mS.
 2025-07-30 13:36:19,970 [INFO] ProjectBuilder:3463 - Time for Copy CMSIS : 0mS.
+2025-07-30 13:40:40,736 [INFO] Gpio:278 - dependency for GPIO [ADC1, ADC3, I2C2, TIM1]
+2025-07-30 13:40:40,843 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-07-30 13:40:40,855 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-07-30 13:40:41,941 [INFO] Gpio:278 - dependency for GPIO [ADC1, ADC3, I2C2, TIM1]
+2025-07-30 13:40:42,008 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-07-30 13:40:42,015 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-07-30 13:40:45,733 [INFO] Gpio:278 - dependency for GPIO [ADC1, ADC3, I2C2, TIM1]
+2025-07-30 13:41:02,055 [INFO] Gpio:278 - dependency for GPIO [ADC1, ADC3, I2C2, TIM1]
+2025-07-30 13:41:02,092 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-07-30 13:41:02,097 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-07-30 13:41:02,926 [INFO] Gpio:278 - dependency for GPIO [ADC1, ADC3, I2C2, TIM1]
+2025-07-30 13:41:02,968 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-07-30 13:41:02,974 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-07-30 13:41:06,157 [INFO] Gpio:278 - dependency for GPIO [ADC1, ADC3, I2C2, TIM1]
+2025-07-30 13:41:12,953 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 568567448 Bytes (1073741824)
+2025-07-30 13:41:13,091 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 611494688 Bytes (1073741824)
+2025-07-30 13:41:13,727 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 653948656 Bytes (1073741824)
+2025-07-30 13:41:14,286 [ERROR] IocParser:95 - Exception caught: Cannot invoke "java.lang.CharSequence.length()" because "this.text" is null
+2025-07-30 13:41:14,959 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: FREERTOS
+2025-07-30 13:41:14,959 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: RCC
+2025-07-30 13:41:14,959 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: I2C
+2025-07-30 13:41:14,959 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: TIM1_8H7
+2025-07-30 13:41:14,960 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: SYS
+2025-07-30 13:41:14,960 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: ADC
+2025-07-30 13:41:14,960 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: ADC
+2025-07-30 13:41:14,960 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: NVIC2
+2025-07-30 13:41:14,960 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: GPIO
+2025-07-30 13:41:14,960 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: SYS_M4
+2025-07-30 13:41:14,960 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: NUCLEO-H755ZI-Q
+2025-07-30 13:41:14,960 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: NVIC1
+2025-07-30 13:41:14,961 [INFO] CodeGenerator:892 - code generatio: config db path: C:\ST\STM32CubeIDE_1.19.0\STM32CubeIDE\plugins\com.st.stm32cube.common.mx_6.15.0.202507011659\\db\
+2025-07-30 13:41:15,016 [ERROR] CodeGenerator:10662 - The current RTOS owner has not been found in the list of IPs
+2025-07-30 13:41:15,016 [INFO] CodeGenerator:1619 - *******************Project context M7 selected
+2025-07-30 13:41:15,067 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\MXTmpFiles\license.tmp_save
+2025-07-30 13:41:15,186 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\MXTmpFiles\license.tmp
+2025-07-30 13:41:15,265 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\gpio.tmp_save
+2025-07-30 13:41:15,342 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\gpio.tmp
+2025-07-30 13:41:15,660 [WARN] IPConfigManager:103 - WARNING: Missing Config File for NVIC1 ip!!
+2025-07-30 13:41:15,818 [ERROR] CodeGenerator:10662 - The current RTOS owner has not been found in the list of IPs
+2025-07-30 13:41:15,825 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\cortex.tmp_save
+2025-07-30 13:41:15,874 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\cortex.tmp
+2025-07-30 13:41:15,890 [INFO] Middleware:1452 - No code input for Bsp Dependency
+2025-07-30 13:41:15,896 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_inc.tmp_save
+2025-07-30 13:41:15,940 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_inc.tmp
+2025-07-30 13:41:15,944 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_kernelInit.tmp_save
+2025-07-30 13:41:15,990 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_kernelInit.tmp
+2025-07-30 13:41:15,994 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_kernelStart.tmp_save
+2025-07-30 13:41:16,034 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_kernelStart.tmp
+2025-07-30 13:41:16,038 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_typedefs.tmp_save
+2025-07-30 13:41:16,081 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_typedefs.tmp
+2025-07-30 13:41:16,085 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_vars.tmp_save
+2025-07-30 13:41:16,128 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_vars.tmp
+2025-07-30 13:41:16,133 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_pfp.tmp_save
+2025-07-30 13:41:16,173 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_pfp.tmp
+2025-07-30 13:41:16,179 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_obj_creat.tmp_save
+2025-07-30 13:41:16,222 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_obj_creat.tmp
+2025-07-30 13:41:16,227 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_default_thread.tmp_save
+2025-07-30 13:41:16,267 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_default_thread.tmp
+2025-07-30 13:41:16,272 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_threads.tmp_save
+2025-07-30 13:41:16,311 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_threads.tmp
+2025-07-30 13:41:16,317 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Inc\FreeRTOSConfig.h_save
+2025-07-30 13:41:16,370 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Inc\FreeRTOSConfig.h
+2025-07-30 13:41:16,376 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Src\freertos.c_save
+2025-07-30 13:41:16,427 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Src\freertos.c
+2025-07-30 13:41:16,460 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Inc\stm32h7xx_nucleo_conf.h_save
+2025-07-30 13:41:16,503 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Inc\stm32h7xx_nucleo_conf.h
+2025-07-30 13:41:16,508 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\bsp_inc.tmp_save
+2025-07-30 13:41:16,546 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\bsp_inc.tmp
+2025-07-30 13:41:16,551 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\bsp_common_vars.tmp_save
+2025-07-30 13:41:16,591 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\bsp_common_vars.tmp
+2025-07-30 13:41:16,596 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\bsp_common_init.tmp_save
+2025-07-30 13:41:16,635 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\bsp_common_init.tmp
+2025-07-30 13:41:16,639 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\bsp_common_demo_before_while.tmp_save
+2025-07-30 13:41:16,676 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\bsp_common_demo_before_while.tmp
+2025-07-30 13:41:16,681 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\bsp_common_demo_inside_while.tmp_save
+2025-07-30 13:41:16,720 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\bsp_common_demo_inside_while.tmp
+2025-07-30 13:41:16,724 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\bsp_common_demo_fct.tmp_save
+2025-07-30 13:41:16,761 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\bsp_common_demo_fct.tmp
+2025-07-30 13:41:16,779 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Src\stm32h7xx_it.c_save
+2025-07-30 13:41:16,849 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Src\stm32h7xx_it.c
+2025-07-30 13:41:16,855 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Inc\stm32h7xx_it.h_save
+2025-07-30 13:41:16,898 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Inc\stm32h7xx_it.h
+2025-07-30 13:41:17,003 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Src\stm32h7xx_hal_msp.c_save
+2025-07-30 13:41:17,072 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Src\stm32h7xx_hal_msp.c
+2025-07-30 13:41:17,077 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\system.tmp_save
+2025-07-30 13:41:17,118 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\system.tmp
+2025-07-30 13:41:17,132 [INFO] CodeEngine:321 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Inc\stm32h7xx_hal_conf.h_save
+2025-07-30 13:41:17,178 [INFO] CodeEngine:345 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Inc\stm32h7xx_hal_conf.h
+2025-07-30 13:41:17,200 [WARN] IPConfigManager:3811 - IP not found : NVIC
+2025-07-30 13:41:17,200 [WARN] IPConfigManager:3811 - IP not found : TIM
+2025-07-30 13:41:17,201 [WARN] CodeGenerator:4259 - IP not found : null
+2025-07-30 13:41:17,201 [WARN] CodeGenerator:4259 - IP not found : null
+2025-07-30 13:41:17,208 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Inc\main.h_save
+2025-07-30 13:41:17,258 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Inc\main.h
+2025-07-30 13:41:17,265 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Src\main.c_save
+2025-07-30 13:41:17,359 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Src\main.c
+2025-07-30 13:41:17,412 [INFO] CodeGenerator:1619 - *******************Project context M4 selected
+2025-07-30 13:41:17,466 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\MXTmpFiles\license.tmp_save
+2025-07-30 13:41:17,515 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\MXTmpFiles\license.tmp
+2025-07-30 13:41:17,527 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\MXTmpFiles\gpio.tmp_save
+2025-07-30 13:41:17,567 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\MXTmpFiles\gpio.tmp
+2025-07-30 13:41:17,588 [WARN] IPConfigManager:103 - WARNING: Missing Config File for NVIC2 ip!!
+2025-07-30 13:41:17,601 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\MXTmpFiles\cortex.tmp_save
+2025-07-30 13:41:17,641 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\MXTmpFiles\cortex.tmp
+2025-07-30 13:41:17,671 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Inc\stm32h7xx_nucleo_conf.h_save
+2025-07-30 13:41:17,714 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Inc\stm32h7xx_nucleo_conf.h
+2025-07-30 13:41:17,720 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\MXTmpFiles\bsp_inc.tmp_save
+2025-07-30 13:41:17,757 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\MXTmpFiles\bsp_inc.tmp
+2025-07-30 13:41:17,772 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Src\stm32h7xx_it.c_save
+2025-07-30 13:41:17,818 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Src\stm32h7xx_it.c
+2025-07-30 13:41:17,824 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Inc\stm32h7xx_it.h_save
+2025-07-30 13:41:17,865 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Inc\stm32h7xx_it.h
+2025-07-30 13:41:17,889 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Src\stm32h7xx_hal_msp.c_save
+2025-07-30 13:41:17,948 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Src\stm32h7xx_hal_msp.c
+2025-07-30 13:41:17,952 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\MXTmpFiles\system.tmp_save
+2025-07-30 13:41:17,990 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\MXTmpFiles\system.tmp
+2025-07-30 13:41:18,000 [INFO] CodeEngine:321 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Inc\stm32h7xx_hal_conf.h_save
+2025-07-30 13:41:18,043 [INFO] CodeEngine:345 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Inc\stm32h7xx_hal_conf.h
+2025-07-30 13:41:18,053 [WARN] IPConfigManager:3811 - IP not found : NVIC
+2025-07-30 13:41:18,054 [WARN] CodeGenerator:4259 - IP not found : null
+2025-07-30 13:41:18,061 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Inc\main.h_save
+2025-07-30 13:41:18,106 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Inc\main.h
+2025-07-30 13:41:18,112 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Src\main.c_save
+2025-07-30 13:41:18,177 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Src\main.c
+2025-07-30 13:41:18,574 [INFO] ProjectBuilder:3606 - Time for Copy HAL[1] : 230mS.
+2025-07-30 13:41:18,587 [INFO] ProjectBuilder:5216 - Project Generator version: 4.7.0-B52
+2025-07-30 13:41:18,645 [INFO] ConfigFileManager:1595 - The Die is : DIE450
+2025-07-30 13:41:19,272 [ERROR] :77 - Fail to create / get project 'AFR_SENSORS' within workspace 'C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR'
+2025-07-30 13:41:19,273 [INFO] ProjectBuilder:5496 - Time for Generating toolchain IDE Files: 686mS.
+2025-07-30 13:41:19,273 [INFO] ProjectBuilder:3463 - Time for Copy CMSIS : 0mS.
+2025-07-30 13:41:19,277 [INFO] ProjectBuilder:3463 - Time for Copy CMSIS : 0mS.
+2025-07-30 13:41:30,433 [INFO] Gpio:278 - dependency for GPIO [ADC1, ADC3, I2C2, TIM1]
+2025-07-30 13:41:30,465 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-07-30 13:41:30,469 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-07-30 13:41:31,215 [INFO] Gpio:278 - dependency for GPIO [ADC1, ADC3, I2C2, TIM1]
+2025-07-30 13:41:31,248 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-07-30 13:41:31,250 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-07-30 13:41:35,229 [INFO] Gpio:278 - dependency for GPIO [ADC1, ADC3, I2C2, TIM1]
+2025-07-30 13:41:46,486 [INFO] Gpio:278 - dependency for GPIO [ADC1, ADC3, I2C2, TIM1]
+2025-07-30 13:41:46,517 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-07-30 13:41:46,520 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-07-30 13:41:47,251 [INFO] Gpio:278 - dependency for GPIO [ADC1, ADC3, I2C2, TIM1]
+2025-07-30 13:41:47,280 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-07-30 13:41:47,283 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-07-30 13:41:49,588 [INFO] Gpio:278 - dependency for GPIO [ADC1, ADC3, I2C2, TIM1]
+2025-07-30 13:42:37,908 [INFO] Gpio:278 - dependency for GPIO [ADC1, ADC3, I2C2, TIM1]
+2025-07-30 13:42:37,938 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-07-30 13:42:37,941 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-07-30 13:42:44,131 [INFO] Gpio:278 - dependency for GPIO [ADC1, ADC3, I2C2, TIM1]
+2025-07-30 13:47:37,715 [INFO] I2cTimingTraitement:330 - 0x109090D9
+2025-07-30 13:47:58,598 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 713022488 Bytes (1073741824)
+2025-07-30 13:47:58,710 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 734926608 Bytes (1073741824)
+2025-07-30 13:47:59,324 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 779018160 Bytes (1073741824)
+2025-07-30 13:48:00,423 [ERROR] IocParser:95 - Exception caught: Cannot invoke "java.lang.CharSequence.length()" because "this.text" is null
+2025-07-30 13:48:00,515 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: FREERTOS
+2025-07-30 13:48:00,515 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: RCC
+2025-07-30 13:48:00,515 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: I2C
+2025-07-30 13:48:00,515 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: USART
+2025-07-30 13:48:00,515 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: TIM1_8H7
+2025-07-30 13:48:00,515 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: SYS
+2025-07-30 13:48:00,515 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: ADC
+2025-07-30 13:48:00,516 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: ADC
+2025-07-30 13:48:00,516 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: NVIC2
+2025-07-30 13:48:00,516 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: UART
+2025-07-30 13:48:00,516 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: UART
+2025-07-30 13:48:00,516 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: GPIO
+2025-07-30 13:48:00,516 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: SYS_M4
+2025-07-30 13:48:00,516 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: NUCLEO-H755ZI-Q
+2025-07-30 13:48:00,516 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: NVIC1
+2025-07-30 13:48:00,517 [INFO] CodeGenerator:892 - code generatio: config db path: C:\ST\STM32CubeIDE_1.19.0\STM32CubeIDE\plugins\com.st.stm32cube.common.mx_6.15.0.202507011659\\db\
+2025-07-30 13:48:00,570 [ERROR] CodeGenerator:10662 - The current RTOS owner has not been found in the list of IPs
+2025-07-30 13:48:00,570 [INFO] CodeGenerator:1619 - *******************Project context M7 selected
+2025-07-30 13:48:00,616 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\MXTmpFiles\license.tmp_save
+2025-07-30 13:48:00,729 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\MXTmpFiles\license.tmp
+2025-07-30 13:48:00,815 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\gpio.tmp_save
+2025-07-30 13:48:00,883 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\gpio.tmp
+2025-07-30 13:48:01,211 [WARN] IPConfigManager:103 - WARNING: Missing Config File for NVIC1 ip!!
+2025-07-30 13:48:01,515 [ERROR] CodeGenerator:10662 - The current RTOS owner has not been found in the list of IPs
+2025-07-30 13:48:01,523 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\cortex.tmp_save
+2025-07-30 13:48:01,573 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\cortex.tmp
+2025-07-30 13:48:01,597 [INFO] Middleware:1452 - No code input for Bsp Dependency
+2025-07-30 13:48:01,603 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_inc.tmp_save
+2025-07-30 13:48:01,646 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_inc.tmp
+2025-07-30 13:48:01,651 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_kernelInit.tmp_save
+2025-07-30 13:48:01,692 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_kernelInit.tmp
+2025-07-30 13:48:01,697 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_kernelStart.tmp_save
+2025-07-30 13:48:01,740 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_kernelStart.tmp
+2025-07-30 13:48:01,745 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_typedefs.tmp_save
+2025-07-30 13:48:01,787 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_typedefs.tmp
+2025-07-30 13:48:01,792 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_vars.tmp_save
+2025-07-30 13:48:01,833 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_vars.tmp
+2025-07-30 13:48:01,839 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_pfp.tmp_save
+2025-07-30 13:48:01,879 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_pfp.tmp
+2025-07-30 13:48:01,884 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_obj_creat.tmp_save
+2025-07-30 13:48:01,927 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_obj_creat.tmp
+2025-07-30 13:48:01,931 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_default_thread.tmp_save
+2025-07-30 13:48:01,972 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_default_thread.tmp
+2025-07-30 13:48:01,977 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_threads.tmp_save
+2025-07-30 13:48:02,019 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\rtos_threads.tmp
+2025-07-30 13:48:02,024 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Inc\FreeRTOSConfig.h_save
+2025-07-30 13:48:02,081 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Inc\FreeRTOSConfig.h
+2025-07-30 13:48:02,087 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Src\freertos.c_save
+2025-07-30 13:48:02,134 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Src\freertos.c
+2025-07-30 13:48:02,172 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Inc\stm32h7xx_nucleo_conf.h_save
+2025-07-30 13:48:02,216 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Inc\stm32h7xx_nucleo_conf.h
+2025-07-30 13:48:02,222 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\bsp_inc.tmp_save
+2025-07-30 13:48:02,260 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\bsp_inc.tmp
+2025-07-30 13:48:02,265 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\bsp_common_vars.tmp_save
+2025-07-30 13:48:02,304 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\bsp_common_vars.tmp
+2025-07-30 13:48:02,308 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\bsp_common_init.tmp_save
+2025-07-30 13:48:02,348 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\bsp_common_init.tmp
+2025-07-30 13:48:02,352 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\bsp_common_demo_before_while.tmp_save
+2025-07-30 13:48:02,391 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\bsp_common_demo_before_while.tmp
+2025-07-30 13:48:02,396 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\bsp_common_demo_inside_while.tmp_save
+2025-07-30 13:48:02,436 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\bsp_common_demo_inside_while.tmp
+2025-07-30 13:48:02,441 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\bsp_common_demo_fct.tmp_save
+2025-07-30 13:48:02,479 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\bsp_common_demo_fct.tmp
+2025-07-30 13:48:02,501 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Src\stm32h7xx_it.c_save
+2025-07-30 13:48:02,560 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Src\stm32h7xx_it.c
+2025-07-30 13:48:02,566 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Inc\stm32h7xx_it.h_save
+2025-07-30 13:48:02,609 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Inc\stm32h7xx_it.h
+2025-07-30 13:48:02,721 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Src\stm32h7xx_hal_msp.c_save
+2025-07-30 13:48:02,797 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Src\stm32h7xx_hal_msp.c
+2025-07-30 13:48:02,803 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\system.tmp_save
+2025-07-30 13:48:02,842 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\MXTmpFiles\system.tmp
+2025-07-30 13:48:02,853 [INFO] CodeEngine:321 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Inc\stm32h7xx_hal_conf.h_save
+2025-07-30 13:48:02,901 [INFO] CodeEngine:345 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Inc\stm32h7xx_hal_conf.h
+2025-07-30 13:48:02,929 [INFO] ApiDbMcu:532 - Load IP Config File for USART2
+2025-07-30 13:48:02,931 [WARN] IPConfigManager:3811 - IP not found : NVIC
+2025-07-30 13:48:02,931 [WARN] IPConfigManager:3811 - IP not found : TIM
+2025-07-30 13:48:02,932 [WARN] CodeGenerator:4259 - IP not found : null
+2025-07-30 13:48:02,932 [WARN] CodeGenerator:4259 - IP not found : null
+2025-07-30 13:48:02,939 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Inc\main.h_save
+2025-07-30 13:48:02,988 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Inc\main.h
+2025-07-30 13:48:02,993 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Src\main.c_save
+2025-07-30 13:48:03,081 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM7\Core\Src\main.c
+2025-07-30 13:48:03,126 [INFO] CodeGenerator:1619 - *******************Project context M4 selected
+2025-07-30 13:48:03,174 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\MXTmpFiles\license.tmp_save
+2025-07-30 13:48:03,221 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\MXTmpFiles\license.tmp
+2025-07-30 13:48:03,239 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\MXTmpFiles\gpio.tmp_save
+2025-07-30 13:48:03,280 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\MXTmpFiles\gpio.tmp
+2025-07-30 13:48:03,321 [WARN] IPConfigManager:103 - WARNING: Missing Config File for NVIC2 ip!!
+2025-07-30 13:48:03,406 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\MXTmpFiles\cortex.tmp_save
+2025-07-30 13:48:03,452 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\MXTmpFiles\cortex.tmp
+2025-07-30 13:48:03,494 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Inc\stm32h7xx_nucleo_conf.h_save
+2025-07-30 13:48:03,538 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Inc\stm32h7xx_nucleo_conf.h
+2025-07-30 13:48:03,544 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\MXTmpFiles\bsp_inc.tmp_save
+2025-07-30 13:48:03,589 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\MXTmpFiles\bsp_inc.tmp
+2025-07-30 13:48:03,610 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Src\stm32h7xx_it.c_save
+2025-07-30 13:48:03,667 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Src\stm32h7xx_it.c
+2025-07-30 13:48:03,675 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Inc\stm32h7xx_it.h_save
+2025-07-30 13:48:03,726 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Inc\stm32h7xx_it.h
+2025-07-30 13:48:03,784 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Src\stm32h7xx_hal_msp.c_save
+2025-07-30 13:48:03,856 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Src\stm32h7xx_hal_msp.c
+2025-07-30 13:48:03,861 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\MXTmpFiles\system.tmp_save
+2025-07-30 13:48:03,905 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\MXTmpFiles\system.tmp
+2025-07-30 13:48:03,916 [INFO] CodeEngine:321 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Inc\stm32h7xx_hal_conf.h_save
+2025-07-30 13:48:03,960 [INFO] CodeEngine:345 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Inc\stm32h7xx_hal_conf.h
+2025-07-30 13:48:03,975 [INFO] ApiDbMcu:532 - Load IP Config File for UART4
+2025-07-30 13:48:03,982 [INFO] ApiDbMcu:532 - Load IP Config File for UART5
+2025-07-30 13:48:03,984 [WARN] IPConfigManager:3811 - IP not found : NVIC
+2025-07-30 13:48:03,985 [WARN] CodeGenerator:4259 - IP not found : null
+2025-07-30 13:48:03,991 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Inc\main.h_save
+2025-07-30 13:48:04,038 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Inc\main.h
+2025-07-30 13:48:04,043 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Src\main.c_save
+2025-07-30 13:48:04,109 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR_SENSORS\CM4\Core\Src\main.c
+2025-07-30 13:48:04,510 [INFO] ProjectBuilder:3606 - Time for Copy HAL[1] : 235mS.
+2025-07-30 13:48:04,523 [INFO] ProjectBuilder:5216 - Project Generator version: 4.7.0-B52
+2025-07-30 13:48:04,579 [INFO] ConfigFileManager:1595 - The Die is : DIE450
+2025-07-30 13:48:05,196 [ERROR] :77 - Fail to create / get project 'AFR_SENSORS' within workspace 'C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR'
+2025-07-30 13:48:05,196 [INFO] ProjectBuilder:5496 - Time for Generating toolchain IDE Files: 673mS.
+2025-07-30 13:48:05,196 [INFO] ProjectBuilder:3463 - Time for Copy CMSIS : 0mS.
+2025-07-30 13:48:05,200 [INFO] ProjectBuilder:3463 - Time for Copy CMSIS : 0mS.

@@ -54,23 +54,12 @@ extern "C" {
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
-void MX_GPIO_Init(void);
 
 /* USER CODE BEGIN EFP */
 
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define HC05_TX_Pin GPIO_PIN_0
-#define HC05_TX_GPIO_Port GPIOA
-#define BATT_V_Pin GPIO_PIN_3
-#define BATT_V_GPIO_Port GPIOA
-#define HC06_RX_Pin GPIO_PIN_12
-#define HC06_RX_GPIO_Port GPIOB
-#define HC05_RX_Pin GPIO_PIN_11
-#define HC05_RX_GPIO_Port GPIOC
-#define HC06_TX_Pin GPIO_PIN_12
-#define HC06_TX_GPIO_Port GPIOC
 
 /* USER CODE BEGIN Private defines */
 
