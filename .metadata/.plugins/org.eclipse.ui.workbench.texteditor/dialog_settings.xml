@@ -3,21 +3,21 @@
 	<item key="hasShownOverlayPopupBefore" value="true"/>
 	<item key="replaceBarOpen" value="true"/>
 	<list key="searchhistory">
-		<item value="LidarPoint_t"/>
+		<item value="RCC_CLOCKTYPE_SYSCLK"/>
+		<item value="nvic"/>
+		<item value="IC1Filter "/>
+		<item value="MX_TIM4_Init"/>
+		<item value="mx"/>
+		<item value="HAL_TIM_Encoder_Start"/>
+		<item value="StartDefaultTask"/>
+		<item value="HAL_TIM_PWM_Start"/>
 		<item value="f"/>
 		<item value="float"/>
+		<item value="PrintAllOffsets"/>
+		<item value="BNO055_PrintAllOffsets"/>
+		<item value="LidarPoint_t"/>
 		<item value="RPLIDAR_MAX_POINTS"/>
 		<item value="bins_filled_count"/>
-		<item value="NUM_BINS"/>
-		<item value="dma"/>
-		<item value="StartDefaultTask"/>
-		<item value="uart2_dma_buf"/>
-		<item value="__HAL_LINKDMA"/>
-		<item value="DTCMRAM"/>
-		<item value="__HAL_DMA_ENABLE_IT"/>
-		<item value="HAL_UART_Receive_DMA"/>
-		<item value="MX_DMA_Init"/>
-		<item value="HAL_UART_RxCpltCallback"/>
 	</list>
 	<list key="replacehistory">
 		<item value="double"/>
