@@ -685,7 +685,7 @@ void enc_go(void *argument)
 		if (now-lastprint >= print_dt)
 		{
 			BSP_LED_Toggle(LED_GREEN);
-			printf("%.3f %.3f %.3f %.3f %.3f\n",rpm1,rpm2,rpm3,rpm4,dt);
+			printf("%.3f %.3f %.3f %.3f %.3f\n",rpm1,rpm1,rpm1,rpm1,dt);
 			lastprint = now;
 		}
 

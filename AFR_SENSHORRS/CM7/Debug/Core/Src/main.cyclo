@@ -10,5 +10,5 @@
 ../Core/Src/main.c:637:6:BSP_PB_Callback	3
 ../Core/Src/main.c:655:6:HAL_GPIO_EXTI_Callback	5
 ../Core/Src/main.c:670:6:enc_go	2
-../Core/Src/main.c:705:6:StartDefaultTask	1
-../Core/Src/main.c:728:6:Error_Handler	1
+../Core/Src/main.c:708:6:StartDefaultTask	1
+../Core/Src/main.c:731:6:Error_Handler	1

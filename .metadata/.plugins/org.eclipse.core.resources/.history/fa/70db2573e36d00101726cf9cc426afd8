@@ -675,17 +675,14 @@ void enc_go(void *argument)
 	for(;;)
 	{
 		uint32_t now = HAL_GetTick();
-		float dt = (now - last) * 1e-3f;  // ms→s
+		float    dt    = (now - last) * 1e-3f;  // ms→s
 
-		float rpm1 = encoder_count[0]*60.0f/(CPR*dt);
-		float rpm2 = encoder_count[1]*60.0f/(CPR*dt);
-		float rpm3 = encoder_count[2]*60.0f/(CPR*dt);
-		float rpm4 = encoder_count[3]*60.0f/(CPR*dt);
+		float rpm_out = encoder_count[0]*60.0f/(CPR*dt);
 
 		if (now-lastprint >= print_dt)
 		{
 			BSP_LED_Toggle(LED_GREEN);
-			printf("%.3f %.3f %.3f %.3f %.3f\n",rpm1,rpm2,rpm3,rpm4,dt);
+			printf("%.3f\n",rpm_out);
 			lastprint = now;
 		}
 
