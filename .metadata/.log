@@ -2045,3 +2045,15 @@ java.lang.Exception: Resource '/WAYPOINTIFICATION' does not exist.
 	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:668)
 	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:605)
 	at org.eclipse.equinox.launcher.Main.run(Main.java:1481)
+
+!ENTRY org.eclipse.cdt.core 1 0 2025-07-31 18:13:49.821
+!MESSAGE Indexed 'AFRok_CM4' (29 sources, 90 headers) in 2.27 sec: 8,695 declarations; 66,717 references; 0 unresolved inclusions; 1 syntax errors; 2 unresolved names (0.0027%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2025-07-31 18:13:51.326
+!MESSAGE Indexed 'AFRok_CM7' (41 sources, 119 headers) in 1.5 sec: 13,318 declarations; 101,495 references; 0 unresolved inclusions; 40 syntax errors; 10 unresolved names (0.0087%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2025-07-31 18:24:16.790
+!MESSAGE Indexed 'AFR_CM4' (31 sources, 93 headers) in 2.59 sec: 9,718 declarations; 81,010 references; 0 unresolved inclusions; 1 syntax errors; 2 unresolved names (0.0022%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2025-07-31 18:24:18.430
+!MESSAGE Indexed 'AFR_CM7' (43 sources, 122 headers) in 1.64 sec: 14,328 declarations; 115,600 references; 0 unresolved inclusions; 40 syntax errors; 10 unresolved names (0.0077%)
