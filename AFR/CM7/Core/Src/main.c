@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "shared_mem.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -69,7 +69,12 @@ const osThreadAttr_t defaultTask_attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* USER CODE BEGIN PV */
-
+osThreadId_t wayr_id;
+const osThreadAttr_t wayr_att = {
+  .name = "wayr_task",
+  .stack_size = 1028 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
+};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -82,7 +87,7 @@ static void MX_USART2_UART_Init(void);
 void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
-
+void wayreceive(void *argument);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -188,6 +193,7 @@ Error_Handler();
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
+  wayr_id = osThreadNew(wayreceive, NULL, &wayr_att);
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
 
@@ -530,7 +536,35 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+/* USER CODE BEGIN 4 */
+int _write(int file, char *ptr, int len) {
+    HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)ptr, len, HAL_MAX_DELAY);
+    return len;
+}
+void wayreceive(void *argument)
+{
+	SHARED_MEM->flag = 0;
+	SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
+	__DSB();
+	for(;;)
+	{
+		SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
+		if (SHARED_MEM->flag)
+		{
+			BSP_LED_Toggle(LED_RED);
+			printf("_______\n");
+			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
+			for (int i = 0; i < 16; ++i)
+				printf("Got: %f\n", SHARED_MEM->buffer[i]);
+			osDelay(1000);
+			SHARED_MEM->flag = 0;
+			SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
+			__DSB();
+		}
+		osDelay(1);
+	}
 
+}
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */

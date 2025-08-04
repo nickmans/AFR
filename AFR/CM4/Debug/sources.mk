@@ -25,6 +25,8 @@ SUBDIRS := \
 Common/Src \
 Core/Src \
 Core/Startup \
+Core/ThreadSafe \
 Drivers/BSP/STM32H7xx_Nucleo \
 Drivers/STM32H7xx_HAL_Driver \
+Middlewares/Third_Party/FreeRTOS \
 
