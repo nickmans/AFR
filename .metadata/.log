@@ -2057,3 +2057,33 @@ java.lang.Exception: Resource '/WAYPOINTIFICATION' does not exist.
 
 !ENTRY org.eclipse.cdt.core 1 0 2025-07-31 18:24:18.430
 !MESSAGE Indexed 'AFR_CM7' (43 sources, 122 headers) in 1.64 sec: 14,328 declarations; 115,600 references; 0 unresolved inclusions; 40 syntax errors; 10 unresolved names (0.0077%)
+!SESSION 2025-08-03 18:28:37.433 -----------------------------------------------
+eclipse.buildId=Version 1.19.0
+java.version=21.0.3
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_AU
+Command-line arguments:  -os win32 -ws win32 -arch x86_64
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2025-08-03 18:28:41.043
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2025-08-03 18:28:41.044
+!MESSAGE Log4j2 initialized with config file C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2025-08-03 18:28:46.275
+!MESSAGE Started RMI Server, listening on port 41337
+!SESSION 2025-08-04 14:25:36.745 -----------------------------------------------
+eclipse.buildId=Version 1.19.0
+java.version=21.0.3
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_AU
+Command-line arguments:  -os win32 -ws win32 -arch x86_64
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2025-08-04 14:25:40.457
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2025-08-04 14:25:40.458
+!MESSAGE Log4j2 initialized with config file C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2025-08-04 14:25:45.861
+!MESSAGE Started RMI Server, listening on port 41337
