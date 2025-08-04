@@ -1,9 +1,14 @@
-15:42:30 **** Incremental Build of configuration Debug for project nodemcu ****
+16:02:49 **** Incremental Build of configuration Debug for project AFR_CM4 ****
 make -j16 all 
-arm-none-eabi-gcc -o "nodemcu.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\nodemcu\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="nodemcu.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
-C:/ST/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld.exe: ./Core/Src/main.o: in function `main':
-C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/nodemcu/Debug/../Core/Src/main.c:112:(.text.main+0x24): undefined reference to `uartt_init'
-C:/ST/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/bin/ld.exe: C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/nodemcu/Debug/../Core/Src/main.c:113:(.text.main+0x28): undefined reference to `cmd_line_init'
-collect2.exe: error: ld returned 1 exit status
-make: *** [makefile:68: nodemcu.elf] Error 1
-"make -j16 all" terminated with exit code 2. Build might be incomplete.
+arm-none-eabi-gcc "../Core/Src/cmd.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DCORE_CM4 -DUSE_HAL_DRIVER -DSTM32H755xx -DUSE_PWR_DIRECT_SMPS_SUPPLY -DUSE_NUCLEO_64 -DSTM32_THREAD_SAFE_STRATEGY=4 -c -I../Core/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../../Drivers/BSP/STM32H7xx_Nucleo -I../../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../../Drivers/CMSIS/Include -I../../Middlewares/Third_Party/FreeRTOS/Source/include -I../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I../Core/ThreadSafe -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/cmd.d" -MT"Core/Src/cmd.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/cmd.o"
+arm-none-eabi-gcc -o "AFR_CM4.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\STM32H755ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="AFR_CM4.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: AFR_CM4.elf
+ 
+arm-none-eabi-size  AFR_CM4.elf 
+arm-none-eabi-objdump -h -S AFR_CM4.elf  > "AFR_CM4.list"
+   text	   data	    bss	    dec	    hex	filename
+  64816	    488	  21328	  86632	  15268	AFR_CM4.elf
+Finished building: default.size.stdout
+ 
+Finished building: AFR_CM4.list
+ 
