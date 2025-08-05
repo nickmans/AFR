@@ -15,6 +15,7 @@
 #include <ctype.h>
 #include "stm32h7xx_hal.h"
 #include "trilateration.h"
+#include "shared_mem.h"
 
 uint32_t last_anchor_print = 0;
 
@@ -59,7 +60,7 @@ void          cmdlinego(void *argument);
 osThreadId_t  cmdlineID;
 const osThreadAttr_t cmdline_att = {
   .name       = "cmdline",
-  .stack_size = 2048,
+  .stack_size = 3028 * 4,
   .priority   = (osPriority_t) osPriorityNormal,
 };
 
@@ -74,6 +75,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 void cmdlinego(void *argument)
 {
     (void)argument;
+    const char start_range[] = "AT+switchdis=1\r\n";
+    const char reset_range[] = "AT+RST\r\n";
+    int no_range_count = 0;
+
+	HAL_UART_Transmit(&huart4, (uint8_t*)reset_range, strlen(reset_range), HAL_MAX_DELAY);
+
     for (;;)
     {
         // === HC-05 Bluetooth parsing ===
@@ -106,7 +113,14 @@ void cmdlinego(void *argument)
 					//printf("an0=%d mm, an2=%d mm, an3=%d mm\n", anchordistance[0], anchordistance[1], anchordistance[2]);
 					if(GetLocation(&tag_position, 0, &(AnchorList[0]), &(anchordistance[0])) != -1)
 					{
-						printf("Tag Location:x=%3.2fm y=%3.2fm z=%3.2fm\r\n",tag_position.x,tag_position.y,tag_position.z);
+						if (!(SHARED_MEM->flagm4))
+						{
+							BSP_LED_Toggle(LED_RED);
+							memcpy(SHARED_MEM->tag_pos,&tag_position.x,sizeof SHARED_MEM->tag_pos);
+							SHARED_MEM->flagm4 = 1;
+							__DSB();    // ensure the write completes
+						}
+						//printf("Tag Location:x=%3.2fm y=%3.2fm z=%3.2fm\r\n",tag_position.x,tag_position.y,tag_position.z);
 					//sprintf(dist_str, "x:%3.2f y:%3.2f",tag_best_solution.x,tag_best_solution.y);
 					}
 					}
@@ -117,7 +131,17 @@ void cmdlinego(void *argument)
                 hc05_line_pos = 0;
             }
         }
+        else
+        {
+        	no_range_count++;
+        }
 
+        if (no_range_count > 3000)
+        {
+        	BSP_LED_Toggle(LED_YELLOW);
+			HAL_UART_Transmit(&huart4, (uint8_t*)start_range, strlen(start_range), HAL_MAX_DELAY);
+			no_range_count = 0;
+        }
         osDelay(1);
     }
 }
@@ -127,7 +151,7 @@ void cmdlinego(void *argument)
 /* ---------------------------------------------------------------------- */
 void uartt_init(void)
 {
-    HAL_UART_Receive_IT(&huart4, &rx_from_bu01, 1);
+    HAL_UART_Receive_IT(&huart4, &rx_from_hc05, 1);
 }
 
 /* ---------------------------------------------------------------------- */
@@ -146,7 +170,7 @@ void cmd_line_init(void)
 /* ---------------------------------------------------------------------- */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-    /* --- HC-05 input (UART3) --- */
+    /* --- HC-05 input (UART4) --- */
     if (huart == &huart4)
     {
         hc05_rx_buffer[hc05_rx_write_idx++] = rx_from_hc05;

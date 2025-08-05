@@ -22,7 +22,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "cmd.h"
 #include "shared_mem.h"
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -65,16 +67,10 @@ UART_HandleTypeDef huart5;
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
-  .stack_size = 128 * 4,
+  .stack_size = 1028 * 2,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* USER CODE BEGIN PV */
-osThreadId_t way_id;
-const osThreadAttr_t way_att = {
-  .name = "waytask",
-  .stack_size = 1028 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
-};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -142,7 +138,8 @@ int main(void)
   MX_UART5_Init();
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
-
+  uartt_init();
+  cmd_line_init();
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -169,8 +166,6 @@ int main(void)
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
-  way_id = osThreadNew(waysend, NULL, &way_att);
-
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
@@ -351,6 +346,7 @@ static void MX_TIM1_Init(void)
   /* USER CODE BEGIN TIM1_Init 0 */
 
   /* USER CODE END TIM1_Init 0 */
+
   TIM_MasterConfigTypeDef sMasterConfig = {0};
   TIM_OC_InitTypeDef sConfigOC = {0};
   TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = {0};
@@ -572,25 +568,6 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void waysend(void *argument)
-{
-	int uhh = 0;
-	for(;;)
-	{
-		if (!(SHARED_MEM->flag))
-		{
-			BSP_LED_Toggle(LED_YELLOW);
-			for (int i = 0; i < 16; ++i)
-				SHARED_MEM->buffer[i] = i * 1.1f+uhh;
-			SHARED_MEM->flag = 1;
-			__DSB();    // ensure the write completes
-			uhh++;
-		}
-		BSP_LED_Toggle(LED_YELLOW);
-	    osDelay(1);
-	}
-}
-
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */

@@ -23,6 +23,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "shared_mem.h"
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -541,26 +542,32 @@ int _write(int file, char *ptr, int len) {
     HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)ptr, len, HAL_MAX_DELAY);
     return len;
 }
+
 void wayreceive(void *argument)
 {
-	SHARED_MEM->flag = 0;
+	int count = 0;
+	SHARED_MEM->flagm4 = 0;
 	SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
 	__DSB();
 	for(;;)
 	{
 		SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
-		if (SHARED_MEM->flag)
+		if (SHARED_MEM->flagm4)
 		{
 			BSP_LED_Toggle(LED_RED);
 			printf("_______\n");
 			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
-			for (int i = 0; i < 16; ++i)
-				printf("Got: %f\n", SHARED_MEM->buffer[i]);
-			osDelay(1000);
-			SHARED_MEM->flag = 0;
+			printf("Tag Location: x=%3.2fm y=%3.2fm z=%3.2fm\r\n",SHARED_MEM->tag_pos[0],SHARED_MEM->tag_pos[1],SHARED_MEM->tag_pos[2]);
+			SHARED_MEM->flagm4 = 0;
 			SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
 			__DSB();
 		}
+		if (count == 333)
+		{
+			BSP_LED_Toggle(LED_GREEN);
+			count = 0;
+		}
+		count++;
 		osDelay(1);
 	}
 

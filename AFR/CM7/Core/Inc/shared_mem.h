@@ -10,8 +10,10 @@
 #include <stdint.h>
 
 typedef struct {
-  float buffer[16];
-  int   flag;
+    float   control_u[4];       // 4 × 4 B = 16 B
+    double  tag_pos[3];  // 3 × 8 B = 24 B
+    int     flagm7;             // 4 B
+    int		flagm4;				// 4 B
 } SharedMem_t;
 
 // The mailbox lives at 0x3002_0000
