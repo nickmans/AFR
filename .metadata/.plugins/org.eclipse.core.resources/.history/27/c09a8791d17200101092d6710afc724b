@@ -102,12 +102,12 @@ void cmdlinego(void *argument)
                 hc05_line_buf[hc05_line_pos] = '\0';
 
                 if (strncmp(hc05_line_buf, "an0:", 4) == 0)
-                    anchordistance[0] = (uint16_t)(strtof(&hc05_line_buf[4], NULL) * 1000 - 100); // - 200
+                    anchordistance[0] = (uint16_t)(strtof(&hc05_line_buf[4], NULL) * 1000); // - 200
                 else if (strncmp(hc05_line_buf, "an2:", 4) == 0)
                     anchordistance[1] = (uint16_t)(strtof(&hc05_line_buf[4], NULL) * 1000);  //  + 50
                 else if (strncmp(hc05_line_buf, "an3:", 4) == 0)
                 {
-                    anchordistance[2] = (uint16_t)(strtof(&hc05_line_buf[4], NULL) * 1000 - 100);  //  - 110
+                    anchordistance[2] = (uint16_t)(strtof(&hc05_line_buf[4], NULL) * 1000);  //  - 110
                     //uint32_t now = HAL_GetTick();  // current time in ms						// MIGHT NOT NEED TO TIME THIS
 					//if (now - last_anchor_print >= 500)
 					{
