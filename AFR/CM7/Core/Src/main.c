@@ -554,10 +554,13 @@ void wayreceive(void *argument)
 		SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
 		if (SHARED_MEM->flagm4)
 		{
-			BSP_LED_Toggle(LED_RED);
+			BSP_LED_Toggle(LED_GREEN);
 			printf("_______\n");
 			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
-			printf("Tag Location: x=%3.2fm y=%3.2fm z=%3.2fm\r\n",SHARED_MEM->tag_pos[0],SHARED_MEM->tag_pos[1],SHARED_MEM->tag_pos[2]);
+			printf("Tag Location: x=%3.3fm y=%3.3fm z=%3.3fm\r\n",SHARED_MEM->tag_pos[0],SHARED_MEM->tag_pos[1],SHARED_MEM->tag_pos[2]);
+			printf("Tag Location: a0=%dmm a1=%dmm a2=%dmm\r\n",SHARED_MEM->anchordis[0],SHARED_MEM->anchordis[1],SHARED_MEM->anchordis[2]);
+
+
 			SHARED_MEM->flagm4 = 0;
 			SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
 			__DSB();

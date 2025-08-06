@@ -1,10 +1,52 @@
-16:24:00 **** Incremental Build of configuration Debug for project AFR_CM4 ****
+17:14:16 **** Incremental Build of configuration Debug for project AFR_CM4 ****
 make -j16 all 
+arm-none-eabi-gcc "../Core/Src/trilateration.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DCORE_CM4 -DUSE_HAL_DRIVER -DSTM32H755xx -DUSE_PWR_DIRECT_SMPS_SUPPLY -DUSE_NUCLEO_64 -DSTM32_THREAD_SAFE_STRATEGY=4 -c -I../Core/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../../Drivers/BSP/STM32H7xx_Nucleo -I../../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../../Drivers/CMSIS/Include -I../../Middlewares/Third_Party/FreeRTOS/Source/include -I../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I../Core/ThreadSafe -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/trilateration.d" -MT"Core/Src/trilateration.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/trilateration.o"
+../Core/Src/trilateration.c: In function 'deca_3dlocate':
+../Core/Src/trilateration.c:540:32: warning: variable 'solution_compare2' set but not used [-Wunused-but-set-variable]
+  540 |     vec3d   solution_compare1, solution_compare2;
+      |                                ^~~~~~~~~~~~~~~~~
+../Core/Src/trilateration.c: In function 'GetLocation2':
+../Core/Src/trilateration.c:789:15: warning: variable 'y0' set but not used [-Wunused-but-set-variable]
+  789 |     double x0,y0;
+      |               ^~
+../Core/Src/trilateration.c:789:12: warning: variable 'x0' set but not used [-Wunused-but-set-variable]
+  789 |     double x0,y0;
+      |            ^~
+../Core/Src/trilateration.c: In function 'Cross_Point':
+../Core/Src/trilateration.c:947:13: warning: implicit declaration of function 'abs' [-Wimplicit-function-declaration]
+  947 |         if (abs(points_AC_0 - circles[2].r) < abs(points_AC_1 - circles[2].r))//cross_point[0]
+      |             ^~~
+../Core/Src/trilateration.c:21:1: note: include '<stdlib.h>' or provide a declaration of 'abs'
+   20 | #include "trilateration.h"
+  +++ |+#include <stdlib.h>
+   21 | 
+../Core/Src/trilateration.c:947:29: warning: 'abs' argument 1 type is 'double' where 'int' is expected in a call to built-in function declared without prototype [-Wbuiltin-declaration-mismatch]
+  947 |         if (abs(points_AC_0 - circles[2].r) < abs(points_AC_1 - circles[2].r))//cross_point[0]
+      |                 ~~~~~~~~~~~~^~~~~~~~~~~~~~
+<built-in>: note: built-in 'abs' declared here
+../Core/Src/trilateration.c:947:63: warning: 'abs' argument 1 type is 'double' where 'int' is expected in a call to built-in function declared without prototype [-Wbuiltin-declaration-mismatch]
+  947 |         if (abs(points_AC_0 - circles[2].r) < abs(points_AC_1 - circles[2].r))//cross_point[0]
+      |                                                   ~~~~~~~~~~~~^~~~~~~~~~~~~~
+<built-in>: note: built-in 'abs' declared here
+../Core/Src/trilateration.c: In function 'Th_Location':
+../Core/Src/trilateration.c:973:31: warning: variable 'Location' set but not used [-Wunused-but-set-variable]
+  973 |     struct  point_t points[1],Location[1];;
+      |                               ^~~~~~~~
+../Core/Src/trilateration.c: In function 'trilateration_1':
+../Core/Src/trilateration.c:1070:18: warning: variable 'resultPose' set but not used [-Wunused-but-set-variable]
+ 1070 |     struct point resultPose;
+      |                  ^~~~~~~~~~
+arm-none-eabi-gcc -o "AFR_CM4.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\STM32H755ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="AFR_CM4.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: AFR_CM4.elf
+ 
 arm-none-eabi-size  AFR_CM4.elf 
+arm-none-eabi-objdump -h -S AFR_CM4.elf  > "AFR_CM4.list"
    text	   data	    bss	    dec	    hex	filename
-  91596	    560	  21696	 113852	  1bcbc	AFR_CM4.elf
+  91684	    560	  21696	 113940	  1bd14	AFR_CM4.elf
 Finished building: default.size.stdout
  
+Finished building: AFR_CM4.list
+ 
 
-16:24:01 Build Finished. 0 errors, 0 warnings. (took 344ms)
+17:14:17 Build Finished. 0 errors, 8 warnings. (took 911ms)
 

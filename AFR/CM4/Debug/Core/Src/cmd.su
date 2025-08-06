@@ -1,4 +1,4 @@
-../Core/Src/cmd.c:75:6:cmdlinego	64	static,ignoring_inline_asm
-../Core/Src/cmd.c:152:6:uartt_init	8	static
-../Core/Src/cmd.c:160:6:cmd_line_init	8	static
-../Core/Src/cmd.c:171:6:HAL_UART_RxCpltCallback	16	static
+../Core/Src/cmd.c:75:6:cmdlinego	80	static,ignoring_inline_asm
+../Core/Src/cmd.c:165:6:uartt_init	8	static
+../Core/Src/cmd.c:173:6:cmd_line_init	8	static
+../Core/Src/cmd.c:184:6:HAL_UART_RxCpltCallback	16	static

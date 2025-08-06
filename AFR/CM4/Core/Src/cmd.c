@@ -77,7 +77,10 @@ void cmdlinego(void *argument)
     (void)argument;
     const char start_range[] = "AT+switchdis=1\r\n";
     const char reset_range[] = "AT+RST\r\n";
+    const char get_xyz[] = "AT+xyz\r\n";
+
     int no_range_count = 0;
+    int xyz_count = 0;
 
 	HAL_UART_Transmit(&huart4, (uint8_t*)reset_range, strlen(reset_range), HAL_MAX_DELAY);
 
@@ -99,12 +102,12 @@ void cmdlinego(void *argument)
                 hc05_line_buf[hc05_line_pos] = '\0';
 
                 if (strncmp(hc05_line_buf, "an0:", 4) == 0)
-                    anchordistance[0] = (uint16_t)(strtof(&hc05_line_buf[4], NULL) * 1000);
+                    anchordistance[0] = (uint16_t)(strtof(&hc05_line_buf[4], NULL) * 1000 ); // - 200
                 else if (strncmp(hc05_line_buf, "an2:", 4) == 0)
-                    anchordistance[1] = (uint16_t)(strtof(&hc05_line_buf[4], NULL) * 1000);
+                    anchordistance[1] = (uint16_t)(strtof(&hc05_line_buf[4], NULL) * 1000);  //  + 50
                 else if (strncmp(hc05_line_buf, "an3:", 4) == 0)
                 {
-                    anchordistance[2] = (uint16_t)(strtof(&hc05_line_buf[4], NULL) * 1000);
+                    anchordistance[2] = (uint16_t)(strtof(&hc05_line_buf[4], NULL) * 1000);  //  - 110
                     //uint32_t now = HAL_GetTick();  // current time in ms						// MIGHT NOT NEED TO TIME THIS
 					//if (now - last_anchor_print >= 500)
 					{
@@ -117,12 +120,15 @@ void cmdlinego(void *argument)
 						{
 							BSP_LED_Toggle(LED_RED);
 							memcpy(SHARED_MEM->tag_pos,&tag_position.x,sizeof SHARED_MEM->tag_pos);
+							for (int i = 0; i < 3; ++i) { SHARED_MEM->anchordis[i] = anchordistance[i];}
 							SHARED_MEM->flagm4 = 1;
 							__DSB();    // ensure the write completes
 						}
 						//printf("Tag Location:x=%3.2fm y=%3.2fm z=%3.2fm\r\n",tag_position.x,tag_position.y,tag_position.z);
 					//sprintf(dist_str, "x:%3.2f y:%3.2f",tag_best_solution.x,tag_best_solution.y);
 					}
+					else
+						printf("FAILURE\n");
 					}
                 }
                 if (strncmp(hc05_line_buf, "an", 2) != 0)
@@ -130,18 +136,25 @@ void cmdlinego(void *argument)
 
                 hc05_line_pos = 0;
             }
+            no_range_count = 0;
         }
         else
         {
         	no_range_count++;
         }
-
         if (no_range_count > 3000)
         {
         	BSP_LED_Toggle(LED_YELLOW);
 			HAL_UART_Transmit(&huart4, (uint8_t*)start_range, strlen(start_range), HAL_MAX_DELAY);
 			no_range_count = 0;
         }
+        /*
+        if (xyz_count > 333)
+        {
+			HAL_UART_Transmit(&huart4, (uint8_t*)get_xyz, strlen(get_xyz), HAL_MAX_DELAY);
+			xyz_count = 0;
+        }
+        xyz_count++; */
         osDelay(1);
     }
 }

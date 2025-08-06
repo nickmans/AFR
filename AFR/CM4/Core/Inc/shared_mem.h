@@ -12,6 +12,7 @@
 typedef struct {
     float   control_u[4];       // 4 × 4 B = 16 B
     double  tag_pos[3];  // 3 × 8 B = 24 B
+    int 	anchordis[3];
     int     flagm7;             // 4 B
     int		flagm4;				// 4 B
 } SharedMem_t;

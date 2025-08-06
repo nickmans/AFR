@@ -35,7 +35,6 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 extern UART_HandleTypeDef huart4;
-extern UART_HandleTypeDef hcom_uart[COM1];
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
