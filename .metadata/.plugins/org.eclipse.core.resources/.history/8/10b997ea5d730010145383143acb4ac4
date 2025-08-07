@@ -582,7 +582,7 @@ void wayreceive(void *argument)
 			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
 			double wx = SHARED_MEM->tag_pos[0];
 			double wy = SHARED_MEM->tag_pos[1];
-			if (wait_5>5)
+			if (wait_5>10)
 			{
 				if (waypoint_count < MAX_WAYPOINTS)
 				{
@@ -599,9 +599,10 @@ void wayreceive(void *argument)
 					failed_count = 0;
 					waypoints[waypoint_count].x = wx;
 					waypoints[waypoint_count].y = wy;
-					waypoint_count++;
 					for (int k = 0; k < waypoint_count; k++)
 						printf("Tag Location: x=%3.3fm y=%3.3fm\r\n",waypoints[k].x,waypoints[k].y);
+
+					waypoint_count++;
 				}
 				else
 				{

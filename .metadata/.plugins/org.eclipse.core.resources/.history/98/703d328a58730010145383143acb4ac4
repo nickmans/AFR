@@ -567,7 +567,7 @@ static bool waypoints_within_radius(double x1,double y1,double x2,double y2)
 void wayreceive(void *argument)
 {
 	int count = 0;
-	static int wait_5 = 0;
+	int wait_5 = 0;
 	static int failed_count = 0;
 	SHARED_MEM->flagm4 = 0;
 	SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
@@ -582,43 +582,34 @@ void wayreceive(void *argument)
 			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
 			double wx = SHARED_MEM->tag_pos[0];
 			double wy = SHARED_MEM->tag_pos[1];
-			if (wait_5>5)
+			if (waypoint_count < MAX_WAYPOINTS)
 			{
-				if (waypoint_count < MAX_WAYPOINTS)
+				if (waypoint_count>=1)
 				{
-					if (waypoint_count>=1)
+					for (int i = 0; i < waypoint_count; i++)
 					{
-						for (int i = 0; i < waypoint_count; i++)
+						if (waypoints_within_radius(wx,wy,waypoints[i].x,waypoints[i].y))
 						{
-							if (waypoints_within_radius(wx,wy,waypoints[i].x,waypoints[i].y))
-							{
-								goto failure;
-							}
+							goto failure;
 						}
 					}
-					failed_count = 0;
-					waypoints[waypoint_count].x = wx;
-					waypoints[waypoint_count].y = wy;
-					waypoint_count++;
-					for (int k = 0; k < waypoint_count; k++)
-						printf("Tag Location: x=%3.3fm y=%3.3fm\r\n",waypoints[k].x,waypoints[k].y);
 				}
-				else
-				{
-					failure:
-					failed_count++;
-					if (failed_count>20)
-					{
-						waypoint_count = 1;
-						waypoints[0].x = wx;
-						waypoints[0].y = wy;
-						printf("Tag Location: x=%3.3fm y=%3.3fm\r\n",wx,wy);
-						failed_count = 0;
-					}
-				}
+				waypoints[waypoint_count].x = wx;
+				waypoints[waypoint_count].y = wy;
+				printf("Tag Location: x=%3.3fm y=%3.3fm\r\n",wx,wy);
+				waypoint_count++;
 			}
 			else
-				wait_5++;
+			{
+				failure:
+				failed_count++;
+				if (failed_count>10)
+				{
+					waypoint_count = 1;
+					waypoints[0].x = wx;
+					waypoints[0].y = wy;
+				}
+			}
 
 
 			//printf("Tag Location: x=%3.3fm y=%3.3fm z=%3.3fm\r\n",SHARED_MEM->tag_pos[0],SHARED_MEM->tag_pos[1],SHARED_MEM->tag_pos[2]);

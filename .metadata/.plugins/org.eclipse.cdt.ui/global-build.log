@@ -1,7 +1,7 @@
-16:19:09 **** Incremental Build of configuration Debug for project AFR_CM7 ****
+18:13:32 **** Build of configuration Debug for project AFR_PIL_CM4 ****
 make -j16 all 
-arm-none-eabi-size  AFR_CM7.elf 
+arm-none-eabi-size  AFR_PIL_CM4.elf 
    text	   data	    bss	    dec	    hex	filename
-  64792	    512	  21456	  86760	  152e8	AFR_CM7.elf
+   3448	     28	   1572	   5048	   13b8	AFR_PIL_CM4.elf
 Finished building: default.size.stdout
  

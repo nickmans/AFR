@@ -7,6 +7,6 @@
 ../Core/Src/main.c:487:13:MX_GPIO_Init	1
 ../Core/Src/main.c:547:5:_write	1
 ../Core/Src/main.c:561:13:waypoints_within_radius	1
-../Core/Src/main.c:567:6:wayreceive	16
-../Core/Src/main.c:641:6:StartDefaultTask	1
-../Core/Src/main.c:656:6:Error_Handler	1
+../Core/Src/main.c:567:6:wayreceive	18
+../Core/Src/main.c:651:6:StartDefaultTask	1
+../Core/Src/main.c:666:6:Error_Handler	1
