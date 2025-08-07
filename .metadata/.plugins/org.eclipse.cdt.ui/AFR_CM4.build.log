@@ -1,34 +1,10 @@
-00:43:30 **** Incremental Build of configuration Debug for project AFR_CM4 ****
+16:19:07 **** Incremental Build of configuration Debug for project AFR_CM4 ****
 make -j16 all 
-arm-none-eabi-gcc "../Core/Src/cmd.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DCORE_CM4 -DUSE_HAL_DRIVER -DSTM32H755xx -DUSE_PWR_DIRECT_SMPS_SUPPLY -DUSE_NUCLEO_64 -DSTM32_THREAD_SAFE_STRATEGY=4 -c -I../Core/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../../Drivers/BSP/STM32H7xx_Nucleo -I../../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../../Drivers/CMSIS/Include -I../../Middlewares/Third_Party/FreeRTOS/Source/include -I../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I../Core/ThreadSafe -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/cmd.d" -MT"Core/Src/cmd.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/cmd.o"
-In file included from ../Core/Src/cmd.c:18:
-../Core/Src/cmd.c: In function 'cmdlinego':
-../Core/Inc/shared_mem.h:22:26: warning: passing argument 1 of 'memcpy' discards 'volatile' qualifier from pointer target type [-Wdiscarded-qualifiers]
-   22 | #define SHARED_MEM       ((volatile SharedMem_t*)SHARED_MEM_BASE)
-../Core/Src/cmd.c:122:64: note: in expansion of macro 'SHARED_MEM'
-  122 |                                                         memcpy(SHARED_MEM->tag_pos,&tag_position.x,sizeof SHARED_MEM->tag_pos);
-      |                                                                ^~~~~~~~~~
-In file included from ../Core/Src/cmd.c:11:
-C:\ST\STM32CubeIDE_1.19.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344\tools\bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/include/string.h:31:18: note: expected 'void * restrict' but argument is of type 'volatile double *'
-   31 | void *   memcpy (void *__restrict, const void *__restrict, size_t);
-      |                  ^
-../Core/Src/cmd.c:83:9: warning: unused variable 'xyz_count' [-Wunused-variable]
-   83 |     int xyz_count = 0;
-      |         ^~~~~~~~~
-../Core/Src/cmd.c:80:16: warning: unused variable 'get_xyz' [-Wunused-variable]
-   80 |     const char get_xyz[] = "AT+xyz\r\n";
-      |                ^~~~~~~
-arm-none-eabi-gcc -o "AFR_CM4.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\STM32H755ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="AFR_CM4.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: AFR_CM4.elf
- 
 arm-none-eabi-size  AFR_CM4.elf 
-arm-none-eabi-objdump -h -S AFR_CM4.elf  > "AFR_CM4.list"
    text	   data	    bss	    dec	    hex	filename
   91716	    560	  21696	 113972	  1bd34	AFR_CM4.elf
 Finished building: default.size.stdout
  
-Finished building: AFR_CM4.list
- 
 
-00:43:31 Build Finished. 0 errors, 3 warnings. (took 1s.55ms)
+16:19:07 Build Finished. 0 errors, 0 warnings. (took 342ms)
 

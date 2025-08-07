@@ -24,11 +24,19 @@
 /* USER CODE BEGIN Includes */
 #include "shared_mem.h"
 #include <string.h>
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+typedef struct {
+    double x;
+    double y;
+} waypoint_t;
 
+static uint8_t waypoint_count = 0;
+
+waypoint_t waypoints[15];
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -535,17 +543,32 @@ static void MX_GPIO_Init(void)
 
   /* USER CODE END MX_GPIO_Init_2 */
 }
-
-/* USER CODE BEGIN 4 */
 /* USER CODE BEGIN 4 */
 int _write(int file, char *ptr, int len) {
     HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)ptr, len, HAL_MAX_DELAY);
     return len;
 }
 
+/**
+ * @brief  Test if two waypoints lie within `radius` metres (20 cm = 0.20).
+ * @param  wpA    first waypoint (double x,y)
+ * @param  wpB    second waypoint
+ * @param  radius in metres (e.g. 0.20)
+ * @return true if squared distance ≤ radius²
+ */
+static double radius = 0.3;
+#define MAX_WAYPOINTS 15
+static bool waypoints_within_radius(double x1,double y1,double x2,double y2)
+{
+    double dx = x1 - x2;
+    double dy = y1 - y2;
+    return (dx*dx + dy*dy) <= (radius * radius);
+}
 void wayreceive(void *argument)
 {
 	int count = 0;
+	int wait_5 = 0;
+	static int failed_count = 0;
 	SHARED_MEM->flagm4 = 0;
 	SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
 	__DSB();
@@ -557,8 +580,40 @@ void wayreceive(void *argument)
 			BSP_LED_Toggle(LED_GREEN);
 			printf("_______\n");
 			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
-			printf("Tag Location: x=%3.3fm y=%3.3fm z=%3.3fm\r\n",SHARED_MEM->tag_pos[0],SHARED_MEM->tag_pos[1],SHARED_MEM->tag_pos[2]);
-			printf("Tag Location: a0=%dmm a1=%dmm a2=%dmm\r\n",SHARED_MEM->anchordis[0],SHARED_MEM->anchordis[1],SHARED_MEM->anchordis[2]);
+			double wx = SHARED_MEM->tag_pos[0];
+			double wy = SHARED_MEM->tag_pos[1];
+			if (waypoint_count < MAX_WAYPOINTS)
+			{
+				if (waypoint_count>=1)
+				{
+					for (int i = 0; i < waypoint_count; i++)
+					{
+						if (waypoints_within_radius(wx,wy,waypoints[i].x,waypoints[i].y))
+						{
+							goto failure;
+						}
+					}
+				}
+				waypoints[waypoint_count].x = wx;
+				waypoints[waypoint_count].y = wy;
+				printf("Tag Location: x=%3.3fm y=%3.3fm\r\n",wx,wy);
+				waypoint_count++;
+			}
+			else
+			{
+				failure:
+				failed_count++;
+				if (failed_count>10)
+				{
+					waypoint_count = 1;
+					waypoints[0].x = wx;
+					waypoints[0].y = wy;
+				}
+			}
+
+
+			//printf("Tag Location: x=%3.3fm y=%3.3fm z=%3.3fm\r\n",SHARED_MEM->tag_pos[0],SHARED_MEM->tag_pos[1],SHARED_MEM->tag_pos[2]);
+			//printf("Tag Location: a0=%dmm a1=%dmm a2=%dmm\r\n",SHARED_MEM->anchordis[0],SHARED_MEM->anchordis[1],SHARED_MEM->anchordis[2]);
 
 
 			SHARED_MEM->flagm4 = 0;

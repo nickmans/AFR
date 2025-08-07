@@ -16,7 +16,6 @@
 #include <math.h>
 //#include "stdlib.h"
 //#include "time.h"
-#include <math.h>
 #include "trilateration.h"
 
 //#include <QDebug>
