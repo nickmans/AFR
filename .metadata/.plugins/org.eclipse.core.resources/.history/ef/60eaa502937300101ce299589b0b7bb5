@@ -1,0 +1,103 @@
+/*
+ * PWM.c
+ *
+ *  Created on: Aug 7, 2025
+ *      Author: nicks
+ */
+
+/* ===== OS thread definitions ===== */
+#include "main.h"
+#include "cmsis_os.h"
+#include <string.h>
+
+#define CPR               330u
+#define MAX_CURR_A        0.8f
+#define PWM_MAX           (__HAL_TIM_GET_AUTORELOAD(&htim3))
+#define CONTROL_TIMEOUT   pdMS_TO_TICKS(25u)
+#define NEW_SP_FLAG       (1U<<0)
+
+// gains
+static const float Kp = 0.1f, Ki = 0.02f;
+
+// state
+static float integ[4] = {0};
+static float sp_rpm[4] = {0};      // most-recent setpoint in RPM
+
+void pwmgo(void *argument);
+osThreadId_t  cmdlineID;
+const osThreadAttr_t cmdline_att = {
+  .name       = "pwmline",
+  .stack_size = 3028 * 4,
+  .priority   = (osPriority_t) osPriorityNormal,
+};
+
+// called by your OpenAMP or shared-mem ISR when M7 writes control_u[]
+// must run in M4 context
+void NotifyNewSetpoint(void) {
+  osThreadFlagsSet(SpeedTaskHandle, NEW_SP_FLAG);
+}
+
+void pwmgo(void *arg)
+{
+  uint32_t last_ms = HAL_GetTick();
+  for (;;)
+  {
+    // 1) block until NEW_SP_FLAG arrives OR 25 ms elapses
+    uint32_t flags = osThreadFlagsWait(NEW_SP_FLAG, osFlagsNoClear, CONTROL_TIMEOUT);
+
+    // 2) measure actual dt (in seconds) since last update
+    uint32_t now_ms = HAL_GetTick();
+    float dt = (now_ms - last_ms)*1e-3f;
+    last_ms = now_ms;
+
+    // 3) if we woke on the flag, grab & convert the new control_u[]
+    if (flags & NEW_SP_FLAG)
+    {
+      __disable_irq();
+        for (int i = 0; i < 4; i++)
+          sp_rpm[i] = SHARED_MEM->control_u[i] * (60.0f/(2.0f*M_PI));
+      __enable_irq();
+    }
+    // else: timeout → reuse old sp_rpm[]
+
+    // 4) snap & clear encoders
+    uint32_t counts[4];
+    __disable_irq();
+      memcpy(counts, encoder_count, sizeof counts);
+      memset((void*)encoder_count, 0, sizeof encoder_count);
+    __enable_irq();
+
+    // 5) compute actual RPM
+    float rpm[4];
+    for (int i = 0; i < 4; i++)
+      rpm[i] = counts[i]*60.0f/(CPR*dt);
+
+    // 6) run PI+FF+current-limit+PWM for each motor
+    for (int i = 0; i < 4; i++)
+    {
+      float err   = sp_rpm[i] - rpm[i];
+      integ[i]   += err * dt;
+      // anti-windup
+      if (integ[i] >  2000) integ[i] =  2000;
+      if (integ[i] < -2000) integ[i] = -2000;
+
+      float u_fb = Kp*err + Ki*integ[i];
+      float u_ff = (sp_rpm[i]/3000.0f)*PWM_MAX;
+      float duty = u_ff + u_fb;
+
+      // current limit
+      float cur = read_current(i);
+      if (cur > MAX_CURR_A)
+      {
+        duty *= (MAX_CURR_A/cur);
+        integ[i] -= err*dt;    // unwind
+      }
+
+      // clamp
+      if (duty < 0)      duty = 0;
+      if (duty > PWM_MAX) duty = PWM_MAX;
+
+      __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1 + i, (uint32_t)duty);
+    }
+  }
+}

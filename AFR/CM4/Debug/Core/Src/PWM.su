@@ -1,0 +1,4 @@
+../Core/Src/PWM.c:35:6:HAL_GPIO_EXTI_Callback	16	static
+../Core/Src/PWM.c:48:6:NotifyNewSetpoint	8	static
+../Core/Src/PWM.c:52:6:pwmgo	104	static,ignoring_inline_asm
+../Core/Src/PWM.c:117:6:pwm_init	8	static

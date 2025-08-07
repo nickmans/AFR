@@ -1,10 +1,10 @@
-16:05:43 **** Incremental Build of configuration Debug for project AFR_PIL_CM7 ****
+19:00:37 **** Incremental Build of configuration Debug for project AFR_PIL_CM7 ****
 make -j16 all 
 arm-none-eabi-size  AFR_PIL_CM7.elf 
    text	   data	    bss	    dec	    hex	filename
- 265816	  65760	 180600	 512176	  7d0b0	AFR_PIL_CM7.elf
+ 265816	  65832	 180600	 512248	  7d0f8	AFR_PIL_CM7.elf
 Finished building: default.size.stdout
  
 
-16:05:44 Build Finished. 0 errors, 0 warnings. (took 492ms)
+19:00:38 Build Finished. 0 errors, 0 warnings. (took 456ms)
 
