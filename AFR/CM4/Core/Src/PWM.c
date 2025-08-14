@@ -60,12 +60,14 @@ void NotifyNewSetpoint(void)
 
 void M7control(void *arg)
 {
-    if (SHARED_MEM->flagm7)
-    {
-    	NotifyNewSetpoint();
-    	SHARED_MEM->flagm7 = 0;
-    }
-	osDelay(1);
+	for(;;)
+	{
+		if (SHARED_MEM->flagm7)
+		{
+			NotifyNewSetpoint();
+		}
+		osDelay(1);
+	}
 }
 
 void pwmgo(void *arg)
@@ -88,6 +90,8 @@ void pwmgo(void *arg)
 			for (int i = 0; i < 4; i++)
 			sp_rpm[i] = SHARED_MEM->control_u[i] * (60.0f/(2.0f*M_PI));
 			__enable_irq();
+	    	SHARED_MEM->flagm7 = 0;
+			__DSB();    // ensure the write completes
 		}
 		// else: timeout → reuse old sp_rpm[]
 
@@ -136,4 +140,5 @@ void pwmgo(void *arg)
 void pwm_init(void)
 {
 	pwm_id = osThreadNew(pwmgo, NULL, &pwm_att);
+    M7control_id = osThreadNew(M7control, NULL, &M7control_att);
 }
