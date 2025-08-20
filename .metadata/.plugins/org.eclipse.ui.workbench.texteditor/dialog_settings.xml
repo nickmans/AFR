@@ -3,6 +3,11 @@
 	<item key="hasShownOverlayPopupBefore" value="true"/>
 	<item key="replaceBarOpen" value="false"/>
 	<list key="searchhistory">
+		<item value="HAL_TIM_PWM_Start"/>
+		<item value="m_pi"/>
+		<item value="encoder_count"/>
+		<item value="flags"/>
+		<item value="waysend"/>
 		<item value="HSEM2_IRQn"/>
 		<item value="SHARED_MEM"/>
 		<item value="0.856"/>

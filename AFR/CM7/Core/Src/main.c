@@ -97,6 +97,7 @@ void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
 void wayreceive(void *argument);
+void uset(void *argument);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -571,6 +572,7 @@ void wayreceive(void *argument)
 	static int wait_5 = 0;
 	static int failed_count = 0;
 	SHARED_MEM->flagm4 = 0;
+	SHARED_MEM->flagm7 = 0;
 	SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
 	__DSB();
 	for(;;)
@@ -639,6 +641,25 @@ void wayreceive(void *argument)
 		osDelay(1);
 	}
 
+}
+static int cc = 0;
+void BSP_PB_Callback(Button_TypeDef Button)
+{
+	SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
+	if (!SHARED_MEM->flagm7)
+	{
+		SHARED_MEM->control_u[0] = cc;
+		SHARED_MEM->control_u[0] = cc;
+		SHARED_MEM->control_u[0] = cc;
+		SHARED_MEM->control_u[0] = cc;
+		SHARED_MEM->flagm7 = 1;
+		SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
+		__DSB();
+
+		cc = cc + 5;
+		if (cc >= 20)
+			cc = 0;
+	}
 }
 /* USER CODE END 4 */
 

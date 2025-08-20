@@ -10,18 +10,22 @@
 #include "cmsis_os.h"
 #include <string.h>
 #include "shared_mem.h"
+#include <stdbool.h>
 #define CPR               330u
-#define MAX_CURR_A        0.8f
+#define MAX_CURR_A        0.8
 #define PWM_MAX           (__HAL_TIM_GET_AUTORELOAD(&htim1))
 #define CONTROL_TIMEOUT   pdMS_TO_TICKS(25u)
 #define NEW_SP_FLAG       (1U<<0)
+#define PI 3.141592653589793
 
 // gains
-static const float Kp = 0.1f, Ki = 0.02f;
+static const double Kp = 0.1, Ki = 0.02;
+static const double RPM_FS[4] = { 298.182, 312.727, 312.727, 312.727 };
 
 // state
-static float integ[4] = {0};
-static float sp_rpm[4] = {0};      // most-recent setpoint in RPM
+static double integ[4] = {0};
+static double sp_rpm[4] = {0};      // most-recent setpoint in RPM
+static const uint32_t CH[4] = { TIM_CHANNEL_1, TIM_CHANNEL_2, TIM_CHANNEL_3, TIM_CHANNEL_4 };
 
 void pwmgo(void *argument);
 osThreadId_t  pwm_id;
@@ -39,7 +43,7 @@ const osThreadAttr_t M7control_att = {
   .priority   = (osPriority_t) osPriorityHigh,
 };
 
-static int encoder_count[4] = {0};
+static volatile int32_t encoder_count[4] = {0};
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	if (GPIO_Pin == ENC_1_Pin){
@@ -76,20 +80,19 @@ void pwmgo(void *arg)
 	for (;;)
 	{
 		// 1) block until NEW_SP_FLAG arrives OR 25 ms elapses
-		uint32_t flags = osThreadFlagsWait(NEW_SP_FLAG, osFlagsNoClear, CONTROL_TIMEOUT);
+		uint32_t flags = osThreadFlagsWait(NEW_SP_FLAG, osFlagsWaitAny, CONTROL_TIMEOUT);
 
 		// 2) measure actual dt (in seconds) since last update
 		uint32_t now_ms = HAL_GetTick();
-		float dt = (now_ms - last_ms)*1e-3f;
+		double dt = (now_ms - last_ms)*1e-3;
+		if (dt < 1e-4) dt = 1e-4;
 		last_ms = now_ms;
 
 		// 3) if we woke on the flag, grab & convert the new control_u[]
 		if (flags & NEW_SP_FLAG)
 		{
-			__disable_irq();
 			for (int i = 0; i < 4; i++)
-			sp_rpm[i] = SHARED_MEM->control_u[i] * (60.0f/(2.0f*M_PI));
-			__enable_irq();
+			sp_rpm[i] = SHARED_MEM->control_u[i] * (60/(2*PI));
 	    	SHARED_MEM->flagm7 = 0;
 			__DSB();    // ensure the write completes
 		}
@@ -103,42 +106,94 @@ void pwmgo(void *arg)
 		__enable_irq();
 
 		// 5) compute actual RPM
-		float rpm[4];
+		const double k_rpm = 60.0/(CPR*dt);
+		double rpm[4];
 		for (int i = 0; i < 4; i++)
-			rpm[i] = counts[i]*60.0f/(CPR*dt);
+			rpm[i] = counts[i]*k_rpm;
 
 		// 6) run PI+FF+current-limit+PWM for each motor
 		for (int i = 0; i < 4; i++)
 		{
-			float err   = sp_rpm[i] - rpm[i];
-			integ[i]   += err * dt;
-			// anti-windup
-			if (integ[i] >  2000) integ[i] =  2000;
-			if (integ[i] < -2000) integ[i] = -2000;
+		    const double err = sp_rpm[i] - rpm[i];
 
-			float u_fb = Kp*err + Ki*integ[i];
-			float u_ff = (sp_rpm[i]/3000.0f)*PWM_MAX;
-			float duty = u_ff + u_fb;
+		    // feedforward
+		    const double u_ff = (sp_rpm[i] / RPM_FS[i]) * PWM_MAX;
 
-			// current limit
-			float cur = 0;//read_current(i);
-			if (cur > MAX_CURR_A)
-			{
-				duty *= (MAX_CURR_A/cur);
-				integ[i] -= err*dt;    // unwind
-			}
+		    // PI (use current integ value for control calc)
+		    const double u_fb = Kp*err + Ki*integ[i];
+		    const double duty_raw = u_ff + u_fb;
 
-			// clamp
-			if (duty < 0)      duty = 0;
-			if (duty > PWM_MAX) duty = PWM_MAX;
+		    // current limit (guard div-by-zero and negative readings)
+		    double duty = duty_raw;
 
-			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1 + i, (uint32_t)duty);
+		    const double cur = 0; // read_current(i)
+
+		    if (cur > 0.0 && cur > MAX_CURR_A) {
+		        duty *= (MAX_CURR_A / cur);
+		    }
+
+		    // clamp to [0, PWM_MAX]
+		    if (duty < 0)        duty = 0;
+		    else if (duty > PWM_MAX) duty = PWM_MAX;
+
+		    // -------- anti-windup: conditional integration + back-calculation --------
+		    // Only integrate if not saturated OR the error would drive the output back toward the linear region.
+		    const bool saturated_lo = (duty <= 0.0);
+		    const bool saturated_hi = (duty >= PWM_MAX);
+		    const bool allow_integ  =
+		        (!saturated_lo && !saturated_hi) ||
+		        (saturated_lo && err > 0) ||
+		        (saturated_hi && err < 0);
+
+		    if (allow_integ) {
+		        integ[i] += err * dt;
+		    } else {
+		        // simple back-calc: remove the last contribution that caused saturation
+		        // (equivalent to "track" the saturated actuator)
+		        integ[i] -= err * dt;
+		    }
+
+		    // hard cap
+		    if (integ[i] >  2000) integ[i] =  2000;
+		    if (integ[i] < -2000) integ[i] = -2000;
+		    // ------------------------------------------------------------------------
+
+		    __HAL_TIM_SET_COMPARE(&htim1, CH[i], (uint32_t)duty);
 		}
 	}
 }
 
 void pwm_init(void)
 {
+	HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_2);
+	HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_3);
+	HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
 	pwm_id = osThreadNew(pwmgo, NULL, &pwm_att);
     M7control_id = osThreadNew(M7control, NULL, &M7control_att);
 }
+
+void FORWARD12(void)
+{
+    HAL_GPIO_WritePin(GPIOE, GPIO_PIN_10, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOE, GPIO_PIN_12, GPIO_PIN_RESET);
+}
+
+void FORWARD34(void)
+{
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_SET);
+}
+
+void REVERSE12(void)
+{
+    HAL_GPIO_WritePin(GPIOE, GPIO_PIN_10, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOE, GPIO_PIN_12, GPIO_PIN_SET);
+}
+
+void REVERSE34(void)
+{
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);
+}
+

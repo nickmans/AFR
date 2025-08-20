@@ -82,7 +82,6 @@ static void MX_TIM1_Init(void);
 void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
-void waysend(void *argument);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/

@@ -7,3 +7,4 @@
 ../Core/Src/stm32h7xx_it.c:159:6:SysTick_Handler	2
 ../Core/Src/stm32h7xx_it.c:188:6:EXTI15_10_IRQHandler	1
 ../Core/Src/stm32h7xx_it.c:205:6:UART4_IRQHandler	1
+../Core/Src/stm32h7xx_it.c:219:6:HSEM2_IRQHandler	1

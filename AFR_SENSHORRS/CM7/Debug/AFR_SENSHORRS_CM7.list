@@ -2452,7 +2452,7 @@ int _write(int file, char *ptr, int len) {
 08001484 <BSP_PB_Callback>:
 double heading, roll, pitch, ax, ay, az;
 static int startstop = 0;
-static float duty = 0.5f;
+static float duty = 1.0f;
 
 void BSP_PB_Callback(Button_TypeDef Button)
 {
@@ -2492,15 +2492,15 @@ void BSP_PB_Callback(Button_TypeDef Button)
  80014c8:	eefc 7ae7 	vcvt.u32.f32	s15, s15
  80014cc:	ee17 3a90 	vmov	r3, s15
  80014d0:	60bb      	str	r3, [r7, #8]
-	        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, pulse);
+	        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, pulse);
  80014d2:	4b0c      	ldr	r3, [pc, #48]	@ (8001504 <BSP_PB_Callback+0x80>)
  80014d4:	681b      	ldr	r3, [r3, #0]
  80014d6:	68ba      	ldr	r2, [r7, #8]
- 80014d8:	641a      	str	r2, [r3, #64]	@ 0x40
+ 80014d8:	635a      	str	r2, [r3, #52]	@ 0x34
 		{
 			startstop = 0;
 			BSP_LED_Toggle(LED_RED);
-			__HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,0);
+			__HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,0);
 		}
 }
  80014da:	e00d      	b.n	80014f8 <BSP_PB_Callback+0x74>
@@ -2516,11 +2516,11 @@ void BSP_PB_Callback(Button_TypeDef Button)
 			BSP_LED_Toggle(LED_RED);
  80014ea:	2002      	movs	r0, #2
  80014ec:	f000 fd12 	bl	8001f14 <BSP_LED_Toggle>
-			__HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,0);
+			__HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,0);
  80014f0:	4b04      	ldr	r3, [pc, #16]	@ (8001504 <BSP_PB_Callback+0x80>)
  80014f2:	681b      	ldr	r3, [r3, #0]
  80014f4:	2200      	movs	r2, #0
- 80014f6:	641a      	str	r2, [r3, #64]	@ 0x40
+ 80014f6:	635a      	str	r2, [r3, #52]	@ 0x34
 }
  80014f8:	bf00      	nop
  80014fa:	3710      	adds	r7, #16
