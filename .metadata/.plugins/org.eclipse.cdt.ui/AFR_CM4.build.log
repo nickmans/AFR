@@ -1,4 +1,4 @@
-00:44:52 **** Incremental Build of configuration Debug for project AFR_CM4 ****
+18:35:45 **** Incremental Build of configuration Debug for project AFR_CM4 ****
 make -j16 all 
 arm-none-eabi-gcc "../Core/Src/PWM.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DCORE_CM4 -DUSE_HAL_DRIVER -DSTM32H755xx -DUSE_PWR_DIRECT_SMPS_SUPPLY -DUSE_NUCLEO_64 -DSTM32_THREAD_SAFE_STRATEGY=4 -c -I../Core/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../../Drivers/BSP/STM32H7xx_Nucleo -I../../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../../Drivers/CMSIS/Include -I../../Middlewares/Third_Party/FreeRTOS/Source/include -I../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I../Core/ThreadSafe -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/PWM.d" -MT"Core/Src/PWM.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/PWM.o"
 ../Core/Src/PWM.c: In function 'pwmgo':
@@ -21,5 +21,5 @@ Finished building: default.size.stdout
 Finished building: AFR_CM4.list
  
 
-00:44:53 Build Finished. 0 errors, 1 warnings. (took 1s.58ms)
+18:35:48 Build Finished. 0 errors, 1 warnings. (took 3s.143ms)
 

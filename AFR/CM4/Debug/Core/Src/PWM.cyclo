@@ -3,5 +3,7 @@
 ../Core/Src/PWM.c:65:6:M7control	2
 ../Core/Src/PWM.c:77:6:pwmgo	26
 ../Core/Src/PWM.c:166:6:pwm_init	1
-../Core/Src/PWM.c:176:6:forward12	1
-../Core/Src/PWM.c:182:6:forward34	1
+../Core/Src/PWM.c:176:6:FORWARD12	1
+../Core/Src/PWM.c:182:6:FORWARD34	1
+../Core/Src/PWM.c:188:6:REVERSE12	1
+../Core/Src/PWM.c:194:6:REVERSE34	1

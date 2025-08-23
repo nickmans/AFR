@@ -3,6 +3,8 @@
 	<item key="hasShownOverlayPopupBefore" value="true"/>
 	<item key="replaceBarOpen" value="false"/>
 	<list key="searchhistory">
+		<item value="sp_rpm"/>
+		<item value="RPM_FS"/>
 		<item value="HAL_TIM_PWM_Start"/>
 		<item value="m_pi"/>
 		<item value="encoder_count"/>
