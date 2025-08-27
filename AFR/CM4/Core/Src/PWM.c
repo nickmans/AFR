@@ -154,8 +154,10 @@ void pwmgo(void *arg)
 		    }
 
 		    // hard cap
-		    if (integ[i] >  2000) integ[i] =  2000;
-		    if (integ[i] < -2000) integ[i] = -2000;
+		    // after (fixed margin version, 20%):
+		    const double INTEG_CAP = (0.20 * PWM_MAX) / Ki;   // ≈ 490 with your settings
+		    if (integ[i] >  INTEG_CAP) integ[i] =  INTEG_CAP;
+		    if (integ[i] < -INTEG_CAP) integ[i] = -INTEG_CAP;
 		    // ------------------------------------------------------------------------
 
 		    __HAL_TIM_SET_COMPARE(&htim1, CH[i], (uint32_t)duty);

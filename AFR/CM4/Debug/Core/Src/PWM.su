@@ -1,9 +1,9 @@
 ../Core/Src/PWM.c:47:6:HAL_GPIO_EXTI_Callback	16	static
 ../Core/Src/PWM.c:60:6:NotifyNewSetpoint	8	static
 ../Core/Src/PWM.c:65:6:M7control	16	static
-../Core/Src/PWM.c:77:6:pwmgo	176	static,ignoring_inline_asm
-../Core/Src/PWM.c:166:6:pwm_init	8	static
-../Core/Src/PWM.c:176:6:FORWARD12	8	static
-../Core/Src/PWM.c:182:6:FORWARD34	8	static
-../Core/Src/PWM.c:188:6:REVERSE12	8	static
-../Core/Src/PWM.c:194:6:REVERSE34	8	static
+../Core/Src/PWM.c:77:6:pwmgo	208	static,ignoring_inline_asm
+../Core/Src/PWM.c:168:6:pwm_init	8	static
+../Core/Src/PWM.c:178:6:FORWARD12	8	static
+../Core/Src/PWM.c:184:6:FORWARD34	8	static
+../Core/Src/PWM.c:190:6:REVERSE12	8	static
+../Core/Src/PWM.c:196:6:REVERSE34	8	static

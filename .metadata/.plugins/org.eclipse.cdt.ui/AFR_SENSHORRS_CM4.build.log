@@ -1,10 +1,10 @@
-23:53:26 **** Build of configuration Debug for project AFR_SENSHORRS_CM4 ****
+19:10:37 **** Incremental Build of configuration Debug for project AFR_SENSHORRS_CM4 ****
 make -j16 all 
 arm-none-eabi-size  AFR_SENSHORRS_CM4.elf 
    text	   data	    bss	    dec	    hex	filename
-  26164	     16	   1968	  28148	   6df4	AFR_SENSHORRS_CM4.elf
+  26220	     16	   1968	  28204	   6e2c	AFR_SENSHORRS_CM4.elf
 Finished building: default.size.stdout
  
 
-23:53:26 Build Finished. 0 errors, 0 warnings. (took 403ms)
+19:10:37 Build Finished. 0 errors, 0 warnings. (took 302ms)
 
