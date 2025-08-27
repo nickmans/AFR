@@ -73,8 +73,8 @@ const osThreadAttr_t enc_att = {
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 void PeriphCommonClock_Config(void);
+static void MX_DMA_Init(void);
 static void MX_GPIO_Init(void);
-static void MX_BDMA_Init(void);
 static void MX_I2C2_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_ADC3_Init(void);
@@ -88,6 +88,14 @@ void enc_go(void *argument);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void acs_zero_now(uint16_t *buf, int n){
+    uint32_t acc[ADC_CH]={0};
+    for (int i=0;i<n;i++)
+        for (int ch=0; ch<ADC_CH; ch++)
+            acc[ch] += buf[i*ADC_CH + ch];
+    for (int ch=0; ch<ADC_CH; ch++)
+        zero_counts[ch] = (uint16_t)(acc[ch]/(uint32_t)n);
+}
 /* USER CODE END 0 */
 
 /**
@@ -147,8 +155,8 @@ Error_Handler();
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
+  MX_DMA_Init();
   MX_GPIO_Init();
-  MX_BDMA_Init();
   MX_I2C2_Init();
   MX_TIM1_Init();
   MX_ADC3_Init();
@@ -169,6 +177,8 @@ Error_Handler();
   HAL_TIM_Base_Start(&htim6);
   HAL_ADC_Start_DMA(&hadc3, (uint32_t*)adc_buf, ADC_CH * N_SAMPLES);
 
+  HAL_Delay(50);
+  acs_zero_now((uint16_t*)&adc_buf[0], N_SAMPLES/2);
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -349,8 +359,11 @@ static void MX_ADC3_Init(void)
   hadc3.Init.ConversionDataManagement = ADC_CONVERSIONDATA_DMA_CIRCULAR;
   hadc3.Init.Overrun = ADC_OVR_DATA_PRESERVED;
   hadc3.Init.LeftBitShift = ADC_LEFTBITSHIFT_NONE;
-  hadc3.Init.OversamplingMode = DISABLE;
-  hadc3.Init.Oversampling.Ratio = 1;
+  hadc3.Init.OversamplingMode = ENABLE;
+  hadc3.Init.Oversampling.Ratio = 16;
+  hadc3.Init.Oversampling.RightBitShift = ADC_RIGHTBITSHIFT_4;
+  hadc3.Init.Oversampling.TriggeredMode = ADC_TRIGGEREDMODE_SINGLE_TRIGGER;
+  hadc3.Init.Oversampling.OversamplingStopReset = ADC_REGOVERSAMPLING_CONTINUED_MODE;
   if (HAL_ADC_Init(&hadc3) != HAL_OK)
   {
     Error_Handler();
@@ -612,16 +625,16 @@ static void MX_USART2_UART_Init(void)
 /**
   * Enable DMA controller clock
   */
-static void MX_BDMA_Init(void)
+static void MX_DMA_Init(void)
 {
 
   /* DMA controller clock enable */
-  __HAL_RCC_BDMA_CLK_ENABLE();
+  __HAL_RCC_DMA1_CLK_ENABLE();
 
   /* DMA interrupt init */
-  /* BDMA_Channel0_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(BDMA_Channel0_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(BDMA_Channel0_IRQn);
+  /* DMA1_Stream0_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream0_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream0_IRQn);
 
 }
 
@@ -729,7 +742,7 @@ int _write(int file, char *ptr, int len) {
 }
 double heading, roll, pitch, ax, ay, az;
 static int startstop = 0;
-static float duty = 0.5f;
+static float duty = 1.0f;
 
 void BSP_PB_Callback(Button_TypeDef Button)
 {
@@ -739,13 +752,13 @@ void BSP_PB_Callback(Button_TypeDef Button)
 			BSP_LED_Toggle(LED_RED);
 	        uint32_t period = __HAL_TIM_GET_AUTORELOAD(&htim1);
 	        uint32_t pulse  = (uint32_t)(duty * (period + 1) + 0.5f);
-	        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, pulse);
+	        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, pulse);
 		}
 		else if (startstop == 1)
 		{
 			startstop = 0;
 			BSP_LED_Toggle(LED_RED);
-			__HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,0);
+			__HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_4,0);
 		}
 }
 static int encoder_count[4] = {0};
@@ -761,6 +774,10 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		encoder_count[3]++;
 	}
 }
+// MOTOR 1 -> motor_current[1]
+// MOTOR 2 -> motor_current[0]
+// MOTOR 3 -> motor_current[3]
+// MOTOR 4 -> motor_current[2]
 #define CPR 330u
 #define period 0.025f
 #define print_dt 1000u
@@ -783,7 +800,8 @@ void enc_go(void *argument)
 		{
 			BSP_LED_Toggle(LED_GREEN);
 			printf("%.3f %.3f %.3f %.3f %.3f\n",rpm1,rpm2,rpm3,rpm4,dt);
-			printf("%.3f %.3f %.3f %.3f\n",motor_current[0],motor_current[1],motor_current[2],motor_current[3]);
+			printf("%.3f %.3f %.3f %.3f\n",motor_current[1],motor_current[0],motor_current[3],motor_current[2]);
+			//printf("raw0=%u raw1=%u raw2=%u raw3=%u\n",adc_buf[0], adc_buf[1], adc_buf[2], adc_buf[3]);
 			lastprint = now;
 		}
 

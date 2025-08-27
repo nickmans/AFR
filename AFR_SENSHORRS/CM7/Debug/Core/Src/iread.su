@@ -1,4 +1,4 @@
-../Core/Src/iread.c:14:21:counts_to_amps	24	static
-../Core/Src/iread.c:19:13:average_block	48	static
-../Core/Src/iread.c:31:6:HAL_ADC_ConvHalfCpltCallback	32	static,ignoring_inline_asm
-../Core/Src/iread.c:37:6:HAL_ADC_ConvCpltCallback	32	static,ignoring_inline_asm
+../Core/Src/iread.c:18:21:amps_from_counts	24	static
+../Core/Src/iread.c:24:13:average_block	48	static
+../Core/Src/iread.c:40:6:HAL_ADC_ConvHalfCpltCallback	16	static
+../Core/Src/iread.c:46:6:HAL_ADC_ConvCpltCallback	16	static

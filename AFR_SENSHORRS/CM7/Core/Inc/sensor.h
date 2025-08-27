@@ -23,7 +23,11 @@ bool BNO055_CalibrateAccelOnce(uint8_t offsets[6], uint32_t timeout_ms);
 #define ACS_SENS      0.132f            // V/A for your ACS71240 variant (adjust)
 #define V_ZERO        (VREF * 0.5f)
 
-extern volatile uint16_t adc_buf[ADC_CH * N_SAMPLES];
-extern volatile float motor_current[ADC_CH];    // filtered A, read by PWM.c
+extern __attribute__((aligned(32))) volatile uint16_t adc_buf[ADC_CH * N_SAMPLES];
+extern volatile float    motor_current[ADC_CH];
+
+
+extern volatile uint16_t zero_counts[ADC_CH];
+extern volatile float    vdda_V; // set ≈3.19f for your board now
 
 #endif /* INC_SENSOR_H_ */

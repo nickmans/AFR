@@ -127,6 +127,10 @@ void pwmgo(void *arg)
 		    double duty = duty_raw;
 
 		    const double cur = 0; // read_current(i)
+		    // MOTOR 1 -> motor_current[1]
+		    // MOTOR 2 -> motor_current[0]
+		    // MOTOR 3 -> motor_current[3]
+		    // MOTOR 4 -> motor_current[2]
 
 		    if (cur > 0.0 && cur > MAX_CURR_A) {
 		        duty *= (MAX_CURR_A / cur);

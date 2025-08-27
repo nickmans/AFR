@@ -35,9 +35,9 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  15 .debug_line   000135a1  00000000  00000000  0005ad15  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_str    0018f59e  00000000  00000000  0006e2b6  2**0
+ 16 .debug_str    0018f59d  00000000  00000000  0006e2b6  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .comment      00000043  00000000  00000000  001fd854  2**0
+ 17 .comment      00000043  00000000  00000000  001fd853  2**0
                   CONTENTS, READONLY
  18 .debug_frame  000040e0  00000000  00000000  001fd898  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
@@ -520,8 +520,8 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
  81006ce:	f000 f93f 	bl	8100950 <MX_GPIO_Init>
-  MX_BDMA_Init();
- 81006d2:	f000 f923 	bl	810091c <MX_BDMA_Init>
+  MX_DMA_Init();
+ 81006d2:	f000 f923 	bl	810091c <MX_DMA_Init>
   MX_ADC1_Init();
  81006d6:	f000 f80d 	bl	81006f4 <MX_ADC1_Init>
   MX_UART5_Init();
@@ -938,27 +938,27 @@ static void MX_UART5_Init(void)
  8100914:	10000124 	.word	0x10000124
  8100918:	40005000 	.word	0x40005000
 
-0810091c <MX_BDMA_Init>:
+0810091c <MX_DMA_Init>:
 
 /**
   * Enable DMA controller clock
   */
-static void MX_BDMA_Init(void)
+static void MX_DMA_Init(void)
 {
  810091c:	b480      	push	{r7}
  810091e:	b083      	sub	sp, #12
  8100920:	af00      	add	r7, sp, #0
 
   /* DMA controller clock enable */
-  __HAL_RCC_BDMA_CLK_ENABLE();
- 8100922:	4b0a      	ldr	r3, [pc, #40]	@ (810094c <MX_BDMA_Init+0x30>)
- 8100924:	f8d3 30e0 	ldr.w	r3, [r3, #224]	@ 0xe0
- 8100928:	4a08      	ldr	r2, [pc, #32]	@ (810094c <MX_BDMA_Init+0x30>)
- 810092a:	f443 1300 	orr.w	r3, r3, #2097152	@ 0x200000
- 810092e:	f8c2 30e0 	str.w	r3, [r2, #224]	@ 0xe0
- 8100932:	4b06      	ldr	r3, [pc, #24]	@ (810094c <MX_BDMA_Init+0x30>)
- 8100934:	f8d3 30e0 	ldr.w	r3, [r3, #224]	@ 0xe0
- 8100938:	f403 1300 	and.w	r3, r3, #2097152	@ 0x200000
+  __HAL_RCC_DMA1_CLK_ENABLE();
+ 8100922:	4b0a      	ldr	r3, [pc, #40]	@ (810094c <MX_DMA_Init+0x30>)
+ 8100924:	f8d3 30d8 	ldr.w	r3, [r3, #216]	@ 0xd8
+ 8100928:	4a08      	ldr	r2, [pc, #32]	@ (810094c <MX_DMA_Init+0x30>)
+ 810092a:	f043 0301 	orr.w	r3, r3, #1
+ 810092e:	f8c2 30d8 	str.w	r3, [r2, #216]	@ 0xd8
+ 8100932:	4b06      	ldr	r3, [pc, #24]	@ (810094c <MX_DMA_Init+0x30>)
+ 8100934:	f8d3 30d8 	ldr.w	r3, [r3, #216]	@ 0xd8
+ 8100938:	f003 0301 	and.w	r3, r3, #1
  810093c:	607b      	str	r3, [r7, #4]
  810093e:	687b      	ldr	r3, [r7, #4]
 
