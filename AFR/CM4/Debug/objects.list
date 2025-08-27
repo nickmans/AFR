@@ -2,6 +2,7 @@
 "./Core/Src/PWM.o"
 "./Core/Src/cmd.o"
 "./Core/Src/freertos.o"
+"./Core/Src/iread.o"
 "./Core/Src/main.o"
 "./Core/Src/stm32h7xx_hal_msp.o"
 "./Core/Src/stm32h7xx_it.o"

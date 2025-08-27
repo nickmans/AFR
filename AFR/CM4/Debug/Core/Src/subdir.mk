@@ -8,6 +8,7 @@ C_SRCS += \
 ../Core/Src/PWM.c \
 ../Core/Src/cmd.c \
 ../Core/Src/freertos.c \
+../Core/Src/iread.c \
 ../Core/Src/main.c \
 ../Core/Src/stm32h7xx_hal_msp.c \
 ../Core/Src/stm32h7xx_it.c \
@@ -19,6 +20,7 @@ OBJS += \
 ./Core/Src/PWM.o \
 ./Core/Src/cmd.o \
 ./Core/Src/freertos.o \
+./Core/Src/iread.o \
 ./Core/Src/main.o \
 ./Core/Src/stm32h7xx_hal_msp.o \
 ./Core/Src/stm32h7xx_it.o \
@@ -30,6 +32,7 @@ C_DEPS += \
 ./Core/Src/PWM.d \
 ./Core/Src/cmd.d \
 ./Core/Src/freertos.d \
+./Core/Src/iread.d \
 ./Core/Src/main.d \
 ./Core/Src/stm32h7xx_hal_msp.d \
 ./Core/Src/stm32h7xx_it.d \
@@ -45,7 +48,7 @@ Core/Src/%.o Core/Src/%.su Core/Src/%.cyclo: ../Core/Src/%.c Core/Src/subdir.mk
 clean: clean-Core-2f-Src
 
 clean-Core-2f-Src:
-	-$(RM) ./Core/Src/PWM.cyclo ./Core/Src/PWM.d ./Core/Src/PWM.o ./Core/Src/PWM.su ./Core/Src/cmd.cyclo ./Core/Src/cmd.d ./Core/Src/cmd.o ./Core/Src/cmd.su ./Core/Src/freertos.cyclo ./Core/Src/freertos.d ./Core/Src/freertos.o ./Core/Src/freertos.su ./Core/Src/main.cyclo ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/stm32h7xx_hal_msp.cyclo ./Core/Src/stm32h7xx_hal_msp.d ./Core/Src/stm32h7xx_hal_msp.o ./Core/Src/stm32h7xx_hal_msp.su ./Core/Src/stm32h7xx_it.cyclo ./Core/Src/stm32h7xx_it.d ./Core/Src/stm32h7xx_it.o ./Core/Src/stm32h7xx_it.su ./Core/Src/syscalls.cyclo ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.cyclo ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/trilateration.cyclo ./Core/Src/trilateration.d ./Core/Src/trilateration.o ./Core/Src/trilateration.su
+	-$(RM) ./Core/Src/PWM.cyclo ./Core/Src/PWM.d ./Core/Src/PWM.o ./Core/Src/PWM.su ./Core/Src/cmd.cyclo ./Core/Src/cmd.d ./Core/Src/cmd.o ./Core/Src/cmd.su ./Core/Src/freertos.cyclo ./Core/Src/freertos.d ./Core/Src/freertos.o ./Core/Src/freertos.su ./Core/Src/iread.cyclo ./Core/Src/iread.d ./Core/Src/iread.o ./Core/Src/iread.su ./Core/Src/main.cyclo ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/stm32h7xx_hal_msp.cyclo ./Core/Src/stm32h7xx_hal_msp.d ./Core/Src/stm32h7xx_hal_msp.o ./Core/Src/stm32h7xx_hal_msp.su ./Core/Src/stm32h7xx_it.cyclo ./Core/Src/stm32h7xx_it.d ./Core/Src/stm32h7xx_it.o ./Core/Src/stm32h7xx_it.su ./Core/Src/syscalls.cyclo ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.cyclo ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/trilateration.cyclo ./Core/Src/trilateration.d ./Core/Src/trilateration.o ./Core/Src/trilateration.su
 
 .PHONY: clean-Core-2f-Src
 

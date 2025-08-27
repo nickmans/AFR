@@ -60,14 +60,6 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define M1_A_Pin GPIO_PIN_7
-#define M1_A_GPIO_Port GPIOF
-#define M2_A_Pin GPIO_PIN_8
-#define M2_A_GPIO_Port GPIOF
-#define M3_A_Pin GPIO_PIN_9
-#define M3_A_GPIO_Port GPIOF
-#define M4_A_Pin GPIO_PIN_10
-#define M4_A_GPIO_Port GPIOF
 #define IMU_SCL_Pin GPIO_PIN_10
 #define IMU_SCL_GPIO_Port GPIOB
 #define IMU_SDA_Pin GPIO_PIN_11

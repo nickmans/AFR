@@ -48,7 +48,7 @@ Core/Src/PWM.o: ../Core/Src/PWM.c ../Core/Inc/main.h \
  ../../Middlewares/Third_Party/FreeRTOS/Source/include/task.h \
  ../../Middlewares/Third_Party/FreeRTOS/Source/include/list.h \
  ../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
- ../Core/Inc/shared_mem.h
+ ../Core/Inc/sensor.h ../Core/Inc/shared_mem.h
 ../Core/Inc/main.h:
 ../../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h:
 ../Core/Inc/stm32h7xx_hal_conf.h:
@@ -99,4 +99,5 @@ Core/Src/PWM.o: ../Core/Src/PWM.c ../Core/Inc/main.h \
 ../../Middlewares/Third_Party/FreeRTOS/Source/include/task.h:
 ../../Middlewares/Third_Party/FreeRTOS/Source/include/list.h:
 ../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
+../Core/Inc/sensor.h:
 ../Core/Inc/shared_mem.h:

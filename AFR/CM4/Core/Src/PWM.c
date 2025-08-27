@@ -8,6 +8,7 @@
 /* ===== OS thread definitions ===== */
 #include "main.h"
 #include "cmsis_os.h"
+#include "sensor.h"
 #include <string.h>
 #include "shared_mem.h"
 #include <stdbool.h>
@@ -20,7 +21,7 @@
 
 // gains
 static const double Kp = 0.1, Ki = 0.02;
-static const double RPM_FS[4] = { 298.182, 312.727, 312.727, 312.727 };
+static const double RPM_FS[4] = { 312.727, 312.727, 312.727, 312.727 };
 
 // state
 static double integ[4] = {0};
@@ -31,7 +32,7 @@ void pwmgo(void *argument);
 osThreadId_t  pwm_id;
 const osThreadAttr_t pwm_att = {
   .name       = "pwmline",
-  .stack_size = 1028 * 4,
+  .stack_size = 2028 * 4,
   .priority   = (osPriority_t) osPriorityNormal,
 };
 
@@ -40,7 +41,7 @@ osThreadId_t  M7control_id;
 const osThreadAttr_t M7control_att = {
   .name       = "M7control",
   .stack_size = 128 * 4,
-  .priority   = (osPriority_t) osPriorityHigh,
+  .priority   = (osPriority_t) osPriorityNormal,
 };
 
 static volatile int32_t encoder_count[4] = {0};
@@ -76,6 +77,7 @@ void M7control(void *arg)
 
 void pwmgo(void *arg)
 {
+	BSP_LED_Toggle(LED_GREEN);
 	uint32_t last_ms = HAL_GetTick();
 	for (;;)
 	{
@@ -91,8 +93,10 @@ void pwmgo(void *arg)
 		// 3) if we woke on the flag, grab & convert the new control_u[]
 		if (flags & NEW_SP_FLAG)
 		{
+
 			for (int i = 0; i < 4; i++)
-			sp_rpm[i] = SHARED_MEM->control_u[i] * (60/(2*PI));
+				sp_rpm[i] = SHARED_MEM->control_u[i] * (60/(2*PI));
+
 	    	SHARED_MEM->flagm7 = 0;
 			__DSB();    // ensure the write completes
 		}
@@ -126,11 +130,7 @@ void pwmgo(void *arg)
 		    // current limit (guard div-by-zero and negative readings)
 		    double duty = duty_raw;
 
-		    const double cur = 0; // read_current(i)
-		    // MOTOR 1 -> motor_current[1]
-		    // MOTOR 2 -> motor_current[0]
-		    // MOTOR 3 -> motor_current[3]
-		    // MOTOR 4 -> motor_current[2]
+		    const double cur = motor_current[i]; // read_current(i)
 
 		    if (cur > 0.0 && cur > MAX_CURR_A) {
 		        duty *= (MAX_CURR_A / cur);
