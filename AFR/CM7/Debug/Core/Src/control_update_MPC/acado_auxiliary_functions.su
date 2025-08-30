@@ -1,0 +1,10 @@
+../Core/Src/control_update_MPC/acado_auxiliary_functions.c:24:9:acado_getVariablesX	4	static
+../Core/Src/control_update_MPC/acado_auxiliary_functions.c:29:9:acado_getVariablesU	4	static
+../Core/Src/control_update_MPC/acado_auxiliary_functions.c:35:9:acado_getVariablesY	4	static
+../Core/Src/control_update_MPC/acado_auxiliary_functions.c:42:9:acado_getVariablesYN	4	static
+../Core/Src/control_update_MPC/acado_auxiliary_functions.c:48:9:acado_getVariablesX0	4	static
+../Core/Src/control_update_MPC/acado_auxiliary_functions.c:58:6:acado_printDifferentialVariables	16	static
+../Core/Src/control_update_MPC/acado_auxiliary_functions.c:72:6:acado_printControlVariables	16	static
+../Core/Src/control_update_MPC/acado_auxiliary_functions.c:86:6:acado_printHeader	8	static
+../Core/Src/control_update_MPC/acado_auxiliary_functions.c:151:6:acado_tic	16	static
+../Core/Src/control_update_MPC/acado_auxiliary_functions.c:157:8:acado_toc	56	static

@@ -34,7 +34,8 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "acado_common.h"
+#include "acado_auxiliary_functions.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

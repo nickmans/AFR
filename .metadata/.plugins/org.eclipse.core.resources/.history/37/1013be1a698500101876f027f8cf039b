@@ -1,0 +1,30 @@
+/*
+ * trajectory.h
+ *
+ *  Created on: Jul 8, 2025
+ *      Author: nicks
+ */
+#include "main.h"
+
+
+#ifndef INC_TRAJECTORY_H_
+#define INC_TRAJECTORY_H_
+
+typedef struct {
+    float x;
+    float y;
+} Point2D;
+
+extern Point2D waypoints[15];
+extern
+
+void trajectory(const real_t ax0[4]);
+void xreffer(float x, float y, real_t ay[ACADO_N*ACADO_NY], real_t ayN[ACADO_NYN]);
+void ukf_update(double            xhat[3],
+                double            P[3][3],
+                const double      z[4],
+                double            dt,
+                const double      Q[3][3],
+                const double      R[4][4]);
+
+#endif /* INC_TRAJECTORY_H_ */

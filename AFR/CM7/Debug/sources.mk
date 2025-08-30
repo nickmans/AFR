@@ -23,6 +23,8 @@ C_DEPS :=
 # Every subdirectory with source files must be described here
 SUBDIRS := \
 Common/Src \
+Core/Include \
+Core/Src/control_update_MPC \
 Core/Src \
 Core/Startup \
 Core/ThreadSafe \

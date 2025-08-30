@@ -25,18 +25,34 @@
 #include "shared_mem.h"
 #include <string.h>
 #include <stdbool.h>
+#include "trajectory.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-typedef struct {
-    double x;
-    double y;
-} waypoint_t;
 
-static uint8_t waypoint_count = 0;
+uint8_t waypoint_count = 0;
 
-waypoint_t waypoints[15];
+Point2D waypoints[15];
+
+ACADOvariables acadoVariables;
+ACADOworkspace acadoWorkspace;
+static const double Q[3][3] = {
+    { 1e-2,    0.0,    0.0 },
+    { 0.0,    1e-2,    0.0 },
+    { 0.0,     0.0,   1e0  }
+};
+static const double R[4][4] = {
+    //   ψ    ψ̇    aₓ   v_enc
+    { 1e-3,  0.0,  0.0,  0.0  },  // yaw noise variance
+    { 0.0,  2e-3,  0.0,  0.0  },  // yaw-rate noise variance
+    { 0.0,   0.0,  1e-1,  0.0 },  // accel noise variance
+    { 0.0,   0.0,  0.0,  1e-3 }   // encoder‐velocity noise variance
+};
+static double P    [3][3];       // covariance
+const double dt = 0.1;    // 1/10 Hz
+const double rw = 0.033;
+double halfW = 0.15 * 0.5;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -83,6 +99,13 @@ const osThreadAttr_t wayr_att = {
   .stack_size = 1028 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+
+osThreadId_t CONTROL_id;
+const osThreadAttr_t CONTROL_att = {
+  .name = "CONTROL_task",
+  .stack_size = 1024*32,
+  .priority = (osPriority_t) osPriorityHigh,
+};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -97,11 +120,62 @@ void StartDefaultTask(void *argument);
 /* USER CODE BEGIN PFP */
 void wayreceive(void *argument);
 void uset(void *argument);
+static void controller_loop(void);
+static void init_controller_weights(void);
+static void filter_init(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+static inline void online_data(double meas[7], double slips[4])
+{
+    for (int i = 0; i < ACADO_N+1; i++) {
+        int c = 0;
+        int base = i * ACADO_NOD;  // offset in flat array
 
+        acadoVariables.od[base + c++] = acadoVariables.x0[3];
+        acadoVariables.od[base + c++] = meas[2];
+        acadoVariables.od[base + c++] = meas[1];
+
+        for (int j = 0; j < 4; j++)
+            acadoVariables.od[base + c++] = meas[3 + j];
+
+        acadoVariables.od[base + c++] = 0.0;
+        acadoVariables.od[base + c++] = 0.5;
+
+        for (int j = 0; j < 4; j++)
+            acadoVariables.od[base + c++] = slips[j];
+    }
+}
+#define SLIP_VW_TH   (1e-2)
+#define SLIP_U_TH    (1e-2)
+static inline void compute_slips(
+		double velocity,
+		double yawrate,
+    const double u[4],
+	double slips[4]
+) {
+
+    // wheel longitudinal velocities
+	double vw[4];
+    vw[0] = velocity + yawrate * halfW;  // wheel 1
+    vw[1] = velocity - yawrate * halfW;  // wheel 2
+    vw[2] = velocity + yawrate * halfW;  // wheel 3
+    vw[3] = velocity - yawrate * halfW;  // wheel 4
+
+    for (size_t i = 0; i < 4; i++) {
+    	double u_lin = u[i] * rw;   // commanded linear speed
+        if (vw[i] > SLIP_VW_TH) {
+            slips[i] = (u_lin - vw[i]) / vw[i];
+        }
+        else if ((u_lin > SLIP_U_TH) && (vw[i] <= SLIP_VW_TH)) {
+            slips[i] = 1.0;
+        }
+        else {
+            slips[i] = 0.0;
+        }
+    }
+}
 /* USER CODE END 0 */
 
 /**
@@ -175,7 +249,9 @@ Error_Handler();
   MX_I2C2_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-
+	acado_initializeSolver();
+	init_controller_weights();
+	filter_init();
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -495,11 +571,126 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+static double measurements[7] = {0, 0, 0, 0, 0, 0, 0};
+
+void CONTROL(void *argument)
+{
+    const TickType_t period = pdMS_TO_TICKS(100);  // 100 ms
+    TickType_t last_wake = xTaskGetTickCount();
+
+	for(;;)
+	{
+		// yaw			   yawrate 		    accel_x			 encoder robot v_x
+		double z[4] = {measurements[0], measurements[1], measurements[2], rw*(measurements[3]+measurements[4]+measurements[5]+measurements[6])/4};
+
+		double xhat[3] = {acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[3]};
+		ukf_update(xhat,P,z,dt,Q,R);
+		acadoVariables.x0[0] = xhat[0];
+		acadoVariables.x0[1] = xhat[1];
+		acadoVariables.x0[2] = measurements[0];
+		acadoVariables.x0[3] = xhat[2];
+
+		double slips[4] = {0, 0, 0, 0};
+		double enc[4] = {measurements[3],measurements[4],measurements[5],measurements[6]};
+		compute_slips(xhat[2],measurements[1],enc,slips);
+
+		online_data(measurements,slips);
+
+		static int step_counter = 0;
+		//HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+		if (step_counter++ % 10 == 0)			//every 10 steps new trajectory
+			trajectory(acadoVariables.x0);
+
+		xreffer(acadoVariables.x0[0],acadoVariables.x0[1], acadoVariables.y, acadoVariables.yN);
+
+		controller_loop();
+
+		SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
+		// wait until flagm7 is cleared by the other core
+		while (SHARED_MEM->flagm7)
+		{
+		    SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
+		    __DSB();   // ensure memory order
+		    osDelay(1);
+		}
+		if (!SHARED_MEM->flagm7)
+		{
+			BSP_LED_Toggle(LED_RED);
+			SHARED_MEM->control_u[0] = acadoVariables.u[0];
+			SHARED_MEM->control_u[1] = acadoVariables.u[3];
+			SHARED_MEM->control_u[2] = acadoVariables.u[2];
+			SHARED_MEM->control_u[3] = acadoVariables.u[4];
+			SHARED_MEM->flagm7 = 1;
+			SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
+			__DSB();
+		}
+
+        vTaskDelayUntil(&last_wake, period);   // align to 100 ms
+	}
+}
 int _write(int file, char *ptr, int len) {
     HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)ptr, len, HAL_MAX_DELAY);
     return len;
 }
+static void controller_loop(void)
+{
+	int iter = 0, status = 0;
+	for(iter = 0; iter < 2; ++iter)
+	{
+		acado_preparationStep();
+		status = acado_feedbackStep();
+		acado_shiftStates(2, 0, 0);     // shift by 1, fill last with copy, don't reset multipliers
+		//acado_shiftControls(0);        // shift controls by 1, fill last with copy of previous
+	}
+    // send u[0..3] back in one line
+    //char out[64];
+    //int n = snprintf(out, sizeof(out),
+	//printf("%.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f",acadoVariables.u[0],acadoVariables.u[1],acadoVariables.u[2],acadoVariables.u[3],acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],acadoVariables.x0[3]);
+    //HAL_UART_Transmit(&huart2, (uint8_t*)out, n, HAL_MAX_DELAY);
+    if (status != 0)
+    	HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)"NaN NaN NaN NaN\n", 17, HAL_MAX_DELAY);
+}
+void init_controller_weights(void)
+{
+    const float W_diag[12] = {
+        1e4f, 1e4f, 1e-3f, 1e-1f,
+        1e-1f, 1e-1f, 1e-1f, 1e-1f,
+        1e3f,  1e3f,  1e3f,  1e3f
+    };
 
+    const float WN_diag[4] = {
+        1e4f, 1e4f, 1e-3f, 1e-1f
+    };
+
+    // Clear and assign W (12x12)
+    for (int i = 0; i < 144; ++i)
+        acadoVariables.W[i] = 0.0f;
+
+    for (int i = 0; i < 12; ++i)
+        acadoVariables.W[i * 12 + i] = W_diag[i];   // Correct row-major indexing
+
+    // Clear and assign WN (4x4)
+    for (int i = 0; i < 16; ++i)
+        acadoVariables.WN[i] = 0.0f;
+
+    for (int i = 0; i < 4; ++i)
+        acadoVariables.WN[i * 4 + i] = WN_diag[i];
+}
+static void filter_init(void) {
+    // initialize P to large uncertainty
+    P[0][0] = 1e-2;  P[0][1]=0;  P[0][2]=0;
+    P[1][0] = 0;  P[1][1]=1e-2;  P[1][2]=0;
+    P[2][0] = 0;  P[2][1]=0;  P[2][2]=2e-1;
+}
+
+int _gettimeofday(struct timeval *tv, void *tzvp)
+{
+    if (tv) {
+        tv->tv_sec = 0;
+        tv->tv_usec = 0;
+    }
+    return 0;
+}
 /**
  * @brief  Test if two waypoints lie within `radius` metres (20 cm = 0.20).
  * @param  wpA    first waypoint (double x,y)
@@ -591,6 +782,7 @@ void wayreceive(void *argument)
 	}
 
 }
+/*
 static int cc = 0;
 void BSP_PB_Callback(Button_TypeDef Button)
 {
@@ -611,7 +803,7 @@ void BSP_PB_Callback(Button_TypeDef Button)
 		if (cc > 20)
 			cc = 0;
 	}
-}
+} */
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
