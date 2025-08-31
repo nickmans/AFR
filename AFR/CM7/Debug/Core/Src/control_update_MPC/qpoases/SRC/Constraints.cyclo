@@ -1,0 +1,13 @@
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/SubjectTo.ipp:43:22:SubjectToType SubjectTo::getType(int) const	3
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/Constraints.ipp:43:12:int Constraints::getNC() const	1
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/Constraints.ipp:127:19:Indexlist* Constraints::getActive()	1
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/Constraints.ipp:136:19:Indexlist* Constraints::getInactive()	1
+../Core/Src/control_update_MPC/qpoases/SRC/Constraints.cpp:46:1:Constraints::Constraints()	1
+../Core/Src/control_update_MPC/qpoases/SRC/Constraints.cpp:58:1:Constraints::Constraints(const Constraints&)	1
+../Core/Src/control_update_MPC/qpoases/SRC/Constraints.cpp:72:1:Constraints::~Constraints()	1
+../Core/Src/control_update_MPC/qpoases/SRC/Constraints.cpp:80:14:Constraints& Constraints::operator=(const Constraints&)	2
+../Core/Src/control_update_MPC/qpoases/SRC/Constraints.cpp:102:13:returnValue Constraints::init(int)	1
+../Core/Src/control_update_MPC/qpoases/SRC/Constraints.cpp:119:13:returnValue Constraints::setupConstraint(int, SubjectToStatus)	11
+../Core/Src/control_update_MPC/qpoases/SRC/Constraints.cpp:155:13:returnValue Constraints::setupAllInactive()	13
+../Core/Src/control_update_MPC/qpoases/SRC/Constraints.cpp:207:13:returnValue Constraints::moveActiveToInactive(int)	6
+../Core/Src/control_update_MPC/qpoases/SRC/Constraints.cpp:227:13:returnValue Constraints::moveInactiveToActive(int, SubjectToStatus)	6

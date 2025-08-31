@@ -7,11 +7,11 @@
 C_SRCS += \
 C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/Common/Src/system_stm32h7xx_dualcore_boot_cm4_cm7.c 
 
-OBJS += \
-./Common/Src/system_stm32h7xx_dualcore_boot_cm4_cm7.o 
-
 C_DEPS += \
 ./Common/Src/system_stm32h7xx_dualcore_boot_cm4_cm7.d 
+
+OBJS += \
+./Common/Src/system_stm32h7xx_dualcore_boot_cm4_cm7.o 
 
 
 # Each subdirectory must supply rules for building sources it contributes

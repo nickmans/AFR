@@ -120,6 +120,7 @@ void StartDefaultTask(void *argument);
 /* USER CODE BEGIN PFP */
 void wayreceive(void *argument);
 void uset(void *argument);
+void CONTROL(void *argument);
 static void controller_loop(void);
 static void init_controller_weights(void);
 static void filter_init(void);
@@ -279,6 +280,7 @@ Error_Handler();
 
   /* USER CODE BEGIN RTOS_THREADS */
   wayr_id = osThreadNew(wayreceive, NULL, &wayr_att);
+  CONTROL_id = osThreadNew(CONTROL, NULL, &CONTROL_att);
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
 
@@ -572,14 +574,31 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 static double measurements[7] = {0, 0, 0, 0, 0, 0, 0};
-
+static float SPEEDS[4]  = {0, 0, 0, 0};
+static int COUNTER = 0;
+static int ccc = 0;
 void CONTROL(void *argument)
 {
     const TickType_t period = pdMS_TO_TICKS(100);  // 100 ms
     TickType_t last_wake = xTaskGetTickCount();
 
+    SHARED2_MEM->flagencoders = 0;
+    __DSB();
 	for(;;)
 	{
+	    SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED2_MEM, sizeof(*SHARED2_MEM));
+	    __DSB();   // ensure memory order
+		if (SHARED2_MEM->flagencoders)				// CHECK FOR NEW ENCODER COUNT - IS UPDATED IN 25ms PWM LOOP ON M4
+		{
+			measurements[3] =  SHARED2_MEM->encoders[0];
+			measurements[4] =  SHARED2_MEM->encoders[1];
+			measurements[5] =  SHARED2_MEM->encoders[2];
+			measurements[6] =  SHARED2_MEM->encoders[3];
+			SHARED2_MEM->flagencoders = 0;
+			SCB_CleanDCache_by_Addr((uint32_t*)SHARED2_MEM, sizeof(*SHARED2_MEM));
+			__DSB();
+		}
+
 		// yaw			   yawrate 		    accel_x			 encoder robot v_x
 		double z[4] = {measurements[0], measurements[1], measurements[2], rw*(measurements[3]+measurements[4]+measurements[5]+measurements[6])/4};
 
@@ -613,13 +632,14 @@ void CONTROL(void *argument)
 		    __DSB();   // ensure memory order
 		    osDelay(1);
 		}
+
 		if (!SHARED_MEM->flagm7)
 		{
 			BSP_LED_Toggle(LED_RED);
 			SHARED_MEM->control_u[0] = acadoVariables.u[0];
-			SHARED_MEM->control_u[1] = acadoVariables.u[3];
-			SHARED_MEM->control_u[2] = acadoVariables.u[2];
-			SHARED_MEM->control_u[3] = acadoVariables.u[4];
+			SHARED_MEM->control_u[1] = acadoVariables.u[2];
+			SHARED_MEM->control_u[2] = acadoVariables.u[1];
+			SHARED_MEM->control_u[3] = acadoVariables.u[3];
 			SHARED_MEM->flagm7 = 1;
 			SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
 			__DSB();
@@ -647,8 +667,8 @@ static void controller_loop(void)
     //int n = snprintf(out, sizeof(out),
 	//printf("%.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f",acadoVariables.u[0],acadoVariables.u[1],acadoVariables.u[2],acadoVariables.u[3],acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],acadoVariables.x0[3]);
     //HAL_UART_Transmit(&huart2, (uint8_t*)out, n, HAL_MAX_DELAY);
-    if (status != 0)
-    	HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)"NaN NaN NaN NaN\n", 17, HAL_MAX_DELAY);
+    //if (status != 0)
+    	//HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)"NaN NaN NaN NaN\n", 17, HAL_MAX_DELAY);
 }
 void init_controller_weights(void)
 {
@@ -708,7 +728,7 @@ static bool waypoints_within_radius(double x1,double y1,double x2,double y2)
 }
 void wayreceive(void *argument)
 {
-	int count = 0;
+	//int count = 0;
 	static int wait_5 = 0;
 	static int failed_count = 0;
 	SHARED_MEM->flagm4 = 0;
@@ -782,7 +802,7 @@ void wayreceive(void *argument)
 	}
 
 }
-/*
+
 static int cc = 0;
 void BSP_PB_Callback(Button_TypeDef Button)
 {
@@ -790,10 +810,10 @@ void BSP_PB_Callback(Button_TypeDef Button)
 	if (!SHARED_MEM->flagm7)
 	{
 		BSP_LED_Toggle(LED_RED);
-		SHARED_MEM->control_u[0] = cc;
-		SHARED_MEM->control_u[1] = cc+3;
-		SHARED_MEM->control_u[2] = cc+1;
-		SHARED_MEM->control_u[3] = cc-3;
+		SHARED_MEM->control_u[0] = 0;
+		SHARED_MEM->control_u[1] = 0;
+		SHARED_MEM->control_u[2] = 0;
+		SHARED_MEM->control_u[3] = 0;
 		SHARED_MEM->flagm7 = 1;
 		SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
 		__DSB();
@@ -803,7 +823,7 @@ void BSP_PB_Callback(Button_TypeDef Button)
 		if (cc > 20)
 			cc = 0;
 	}
-} */
+}
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */

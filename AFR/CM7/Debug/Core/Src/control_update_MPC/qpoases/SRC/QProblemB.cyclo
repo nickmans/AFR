@@ -1,0 +1,65 @@
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.ipp:87:13:void MessageHandling::setErrorVisibilityStatus(VisibilityStatus)	1
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.ipp:96:13:void MessageHandling::setWarningVisibilityStatus(VisibilityStatus)	1
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.ipp:105:13:void MessageHandling::setInfoVisibilityStatus(VisibilityStatus)	1
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/Utils.ipp:40:15:real_t getAbs(real_t)	2
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/Indexlist.ipp:56:12:int Indexlist::getLength()	1
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/SubjectTo.ipp:43:22:SubjectToType SubjectTo::getType(int) const	3
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/SubjectTo.ipp:55:24:SubjectToStatus SubjectTo::getStatus(int) const	3
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/SubjectTo.ipp:67:20:returnValue SubjectTo::setType(int, SubjectToType)	3
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/SubjectTo.ipp:97:13:void SubjectTo::setNoLower(BooleanType)	1
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/SubjectTo.ipp:106:13:void SubjectTo::setNoUpper(BooleanType)	1
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/SubjectTo.ipp:115:20:BooleanType SubjectTo::isNoLower() const	1
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/SubjectTo.ipp:124:20:BooleanType SubjectTo::isNoUpper() const	1
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/Bounds.ipp:42:12:int Bounds::getNV() const	1
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/Bounds.ipp:79:20:returnValue Bounds::setNFV(int)	1
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/Bounds.ipp:89:20:returnValue Bounds::setNBV(int)	1
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/Bounds.ipp:99:20:returnValue Bounds::setNUV(int)	1
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/Bounds.ipp:109:12:int Bounds::getNFR()	1
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/Bounds.ipp:118:12:int Bounds::getNFX()	1
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/Bounds.ipp:127:19:Indexlist* Bounds::getFree()	1
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/Bounds.ipp:136:19:Indexlist* Bounds::getFixed()	1
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/QProblemB.ipp:149:12:int QProblemB::getNV() const	1
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/QProblemB.ipp:158:12:int QProblemB::getNFR()	1
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/QProblemB.ipp:167:12:int QProblemB::getNFX()	1
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/QProblemB.ipp:185:23:QProblemStatus QProblemB::getStatus() const	1
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/QProblemB.ipp:218:20:BooleanType QProblemB::isInfeasible() const	1
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/QProblemB.ipp:227:20:BooleanType QProblemB::isUnbounded() const	1
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/QProblemB.ipp:369:13:void QProblemB::computeGivens(real_t, real_t, real_t&, real_t&, real_t&, real_t&) const	4
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/QProblemB.ipp:407:13:void QProblemB::applyGivens(real_t, real_t, real_t, real_t, real_t&, real_t&) const	1
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:39:6:void printmatrix(char*, double*, int, int)	3
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:61:1:QProblemB::QProblemB()	1
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:94:1:QProblemB::QProblemB(int)	2
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:134:1:QProblemB::QProblemB(const QProblemB&)	10
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:186:1:QProblemB::~QProblemB()	1
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:194:12:QProblemB& QProblemB::operator=(const QProblemB&)	11
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:252:13:returnValue QProblemB::reset()	3
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:285:13:returnValue QProblemB::init(const real_t*, const real_t*, const real_t*, const real_t*, int&, const real_t*, real_t*)	2
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:298:13:returnValue QProblemB::init(const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, int&, const real_t*, real_t*)	2
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:315:13:returnValue QProblemB::hotstart(const real_t*, const real_t*, const real_t*, int&, real_t*)	20
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:512:5:int QProblemB::getNZ()	1
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:522:8:real_t QProblemB::getObjVal() const	5
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:546:8:real_t QProblemB::getObjVal(const real_t*) const	3
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:568:13:returnValue QProblemB::getPrimalSolution(real_t*) const	6
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:593:13:returnValue QProblemB::getDualSolution(real_t*) const	6
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:618:13:returnValue QProblemB::setPrintLevel(PrintLevel)	5
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:661:13:returnValue QProblemB::checkForIdentityHessian()	9
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:694:13:returnValue QProblemB::setupSubjectToType()	9
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:753:13:returnValue QProblemB::setupCholeskyDecomposition()	13
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:870:16:void __tcf_0()	1
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:830:13:returnValue QProblemB::solveInitialQP(const real_t*, const real_t*, const Bounds*, int&, real_t*)	26
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:943:13:returnValue QProblemB::obtainAuxiliaryWorkingSet(const real_t*, const real_t*, const Bounds*, Bounds*) const	34
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:1072:13:returnValue QProblemB::setupAuxiliaryWorkingSet(const Bounds*, BooleanType)	22
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:1139:13:returnValue QProblemB::setupAuxiliaryQPsolution(const real_t*, const real_t*)	9
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:1180:13:returnValue QProblemB::setupAuxiliaryQPgradient()	3
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:1204:13:returnValue QProblemB::setupAuxiliaryQPbounds(BooleanType)	12
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:1269:13:returnValue QProblemB::addBound(int, SubjectToStatus, BooleanType)	16
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:1330:13:returnValue QProblemB::removeBound(int, BooleanType)	16
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:1399:13:returnValue QProblemB::backsolveR(const real_t*, BooleanType, real_t*)	1
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:1411:13:returnValue QProblemB::backsolveR(const real_t*, BooleanType, BooleanType, real_t*)	10
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:1470:13:returnValue QProblemB::hotstart_determineDataShift(const int*, const real_t*, const real_t*, const real_t*, real_t*, real_t*, real_t*, BooleanType&)	12
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:1530:13:BooleanType QProblemB::areBoundsConsistent(const real_t*, const real_t*) const	4
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:1548:13:returnValue QProblemB::setupQPdata(const real_t*, const real_t*, const real_t*, const real_t*, const real_t*)	20
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:1637:13:returnValue QProblemB::hotstart_determineStepDirection(const int*, const int*, const real_t*, const real_t*, const real_t*, BooleanType, real_t*, real_t*, real_t*)	20
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:1753:13:returnValue QProblemB::hotstart_determineStepLength(const int*, const int*, const real_t*, const real_t*, const real_t*, const real_t*, int&, SubjectToStatus&)	26
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:1904:13:returnValue QProblemB::hotstart_performStep(const int*, const int*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, int, SubjectToStatus)	10
+../Core/Src/control_update_MPC/qpoases/SRC/QProblemB.cpp:2075:13:returnValue QProblemB::checkKKTconditions()	1

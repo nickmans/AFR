@@ -7,11 +7,11 @@
 C_SRCS += \
 C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/Drivers/BSP/STM32H7xx_Nucleo/stm32h7xx_nucleo.c 
 
-OBJS += \
-./Drivers/BSP/STM32H7xx_Nucleo/stm32h7xx_nucleo.o 
-
 C_DEPS += \
 ./Drivers/BSP/STM32H7xx_Nucleo/stm32h7xx_nucleo.d 
+
+OBJS += \
+./Drivers/BSP/STM32H7xx_Nucleo/stm32h7xx_nucleo.o 
 
 
 # Each subdirectory must supply rules for building sources it contributes

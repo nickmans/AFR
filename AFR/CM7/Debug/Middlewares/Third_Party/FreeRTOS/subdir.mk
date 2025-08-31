@@ -16,18 +16,6 @@ C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/Middlewares/Third_Party/Fre
 C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/Middlewares/Third_Party/FreeRTOS/Source/tasks.c \
 C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/Middlewares/Third_Party/FreeRTOS/Source/timers.c 
 
-OBJS += \
-./Middlewares/Third_Party/FreeRTOS/cmsis_os2.o \
-./Middlewares/Third_Party/FreeRTOS/croutine.o \
-./Middlewares/Third_Party/FreeRTOS/event_groups.o \
-./Middlewares/Third_Party/FreeRTOS/heap_4.o \
-./Middlewares/Third_Party/FreeRTOS/list.o \
-./Middlewares/Third_Party/FreeRTOS/port.o \
-./Middlewares/Third_Party/FreeRTOS/queue.o \
-./Middlewares/Third_Party/FreeRTOS/stream_buffer.o \
-./Middlewares/Third_Party/FreeRTOS/tasks.o \
-./Middlewares/Third_Party/FreeRTOS/timers.o 
-
 C_DEPS += \
 ./Middlewares/Third_Party/FreeRTOS/cmsis_os2.d \
 ./Middlewares/Third_Party/FreeRTOS/croutine.d \
@@ -39,6 +27,18 @@ C_DEPS += \
 ./Middlewares/Third_Party/FreeRTOS/stream_buffer.d \
 ./Middlewares/Third_Party/FreeRTOS/tasks.d \
 ./Middlewares/Third_Party/FreeRTOS/timers.d 
+
+OBJS += \
+./Middlewares/Third_Party/FreeRTOS/cmsis_os2.o \
+./Middlewares/Third_Party/FreeRTOS/croutine.o \
+./Middlewares/Third_Party/FreeRTOS/event_groups.o \
+./Middlewares/Third_Party/FreeRTOS/heap_4.o \
+./Middlewares/Third_Party/FreeRTOS/list.o \
+./Middlewares/Third_Party/FreeRTOS/port.o \
+./Middlewares/Third_Party/FreeRTOS/queue.o \
+./Middlewares/Third_Party/FreeRTOS/stream_buffer.o \
+./Middlewares/Third_Party/FreeRTOS/tasks.o \
+./Middlewares/Third_Party/FreeRTOS/timers.o 
 
 
 # Each subdirectory must supply rules for building sources it contributes

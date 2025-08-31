@@ -14,16 +14,6 @@ C_SRCS += \
 ../Core/Src/trajectory.c \
 ../Core/Src/ukf.c 
 
-OBJS += \
-./Core/Src/freertos.o \
-./Core/Src/main.o \
-./Core/Src/stm32h7xx_hal_msp.o \
-./Core/Src/stm32h7xx_it.o \
-./Core/Src/syscalls.o \
-./Core/Src/sysmem.o \
-./Core/Src/trajectory.o \
-./Core/Src/ukf.o 
-
 C_DEPS += \
 ./Core/Src/freertos.d \
 ./Core/Src/main.d \
@@ -33,6 +23,16 @@ C_DEPS += \
 ./Core/Src/sysmem.d \
 ./Core/Src/trajectory.d \
 ./Core/Src/ukf.d 
+
+OBJS += \
+./Core/Src/freertos.o \
+./Core/Src/main.o \
+./Core/Src/stm32h7xx_hal_msp.o \
+./Core/Src/stm32h7xx_it.o \
+./Core/Src/syscalls.o \
+./Core/Src/sysmem.o \
+./Core/Src/trajectory.o \
+./Core/Src/ukf.o 
 
 
 # Each subdirectory must supply rules for building sources it contributes

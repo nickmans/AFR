@@ -10,17 +10,17 @@ C_SRCS += \
 ../Core/Include/arm_mat_mult_f32.c \
 ../Core/Include/arm_mat_scale_f32.c 
 
-OBJS += \
-./Core/Include/arm_mat_add_f32.o \
-./Core/Include/arm_mat_inverse_f32.o \
-./Core/Include/arm_mat_mult_f32.o \
-./Core/Include/arm_mat_scale_f32.o 
-
 C_DEPS += \
 ./Core/Include/arm_mat_add_f32.d \
 ./Core/Include/arm_mat_inverse_f32.d \
 ./Core/Include/arm_mat_mult_f32.d \
 ./Core/Include/arm_mat_scale_f32.d 
+
+OBJS += \
+./Core/Include/arm_mat_add_f32.o \
+./Core/Include/arm_mat_inverse_f32.o \
+./Core/Include/arm_mat_mult_f32.o \
+./Core/Include/arm_mat_scale_f32.o 
 
 
 # Each subdirectory must supply rules for building sources it contributes

@@ -1,0 +1,8 @@
+../Core/Src/control_update_MPC/qpoases/SRC/CyclingManager.cpp:47:1:CyclingManager::CyclingManager()	16	static
+../Core/Src/control_update_MPC/qpoases/SRC/CyclingManager.cpp:57:1:CyclingManager::CyclingManager(const CyclingManager&)	24	static
+../Core/Src/control_update_MPC/qpoases/SRC/CyclingManager.cpp:71:1:CyclingManager::~CyclingManager()	16	static
+../Core/Src/control_update_MPC/qpoases/SRC/CyclingManager.cpp:79:17:CyclingManager& CyclingManager::operator=(const CyclingManager&)	24	static
+../Core/Src/control_update_MPC/qpoases/SRC/CyclingManager.cpp:102:13:returnValue CyclingManager::init(int, int)	24	static
+../Core/Src/control_update_MPC/qpoases/SRC/CyclingManager.cpp:117:13:returnValue CyclingManager::setCyclingStatus(int, BooleanType, CyclingStatus)	40	static
+../Core/Src/control_update_MPC/qpoases/SRC/CyclingManager.cpp:149:15:CyclingStatus CyclingManager::getCyclingStatus(int, BooleanType) const	24	static
+../Core/Src/control_update_MPC/qpoases/SRC/CyclingManager.cpp:171:13:returnValue CyclingManager::clearCyclingData()	24	static

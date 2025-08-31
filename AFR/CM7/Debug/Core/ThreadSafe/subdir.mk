@@ -7,11 +7,11 @@
 C_SRCS += \
 C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/ThreadSafe/newlib_lock_glue.c 
 
-OBJS += \
-./Core/ThreadSafe/newlib_lock_glue.o 
-
 C_DEPS += \
 ./Core/ThreadSafe/newlib_lock_glue.d 
+
+OBJS += \
+./Core/ThreadSafe/newlib_lock_glue.o 
 
 
 # Each subdirectory must supply rules for building sources it contributes

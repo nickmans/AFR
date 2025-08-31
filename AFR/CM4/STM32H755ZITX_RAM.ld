@@ -45,7 +45,8 @@ MEMORY
 {
 RAM_EXEC (rx)  : ORIGIN = 0x10000000, LENGTH = 128K
 RAM (xrw)      : ORIGIN = 0x10020000, LENGTH = 160K
-SHARED    (xrw) : ORIGIN = 0x30020000, LENGTH = 256  /* reserve first 256 bytes */
+SHARED   (xrw) : ORIGIN = 0x30020000, LENGTH = 256  /* reserve first 256 bytes */
+SHARED2  (xrw) : ORIGIN = 0x30020100, LENGTH = 256  /* reserve first 256 bytes */
 }
 
 /* Define output sections */
@@ -168,6 +169,13 @@ SECTIONS
     KEEP(*(.shared_dummy))
     . = ALIGN(4);
   } >SHARED
+  
+    	    .shared2_dummy (NOLOAD) :
+  {
+    . = ALIGN(4);
+    KEEP(*(.shared2_dummy))
+    . = ALIGN(4);
+  } >SHARED2
 
   /* Remove information from the standard libraries */
   /DISCARD/ :

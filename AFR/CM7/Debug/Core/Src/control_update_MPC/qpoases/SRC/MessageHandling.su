@@ -1,0 +1,24 @@
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.ipp:87:13:void MessageHandling::setErrorVisibilityStatus(VisibilityStatus)	16	static
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.ipp:96:13:void MessageHandling::setWarningVisibilityStatus(VisibilityStatus)	16	static
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.ipp:105:13:void MessageHandling::setInfoVisibilityStatus(VisibilityStatus)	16	static
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.ipp:114:13:void MessageHandling::setOutputFile(int*)	16	static
+C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.ipp:123:20:returnValue MessageHandling::setErrorCount(int)	16	static
+../Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.cpp:168:1:MessageHandling::MessageHandling()	16	static
+../Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.cpp:179:1:MessageHandling::MessageHandling(int*)	16	static
+../Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.cpp:191:1:MessageHandling::MessageHandling(VisibilityStatus, VisibilityStatus, VisibilityStatus)	16	static
+../Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.cpp:206:1:MessageHandling::MessageHandling(int*, VisibilityStatus, VisibilityStatus, VisibilityStatus)	24	static
+../Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.cpp:224:1:MessageHandling::MessageHandling(const MessageHandling&)	16	static
+../Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.cpp:237:1:MessageHandling::~MessageHandling()	16	static
+../Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.cpp:249:18:MessageHandling& MessageHandling::operator=(const MessageHandling&)	16	static
+../Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.cpp:267:13:returnValue MessageHandling::throwError(returnValue, const char*, const char*, const char*, long unsigned int, VisibilityStatus)	40	static
+../Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.cpp:291:13:returnValue MessageHandling::throwWarning(returnValue, const char*, const char*, const char*, long unsigned int, VisibilityStatus)	40	static
+../Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.cpp:315:13:returnValue MessageHandling::throwInfo(returnValue, const char*, const char*, const char*, long unsigned int, VisibilityStatus)	40	static
+../Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.cpp:339:13:returnValue MessageHandling::reset()	16	static
+../Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.cpp:355:13:returnValue MessageHandling::listAllMessages()	16	static
+../Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.cpp:475:13:returnValue MessageHandling::throwMessage(returnValue, const char*, const char*, const char*, long unsigned int, VisibilityStatus, const char*)	32	static
+../Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.cpp:515:18:MessageHandling* getGlobalMessageHandler()	4	static
+../Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.cpp:520:13:static const char* MessageHandling::getErrorString(int)	16	static
+../Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.cpp:523:1:void __static_initialization_and_destruction_0()	16	static
+../Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.cpp:523:1:void __static_initialization_and_destruction_1()	8	static
+../Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.cpp:523:1:cpp)	8	static
+../Core/Src/control_update_MPC/qpoases/SRC/MessageHandling.cpp:523:1:cpp)	8	static

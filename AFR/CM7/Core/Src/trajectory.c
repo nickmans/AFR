@@ -142,44 +142,6 @@ void plan_local_trajectory(
 
 #define WAYPOINT_CLOSE 0.15f
 
-void generate_fake_lidar(float state[3], Point2D** points_out, int* count_out) {
-    static Point2D lidar_points[NUM_LIDAR_POINTS];
-    int valid = 0;
-
-    float rx  = state[0];   // robot x
-    float ry  = state[1];   // robot y (unused for height gating)
-    float yaw = state[2];
-
-    for (int i = 0; i < NUM_LIDAR_POINTS; i++) {
-        // beam angle in robot frame
-        float a  = -PI + 2.0f*PI*i/NUM_LIDAR_POINTS;
-        // absolute bearing in world frame
-        float bw = yaw + a;
-        float c  = cosf(bw);
-        if (fabsf(c) < 1e-6f)
-            continue;        // parallel to wall, no intersection
-
-        // distance along beam to global x = 2.0
-        float r = (2.0f - rx) / c;
-        if (r < 0.0f)
-            continue;        // wall is behind the robot
-
-        // world‐frame y of the hit
-        float wy = ry + r * sinf(bw);
-        // only keep if within -1 ≤ y ≤ +1 (global)
-        if (wy < -1.0f || wy > 1.0f)
-            continue;
-
-        // back‐project into robot‐frame for your costmap pipeline
-        lidar_points[valid].x = r * cosf(a);
-        lidar_points[valid].y = r * sinf(a);
-        valid++;
-    }
-
-    *points_out = lidar_points;
-    *count_out  = valid;
-}
-
 int near_waypoint(float x, float y)
 {
 	if (waypoint_count == 0) return 1;
@@ -267,7 +229,8 @@ void trajectory(const real_t ax0[4])
     float pos[3] = {ax0[0],ax0[1],ax0[2]};
     near_waypoint(pos[0], pos[1]);
     Point2D* lidar_pts; int cnt;
-    generate_fake_lidar(pos, &lidar_pts, &cnt);
+    lidar_pts = NULL;
+    cnt = 0;                 // <-- no points
 
     uint8_t occ_map[MAX_MAP_SIZE_CELLS][MAX_MAP_SIZE_CELLS];
 
@@ -394,6 +357,17 @@ void plan_local_trajectory(
     int wp_count,                     // total waypoints remaining
     const uint8_t occ_map[][MAX_NODES]
 ) {
+    // --- Early exit: no waypoints left → hold pose, v = 0 ---
+    if (wp_count <= 0) {
+        for (int k = 0; k < N; ++k) {
+            Xref[k].x   = state[0];
+            Xref[k].y   = state[1];
+            Xref[k].yaw = state[2];
+            Xref[k].v   = 0.0f;              // stop
+        }
+        return;
+    }
+
     // 1) Build a combined grid‐cell path for up to 3 waypoints
     Node   full_cells[MAX_PATH_POINTS];
     int    full_len = 0;
@@ -498,7 +472,7 @@ void plan_local_trajectory(
             Xref[k].x = state[0];
             Xref[k].y = state[1];
             Xref[k].yaw = state[2];
-            Xref[k].v = v_des;
+            Xref[k].v = 0.0f;
         }
     } else {
         // repeat last point

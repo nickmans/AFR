@@ -21,4 +21,13 @@ typedef struct {
 #define SHARED_MEM_BASE  ((uintptr_t)0x30020000U)
 #define SHARED_MEM       ((volatile SharedMem_t*)SHARED_MEM_BASE)
 
+typedef struct {
+    float   encoders[4];       // 4 × 4 B = 16 B
+    int		flagencoders;				// 4 B
+} Shared2Mem_t;
+
+// The mailbox lives at 0x3002_0100
+#define SHARED2_MEM_BASE  ((uintptr_t)0x30020100U)
+#define SHARED2_MEM       ((volatile Shared2Mem_t*)SHARED2_MEM_BASE)
+
 #endif
