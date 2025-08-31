@@ -22,6 +22,7 @@
 #define REG_GYR_DATA_X_LSB   0x14  // X LSB, X MSB at 0x15
 #define REG_GYR_DATA_Y_LSB   0x16  // Y LSB, Y MSB at 0x17
 #define REG_GYR_DATA_Z_LSB   0x18  // Z LSB, Z MSB at 0x19
+#define REG_UNIT_SEL 0x3B
 
 extern I2C_HandleTypeDef hi2c2;          // from i2c.c
 
@@ -59,6 +60,17 @@ void bno055_CONFIG(void)
 }
 void bno055_NDOF(void)
 {
+    // Must be in CONFIG mode to change some settings reliably
+    bno055_write(REG_OPR_MODE, MODE_CONFIG);
+    HAL_Delay(25);
+
+    // Ensure page 0
+    bno055_write(REG_PAGE_ID, 0x00);
+
+    // 0b00000000: ACC=m/s^2, GYR=dps, EUL=degrees, TEMP=°C
+    bno055_write(REG_UNIT_SEL, 0x00);
+
+    // Back to fusion mode
     bno055_write(REG_OPR_MODE, MODE_NDOF);
     HAL_Delay(20);
 }
@@ -98,7 +110,7 @@ bool BNO055_ReadEuler(double *heading, double *roll, double *pitch) {
     *pitch   = raw_p / 16.0;
     return true;
 }
-static double mgtom = 0.00980665;
+
 /**
  * @param  ax  X-axis lin. accel [m/s²]
  * @param  ay  Y-axis lin. accel [m/s²]
@@ -114,9 +126,9 @@ bool BNO055_ReadLinAccel_D(double *ax, double *ay, double *az) {
     int16_t rz = (int16_t)(buf[5] << 8 | buf[4]);
 
     // 1 LSB = 1 m/s²
-    *ax = (double)rx*mgtom;
-    *ay = (double)ry*mgtom;
-    *az = (double)rz*mgtom;
+    *ax = (double)rx;
+    *ay = (double)ry;
+    *az = (double)rz;
     return true;
 }
 // Registers for raw accel (LSB = 1 mg)

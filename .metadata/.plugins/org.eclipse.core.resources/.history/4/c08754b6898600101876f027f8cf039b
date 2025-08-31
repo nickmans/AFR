@@ -99,6 +99,15 @@ bool BNO055_ReadEuler(double *heading, double *roll, double *pitch) {
     return true;
 }
 static double mgtom = 0.00980665;
+static bool bno055_read_unit_sel(uint8_t *unit_sel) {
+    uint8_t page = 0;
+    if (bno055_read(REG_PAGE_ID, &page, 1) != HAL_OK) return false;
+    if (page != 0) {
+        if (bno055_write(REG_PAGE_ID, 0x00) != HAL_OK) return false;
+    }
+    return bno055_read(REG_UNIT_SEL, unit_sel, 1) == HAL_OK;
+}
+
 /**
  * @param  ax  X-axis lin. accel [m/s²]
  * @param  ay  Y-axis lin. accel [m/s²]
@@ -106,17 +115,27 @@ static double mgtom = 0.00980665;
  */
 bool BNO055_ReadLinAccel_D(double *ax, double *ay, double *az) {
     uint8_t buf[6];
-    if (bno055_read(REG_LIA_DATA_X_LSB, buf, 6) != HAL_OK) {
-        return false;
-    }
+    if (bno055_read(REG_LIA_DATA_X_LSB, buf, 6) != HAL_OK) return false;
+
     int16_t rx = (int16_t)(buf[1] << 8 | buf[0]);
     int16_t ry = (int16_t)(buf[3] << 8 | buf[2]);
     int16_t rz = (int16_t)(buf[5] << 8 | buf[4]);
 
-    // 1 LSB = 1 m/s²
-    *ax = (double)rx*mgtom;
-    *ay = (double)ry*mgtom;
-    *az = (double)rz*mgtom;
+    uint8_t unit_sel = 0;
+    if (!bno055_read_unit_sel(&unit_sel)) return false;
+
+    // UNIT_SEL bit0 controls accel/LIA/GRV units:
+    // 0 = m/s^2 (1 LSB = 1 m/s^2), 1 = mg (1 LSB = 1 mg)
+    if (unit_sel & 0x01) {
+        const double mg2ms2 = 0.001 * 9.80665;
+        *ax = (double)rx * mg2ms2;
+        *ay = (double)ry * mg2ms2;
+        *az = (double)rz * mg2ms2;
+    } else {
+        *ax = (double)rx;
+        *ay = (double)ry;
+        *az = (double)rz;
+    }
     return true;
 }
 // Registers for raw accel (LSB = 1 mg)

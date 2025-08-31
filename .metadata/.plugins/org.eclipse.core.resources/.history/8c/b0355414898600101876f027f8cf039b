@@ -98,7 +98,7 @@ bool BNO055_ReadEuler(double *heading, double *roll, double *pitch) {
     *pitch   = raw_p / 16.0;
     return true;
 }
-static double mgtom = 0.00980665;
+
 /**
  * @param  ax  X-axis lin. accel [m/s²]
  * @param  ay  Y-axis lin. accel [m/s²]
@@ -114,9 +114,9 @@ bool BNO055_ReadLinAccel_D(double *ax, double *ay, double *az) {
     int16_t rz = (int16_t)(buf[5] << 8 | buf[4]);
 
     // 1 LSB = 1 m/s²
-    *ax = (double)rx*mgtom;
-    *ay = (double)ry*mgtom;
-    *az = (double)rz*mgtom;
+    *ax = (double)rx;
+    *ay = (double)ry;
+    *az = (double)rz;
     return true;
 }
 // Registers for raw accel (LSB = 1 mg)

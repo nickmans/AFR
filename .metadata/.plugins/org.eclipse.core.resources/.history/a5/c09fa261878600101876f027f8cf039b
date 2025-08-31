@@ -254,7 +254,7 @@ Error_Handler();
 	acado_initializeSolver();
 	init_controller_weights();
 	filter_init();
-	//bno055_CONFIG();
+	bno055_CONFIG();
 	bno055_NDOF();
 	BNO055_ApplyAllCalibration();
   /* USER CODE END 2 */
@@ -609,7 +609,7 @@ void CONTROL(void *argument)
 		BNO055_ReadLinAccel_D(&ax, &ay, &az);
 		BNO055_ReadYawRate(&yawrate);
 		//ax = ax - g*sin(pitch*pion180);
-		printf("%.3f\n",ax); /*
+		printf("%.3f %.3f %.3f %.3f\n",ax,az,pitch,roll); /*
 		measurements[0] = heading;
 		measurements[1] = yawrate;
 		measurements[2] = ax;
