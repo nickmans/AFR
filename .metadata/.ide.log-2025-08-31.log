@@ -1,0 +1,212 @@
+2025-08-31 17:10:23,028 [INFO] Gpio:278 - dependency for GPIO [ADC1, ADC3, I2C2, TIM1, UART4, UART5, USART2]
+2025-08-31 17:26:49,610 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 778734128 Bytes (1073741824)
+2025-08-31 17:26:49,781 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 810717744 Bytes (1073741824)
+2025-08-31 17:26:50,355 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 867863088 Bytes (1073741824)
+2025-08-31 17:26:51,540 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: FREERTOS
+2025-08-31 17:26:51,540 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: FREERTOS
+2025-08-31 17:26:51,540 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: RCC
+2025-08-31 17:26:51,540 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: I2C
+2025-08-31 17:26:51,540 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: USART
+2025-08-31 17:26:51,540 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: MEMORYMAP
+2025-08-31 17:26:51,540 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: TIM6_7H7
+2025-08-31 17:26:51,540 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: TIM1_8H7
+2025-08-31 17:26:51,540 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: SYS
+2025-08-31 17:26:51,540 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: ADC
+2025-08-31 17:26:51,540 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: ADC
+2025-08-31 17:26:51,540 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: DMA
+2025-08-31 17:26:51,541 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: NVIC2
+2025-08-31 17:26:51,541 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: UART
+2025-08-31 17:26:51,541 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: UART
+2025-08-31 17:26:51,542 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: GPIO
+2025-08-31 17:26:51,542 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: SYS_M4
+2025-08-31 17:26:51,542 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: NUCLEO-H755ZI-Q
+2025-08-31 17:26:51,542 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: NVIC1
+2025-08-31 17:26:51,543 [INFO] CodeGenerator:892 - code generatio: config db path: C:\ST\STM32CubeIDE_1.19.0\STM32CubeIDE\plugins\com.st.stm32cube.common.mx_6.15.0.202507011659\\db\
+2025-08-31 17:26:51,551 [ERROR] IocParser:95 - Exception caught: Cannot invoke "java.lang.CharSequence.length()" because "this.text" is null
+2025-08-31 17:26:51,556 [INFO] Argument:325 - Argument : hdmavalue: null
+2025-08-31 17:26:51,556 [INFO] Argument:327 - 	 sub Args: 
+2025-08-31 17:26:51,556 [INFO] Argument:325 - Argument : Instancevalue: DMA1_Stream0
+2025-08-31 17:26:51,556 [INFO] Argument:335 - Argument : Instancevalue: DMA1_Stream0
+2025-08-31 17:26:51,556 [INFO] Argument:325 - Argument : Initvalue: null
+2025-08-31 17:26:51,556 [INFO] Argument:327 - 	 sub Args: 
+2025-08-31 17:26:51,557 [INFO] Argument:325 - Argument : Requestvalue: DMA_REQUEST_ADC3
+2025-08-31 17:26:51,557 [INFO] Argument:335 - Argument : Requestvalue: DMA_REQUEST_ADC3
+2025-08-31 17:26:51,557 [INFO] Argument:325 - Argument : Directionvalue: DMA_PERIPH_TO_MEMORY
+2025-08-31 17:26:51,557 [INFO] Argument:335 - Argument : Directionvalue: DMA_PERIPH_TO_MEMORY
+2025-08-31 17:26:51,557 [INFO] Argument:325 - Argument : PeriphIncvalue: DMA_PINC_DISABLE
+2025-08-31 17:26:51,557 [INFO] Argument:335 - Argument : PeriphIncvalue: DMA_PINC_DISABLE
+2025-08-31 17:26:51,557 [INFO] Argument:325 - Argument : MemIncvalue: DMA_MINC_ENABLE
+2025-08-31 17:26:51,557 [INFO] Argument:335 - Argument : MemIncvalue: DMA_MINC_ENABLE
+2025-08-31 17:26:51,557 [INFO] Argument:325 - Argument : PeriphDataAlignmentvalue: DMA_PDATAALIGN_HALFWORD
+2025-08-31 17:26:51,557 [INFO] Argument:335 - Argument : PeriphDataAlignmentvalue: DMA_PDATAALIGN_HALFWORD
+2025-08-31 17:26:51,557 [INFO] Argument:325 - Argument : MemDataAlignmentvalue: DMA_MDATAALIGN_HALFWORD
+2025-08-31 17:26:51,557 [INFO] Argument:335 - Argument : MemDataAlignmentvalue: DMA_MDATAALIGN_HALFWORD
+2025-08-31 17:26:51,558 [INFO] Argument:325 - Argument : Modevalue: DMA_CIRCULAR
+2025-08-31 17:26:51,558 [INFO] Argument:335 - Argument : Modevalue: DMA_CIRCULAR
+2025-08-31 17:26:51,558 [INFO] Argument:325 - Argument : Priorityvalue: DMA_PRIORITY_LOW
+2025-08-31 17:26:51,558 [INFO] Argument:335 - Argument : Priorityvalue: DMA_PRIORITY_LOW
+2025-08-31 17:26:51,558 [INFO] Argument:325 - Argument : FIFOModevalue: DMA_FIFOMODE_DISABLE
+2025-08-31 17:26:51,558 [INFO] Argument:335 - Argument : FIFOModevalue: DMA_FIFOMODE_DISABLE
+2025-08-31 17:26:51,558 [INFO] Argument:325 - Argument : FIFOThresholdvalue: null
+2025-08-31 17:26:51,558 [INFO] Argument:335 - Argument : FIFOThresholdvalue: null
+2025-08-31 17:26:51,558 [INFO] Argument:325 - Argument : MemBurstvalue: null
+2025-08-31 17:26:51,558 [INFO] Argument:335 - Argument : MemBurstvalue: null
+2025-08-31 17:26:51,558 [INFO] Argument:325 - Argument : PeriphBurstvalue: null
+2025-08-31 17:26:51,558 [INFO] Argument:335 - Argument : PeriphBurstvalue: null
+2025-08-31 17:26:51,559 [INFO] Argument:325 - Argument : Lockvalue: null
+2025-08-31 17:26:51,559 [INFO] Argument:335 - Argument : Lockvalue: null
+2025-08-31 17:26:51,559 [INFO] Argument:325 - Argument : Statevalue: null
+2025-08-31 17:26:51,559 [INFO] Argument:335 - Argument : Statevalue: null
+2025-08-31 17:26:51,559 [INFO] Argument:325 - Argument : Parentvalue: null
+2025-08-31 17:26:51,559 [INFO] Argument:335 - Argument : Parentvalue: null
+2025-08-31 17:26:51,559 [INFO] Argument:325 - Argument : XferCpltCallbackvalue: null
+2025-08-31 17:26:51,559 [INFO] Argument:335 - Argument : XferCpltCallbackvalue: null
+2025-08-31 17:26:51,559 [INFO] Argument:325 - Argument : XferHalfCpltCallbackvalue: null
+2025-08-31 17:26:51,560 [INFO] Argument:335 - Argument : XferHalfCpltCallbackvalue: null
+2025-08-31 17:26:51,560 [INFO] Argument:325 - Argument : XferM1CpltCallbackvalue: null
+2025-08-31 17:26:51,560 [INFO] Argument:335 - Argument : XferM1CpltCallbackvalue: null
+2025-08-31 17:26:51,560 [INFO] Argument:325 - Argument : XferM1HalfCpltCallbackvalue: null
+2025-08-31 17:26:51,560 [INFO] Argument:335 - Argument : XferM1HalfCpltCallbackvalue: null
+2025-08-31 17:26:51,560 [INFO] Argument:325 - Argument : XferErrorCallbackvalue: null
+2025-08-31 17:26:51,560 [INFO] Argument:335 - Argument : XferErrorCallbackvalue: null
+2025-08-31 17:26:51,560 [INFO] Argument:325 - Argument : XferAbortCallbackvalue: null
+2025-08-31 17:26:51,560 [INFO] Argument:335 - Argument : XferAbortCallbackvalue: null
+2025-08-31 17:26:51,560 [INFO] Argument:325 - Argument : ErrorCodevalue: null
+2025-08-31 17:26:51,560 [INFO] Argument:335 - Argument : ErrorCodevalue: null
+2025-08-31 17:26:51,560 [INFO] Argument:325 - Argument : StreamBaseAddressvalue: null
+2025-08-31 17:26:51,560 [INFO] Argument:335 - Argument : StreamBaseAddressvalue: null
+2025-08-31 17:26:51,560 [INFO] Argument:325 - Argument : StreamIndexvalue: null
+2025-08-31 17:26:51,561 [INFO] Argument:335 - Argument : StreamIndexvalue: null
+2025-08-31 17:26:51,636 [ERROR] CodeGenerator:10662 - The current RTOS owner has not been found in the list of IPs
+2025-08-31 17:26:51,636 [ERROR] CodeGenerator:10662 - The current RTOS owner has not been found in the list of IPs
+2025-08-31 17:26:51,636 [INFO] CodeGenerator:1619 - *******************Project context M7 selected
+2025-08-31 17:26:51,689 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\MXTmpFiles\license.tmp_save
+2025-08-31 17:26:51,923 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\MXTmpFiles\license.tmp
+2025-08-31 17:26:51,979 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\gpio.tmp_save
+2025-08-31 17:26:52,079 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\gpio.tmp
+2025-08-31 17:26:52,251 [WARN] IPConfigManager:103 - WARNING: Missing Config File for MEMORYMAP ip!!
+2025-08-31 17:26:52,324 [WARN] IPConfigManager:103 - WARNING: Missing Config File for NVIC1 ip!!
+2025-08-31 17:26:52,441 [ERROR] CodeGenerator:10662 - The current RTOS owner has not been found in the list of IPs
+2025-08-31 17:26:52,448 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\cortex.tmp_save
+2025-08-31 17:26:52,502 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\cortex.tmp
+2025-08-31 17:26:52,524 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\dma.tmp_save
+2025-08-31 17:26:52,570 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\dma.tmp
+2025-08-31 17:26:52,575 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\dma_GV.tmp_save
+2025-08-31 17:26:52,619 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\dma_GV.tmp
+2025-08-31 17:26:52,642 [INFO] Middleware:1452 - No code input for Bsp Dependency
+2025-08-31 17:26:52,649 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\rtos_inc.tmp_save
+2025-08-31 17:26:52,693 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\rtos_inc.tmp
+2025-08-31 17:26:52,698 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\rtos_kernelInit.tmp_save
+2025-08-31 17:26:52,740 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\rtos_kernelInit.tmp
+2025-08-31 17:26:52,745 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\rtos_kernelStart.tmp_save
+2025-08-31 17:26:52,784 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\rtos_kernelStart.tmp
+2025-08-31 17:26:52,789 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\rtos_typedefs.tmp_save
+2025-08-31 17:26:52,830 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\rtos_typedefs.tmp
+2025-08-31 17:26:52,835 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\rtos_vars.tmp_save
+2025-08-31 17:26:52,879 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\rtos_vars.tmp
+2025-08-31 17:26:52,884 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\rtos_pfp.tmp_save
+2025-08-31 17:26:52,925 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\rtos_pfp.tmp
+2025-08-31 17:26:52,931 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\rtos_obj_creat.tmp_save
+2025-08-31 17:26:52,970 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\rtos_obj_creat.tmp
+2025-08-31 17:26:52,974 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\rtos_default_thread.tmp_save
+2025-08-31 17:26:53,017 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\rtos_default_thread.tmp
+2025-08-31 17:26:53,022 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\rtos_threads.tmp_save
+2025-08-31 17:26:53,062 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\rtos_threads.tmp
+2025-08-31 17:26:53,068 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\Core\Inc\FreeRTOSConfig.h_save
+2025-08-31 17:26:53,122 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\Core\Inc\FreeRTOSConfig.h
+2025-08-31 17:26:53,128 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\Core\Src\freertos.c_save
+2025-08-31 17:26:53,181 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\Core\Src\freertos.c
+2025-08-31 17:26:53,220 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\Core\Inc\stm32h7xx_nucleo_conf.h_save
+2025-08-31 17:26:53,263 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\Core\Inc\stm32h7xx_nucleo_conf.h
+2025-08-31 17:26:53,268 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\bsp_inc.tmp_save
+2025-08-31 17:26:53,311 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\bsp_inc.tmp
+2025-08-31 17:26:53,316 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\bsp_common_vars.tmp_save
+2025-08-31 17:26:53,354 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\bsp_common_vars.tmp
+2025-08-31 17:26:53,359 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\bsp_common_init.tmp_save
+2025-08-31 17:26:53,400 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\bsp_common_init.tmp
+2025-08-31 17:26:53,404 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\bsp_common_demo_before_while.tmp_save
+2025-08-31 17:26:53,445 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\bsp_common_demo_before_while.tmp
+2025-08-31 17:26:53,450 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\bsp_common_demo_inside_while.tmp_save
+2025-08-31 17:26:53,488 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\bsp_common_demo_inside_while.tmp
+2025-08-31 17:26:53,492 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\bsp_common_demo_fct.tmp_save
+2025-08-31 17:26:53,531 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\bsp_common_demo_fct.tmp
+2025-08-31 17:26:53,553 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\Core\Src\stm32h7xx_it.c_save
+2025-08-31 17:26:53,660 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\Core\Src\stm32h7xx_it.c
+2025-08-31 17:26:53,667 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\Core\Inc\stm32h7xx_it.h_save
+2025-08-31 17:26:53,714 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\Core\Inc\stm32h7xx_it.h
+2025-08-31 17:26:53,795 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\Core\Src\stm32h7xx_hal_msp.c_save
+2025-08-31 17:26:53,868 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\Core\Src\stm32h7xx_hal_msp.c
+2025-08-31 17:26:53,873 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\system.tmp_save
+2025-08-31 17:26:53,918 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\MXTmpFiles\system.tmp
+2025-08-31 17:26:53,931 [INFO] CodeEngine:321 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\Core\Inc\stm32h7xx_hal_conf.h_save
+2025-08-31 17:26:53,980 [INFO] CodeEngine:345 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\Core\Inc\stm32h7xx_hal_conf.h
+2025-08-31 17:26:54,009 [WARN] IPConfigManager:3811 - IP not found : NVIC
+2025-08-31 17:26:54,011 [WARN] CodeGenerator:4259 - IP not found : null
+2025-08-31 17:26:54,020 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\Core\Inc\main.h_save
+2025-08-31 17:26:54,102 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\Core\Inc\main.h
+2025-08-31 17:26:54,110 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\Core\Src\main.c_save
+2025-08-31 17:26:54,208 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\Core\Src\main.c
+2025-08-31 17:26:54,248 [INFO] CodeGenerator:1619 - *******************Project context M4 selected
+2025-08-31 17:26:54,294 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\MXTmpFiles\license.tmp_save
+2025-08-31 17:26:54,339 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\MXTmpFiles\license.tmp
+2025-08-31 17:26:54,390 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\gpio.tmp_save
+2025-08-31 17:26:54,432 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\gpio.tmp
+2025-08-31 17:26:54,666 [WARN] IPConfigManager:103 - WARNING: Missing Config File for NVIC2 ip!!
+2025-08-31 17:26:54,904 [ERROR] CodeGenerator:10662 - The current RTOS owner has not been found in the list of IPs
+2025-08-31 17:26:54,911 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\cortex.tmp_save
+2025-08-31 17:26:54,952 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\cortex.tmp
+2025-08-31 17:26:54,981 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\dma.tmp_save
+2025-08-31 17:26:55,023 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\dma.tmp
+2025-08-31 17:26:55,028 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\dma_GV.tmp_save
+2025-08-31 17:26:55,067 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\dma_GV.tmp
+2025-08-31 17:26:55,085 [INFO] Middleware:1452 - No code input for Bsp Dependency
+2025-08-31 17:26:55,092 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\rtos_inc.tmp_save
+2025-08-31 17:26:55,129 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\rtos_inc.tmp
+2025-08-31 17:26:55,133 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\rtos_kernelInit.tmp_save
+2025-08-31 17:26:55,172 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\rtos_kernelInit.tmp
+2025-08-31 17:26:55,176 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\rtos_kernelStart.tmp_save
+2025-08-31 17:26:55,214 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\rtos_kernelStart.tmp
+2025-08-31 17:26:55,218 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\rtos_typedefs.tmp_save
+2025-08-31 17:26:55,256 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\rtos_typedefs.tmp
+2025-08-31 17:26:55,260 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\rtos_vars.tmp_save
+2025-08-31 17:26:55,298 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\rtos_vars.tmp
+2025-08-31 17:26:55,302 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\rtos_pfp.tmp_save
+2025-08-31 17:26:55,340 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\rtos_pfp.tmp
+2025-08-31 17:26:55,345 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\rtos_obj_creat.tmp_save
+2025-08-31 17:26:55,383 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\rtos_obj_creat.tmp
+2025-08-31 17:26:55,388 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\rtos_default_thread.tmp_save
+2025-08-31 17:26:55,426 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\rtos_default_thread.tmp
+2025-08-31 17:26:55,430 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\rtos_threads.tmp_save
+2025-08-31 17:26:55,469 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\rtos_threads.tmp
+2025-08-31 17:26:55,475 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\Core\Inc\FreeRTOSConfig.h_save
+2025-08-31 17:26:55,525 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\Core\Inc\FreeRTOSConfig.h
+2025-08-31 17:26:55,531 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\Core\Src\freertos.c_save
+2025-08-31 17:26:55,578 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\Core\Src\freertos.c
+2025-08-31 17:26:55,616 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\Core\Inc\stm32h7xx_nucleo_conf.h_save
+2025-08-31 17:26:55,657 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\Core\Inc\stm32h7xx_nucleo_conf.h
+2025-08-31 17:26:55,661 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\bsp_inc.tmp_save
+2025-08-31 17:26:55,700 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\bsp_inc.tmp
+2025-08-31 17:26:55,722 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\Core\Src\stm32h7xx_it.c_save
+2025-08-31 17:26:55,772 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\Core\Src\stm32h7xx_it.c
+2025-08-31 17:26:55,778 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\Core\Inc\stm32h7xx_it.h_save
+2025-08-31 17:26:55,820 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\Core\Inc\stm32h7xx_it.h
+2025-08-31 17:26:55,935 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\Core\Src\stm32h7xx_hal_msp.c_save
+2025-08-31 17:26:55,998 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\Core\Src\stm32h7xx_hal_msp.c
+2025-08-31 17:26:56,002 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\system.tmp_save
+2025-08-31 17:26:56,040 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\MXTmpFiles\system.tmp
+2025-08-31 17:26:56,050 [INFO] CodeEngine:321 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\Core\Inc\stm32h7xx_hal_conf.h_save
+2025-08-31 17:26:56,094 [INFO] CodeEngine:345 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\Core\Inc\stm32h7xx_hal_conf.h
+2025-08-31 17:26:56,115 [WARN] IPConfigManager:3811 - IP not found : NVIC
+2025-08-31 17:26:56,115 [WARN] IPConfigManager:3811 - IP not found : TIM
+2025-08-31 17:26:56,116 [WARN] CodeGenerator:4259 - IP not found : null
+2025-08-31 17:26:56,116 [WARN] CodeGenerator:4259 - IP not found : null
+2025-08-31 17:26:56,123 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\Core\Inc\main.h_save
+2025-08-31 17:26:56,192 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\Core\Inc\main.h
+2025-08-31 17:26:56,198 [INFO] CodeEngine:265 - oldGeneratedFile, C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\Core\Src\main.c_save
+2025-08-31 17:26:56,331 [INFO] CodeEngine:289 - Generated code: C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM4\Core\Src\main.c
+2025-08-31 17:26:56,787 [INFO] ProjectBuilder:3606 - Time for Copy HAL[1] : 294mS.
+2025-08-31 17:26:56,802 [INFO] ProjectBuilder:5216 - Project Generator version: 4.7.0-B52
+2025-08-31 17:26:56,858 [INFO] ConfigFileManager:1595 - The Die is : DIE450
+2025-08-31 17:27:02,494 [INFO] ProjectBuilder:5496 - Time for Generating toolchain IDE Files: 5692mS.
+2025-08-31 17:27:02,495 [INFO] ProjectBuilder:3463 - Time for Copy CMSIS : 0mS.
+2025-08-31 17:27:02,501 [INFO] ProjectBuilder:3463 - Time for Copy CMSIS : 0mS.

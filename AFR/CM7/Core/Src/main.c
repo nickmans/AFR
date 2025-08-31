@@ -26,6 +26,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "trajectory.h"
+#include "sensor.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -253,6 +254,9 @@ Error_Handler();
 	acado_initializeSolver();
 	init_controller_weights();
 	filter_init();
+	bno055_CONFIG();
+	bno055_NDOF();
+	BNO055_ApplyAllCalibration();
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -574,9 +578,10 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 static double measurements[7] = {0, 0, 0, 0, 0, 0, 0};
-static float SPEEDS[4]  = {0, 0, 0, 0};
-static int COUNTER = 0;
-static int ccc = 0;
+double heading, roll, pitch, ax, ay, az, yawrate;
+const double g = 9.80665;
+const double pion180 = 0.01745329251;
+
 void CONTROL(void *argument)
 {
     const TickType_t period = pdMS_TO_TICKS(100);  // 100 ms
@@ -599,7 +604,15 @@ void CONTROL(void *argument)
 			__DSB();
 		}
 
-		// yaw			   yawrate 		    accel_x			 encoder robot v_x
+		BNO055_ReadEuler(&heading, &pitch, &roll);
+		ComputeLinearAccel(&ax, &ay, &az);
+		BNO055_ReadYawRate(&yawrate);
+		//ax = ax - g*sin(pitch*pion180);
+		printf("%.3f %.3f %.3f %.3f\n",ax,az,pitch,roll); /*
+		measurements[0] = heading;
+		measurements[1] = yawrate;
+		measurements[2] = ax;
+						// yaw			   yawrate 		    accel_x			 encoder robot v_x
 		double z[4] = {measurements[0], measurements[1], measurements[2], rw*(measurements[3]+measurements[4]+measurements[5]+measurements[6])/4};
 
 		double xhat[3] = {acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[3]};
@@ -623,7 +636,7 @@ void CONTROL(void *argument)
 		xreffer(acadoVariables.x0[0],acadoVariables.x0[1], acadoVariables.y, acadoVariables.yN);
 
 		controller_loop();
-
+		*/
 		SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
 		// wait until flagm7 is cleared by the other core
 		while (SHARED_MEM->flagm7)
@@ -636,10 +649,10 @@ void CONTROL(void *argument)
 		if (!SHARED_MEM->flagm7)
 		{
 			BSP_LED_Toggle(LED_RED);
-			SHARED_MEM->control_u[0] = acadoVariables.u[0];
-			SHARED_MEM->control_u[1] = acadoVariables.u[2];
-			SHARED_MEM->control_u[2] = acadoVariables.u[1];
-			SHARED_MEM->control_u[3] = acadoVariables.u[3];
+			SHARED_MEM->control_u[0] = 0;//acadoVariables.u[0];
+			SHARED_MEM->control_u[1] = 0;//acadoVariables.u[2];
+			SHARED_MEM->control_u[2] = 0;//acadoVariables.u[1];
+			SHARED_MEM->control_u[3] = 0;//acadoVariables.u[3];
 			SHARED_MEM->flagm7 = 1;
 			SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
 			__DSB();
@@ -660,7 +673,6 @@ static void controller_loop(void)
 		acado_preparationStep();
 		status = acado_feedbackStep();
 		acado_shiftStates(2, 0, 0);     // shift by 1, fill last with copy, don't reset multipliers
-		//acado_shiftControls(0);        // shift controls by 1, fill last with copy of previous
 	}
     // send u[0..3] back in one line
     //char out[64];

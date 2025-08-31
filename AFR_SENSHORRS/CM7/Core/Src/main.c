@@ -165,7 +165,7 @@ Error_Handler();
   /* USER CODE BEGIN 2 */
  	  	  	  	  	  	  	  	  	  // ACCELEROMETER INIT
  /*
-	bno055_CONFIG();;
+	bno055_CONFIG();
 	bno055_NDOF();
 	BNO055_ApplyAllCalibration();
 */

@@ -40,10 +40,10 @@ CPP_DEPS :=
 SUBDIRS := \
 Common/Src \
 Core/Include \
+Core/Src \
 Core/Src/control_update_MPC \
 Core/Src/control_update_MPC/qpoases/SRC \
 Core/Src/control_update_MPC/qpoases/SRC/EXTRAS \
-Core/Src \
 Core/Startup \
 Core/ThreadSafe \
 Drivers/BSP/STM32H7xx_Nucleo \
