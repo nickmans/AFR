@@ -686,7 +686,7 @@ void init_controller_weights(void)
 {
     const float W_diag[12] = {
         1e4f, 1e4f, 1e-3f, 1e-1f,
-        3e-1f, 3e-1f, 3e-1f, 3e-1f,
+        1e-1f, 1e-1f, 1e-1f, 1e-1f,
         1e3f,  1e3f,  1e3f,  1e3f
     };
 
