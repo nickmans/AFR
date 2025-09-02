@@ -3,16 +3,20 @@
 	<item key="hasShownOverlayPopupBefore" value="true"/>
 	<item key="replaceBarOpen" value="false"/>
 	<list key="searchhistory">
-		<item value="sp_rpm"/>
-		<item value="RPM_FS"/>
-		<item value="HAL_TIM_PWM_Start"/>
-		<item value="m_pi"/>
-		<item value="encoder_count"/>
-		<item value="flags"/>
-		<item value="waysend"/>
-		<item value="HSEM2_IRQn"/>
-		<item value="SHARED_MEM"/>
-		<item value="0.856"/>
-		<item value="v_des"/>
+		<item value="opr"/>
+		<item value="heading"/>
+		<item value="BSP"/>
+		<item value="red"/>
+		<item value="RED"/>
+		<item value="GREEN"/>
+		<item value="bsp"/>
+		<item value="chosen_dir"/>
+		<item value="DB_RPM"/>
+		<item value="SHARED"/>
+		<item value="pi"/>
+		<item value="flagm7"/>
+		<item value="_gettimeofday"/>
+		<item value="uset"/>
+		<item value="NoW"/>
 	</list>
 </section>

@@ -150,7 +150,7 @@ void ComputeLinearAccel(double *ax_lin, double *ay_lin, double *az_lin)
     BNO055_ReadRawAccelMS2(&ax_raw, &ay_raw, &az_raw);
 
     // 2) read fused Euler angles (°)
-    BNO055_ReadEuler(&heading, &roll, &pitch);
+    BNO055_ReadEuler(&heading, &pitch, &roll);
 
     // 3) convert to radians
     double φ = roll  * (M_PI / 180.0);

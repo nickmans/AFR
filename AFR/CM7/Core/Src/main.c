@@ -578,7 +578,7 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 static double measurements[7] = {0, 0, 0, 0, 0, 0, 0};
-double heading, roll, pitch, ax, ay, az, yawrate;
+double heading, roll, pitch, ax, axx, ay, az, yawrate;
 const double g = 9.80665;
 const double pion180 = 0.01745329251;
 
@@ -605,11 +605,10 @@ void CONTROL(void *argument)
 		}
 
 		BNO055_ReadEuler(&heading, &pitch, &roll);
-		//ComputeLinearAccel(&ax, &ay, &az);
 		BNO055_ReadLinAccel_D(&ax, &ay, &az);
 		BNO055_ReadYawRate(&yawrate);
-		//ax = ax - g*sin(pitch*pion180);
-		printf("%.3f\n",ax); /*
+		printf("%.3f %.3f %.3f %.3f\n",measurements[3],measurements[4],measurements[5],measurements[6]);
+		/*
 		measurements[0] = heading;
 		measurements[1] = yawrate;
 		measurements[2] = ax;
