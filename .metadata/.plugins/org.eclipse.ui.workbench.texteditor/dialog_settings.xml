@@ -3,6 +3,8 @@
 	<item key="hasShownOverlayPopupBefore" value="true"/>
 	<item key="replaceBarOpen" value="false"/>
 	<list key="searchhistory">
+		<item value="plan"/>
+		<item value="BNO055_ReadEuler"/>
 		<item value="opr"/>
 		<item value="heading"/>
 		<item value="BSP"/>
@@ -16,7 +18,5 @@
 		<item value="pi"/>
 		<item value="flagm7"/>
 		<item value="_gettimeofday"/>
-		<item value="uset"/>
-		<item value="NoW"/>
 	</list>
 </section>

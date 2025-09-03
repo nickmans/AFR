@@ -12,7 +12,7 @@
 ../Core/Src/main.c:711:13:filter_init	1
 ../Core/Src/main.c:718:5:_gettimeofday	2
 ../Core/Src/main.c:735:13:waypoints_within_radius	1
-../Core/Src/main.c:741:6:wayreceive	17
+../Core/Src/main.c:741:6:wayreceive	16
 ../Core/Src/main.c:819:6:BSP_PB_Callback	7
 ../Core/Src/main.c:848:6:StartDefaultTask	1
 ../Core/Src/main.c:863:6:Error_Handler	1
