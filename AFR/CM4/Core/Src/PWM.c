@@ -85,6 +85,8 @@ void M7control(void *arg)
 }
 const double twopi60 = 0.10471975512;
 const double sixty2pi = 9.54929658551;
+static int cunter = 0;
+float vin = 0;
 void pwmgo(void *arg)
 {
 	TickType_t last = xTaskGetTickCount();
@@ -129,7 +131,16 @@ void pwmgo(void *arg)
 			SHARED2_MEM->encoders[1] = dirR_state*rpm[2]*twopi60;
 			SHARED2_MEM->encoders[3] = dirR_state*rpm[3]*twopi60;
 
+			HAL_ADC_Start(&hadc1);
+			HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+			uint16_t raw = HAL_ADC_GetValue(&hadc1);
+			HAL_ADC_Stop(&hadc1);
+			float vadc  = (raw * 3.19) / 65535.0f;      // volts at PA3
+			vin   = vadc * 5.7619048f;                 // your 47k/9.87k divider scale
+			SHARED2_MEM->BATT_V = vin;
+
 			SHARED2_MEM->flagencoders  = 1;
+			__DSB();
 		}
 
 		// 5c) choose side directions from pair setpoints (with deadband)
@@ -176,7 +187,7 @@ void pwmgo(void *arg)
 
 		    // PI on magnitude
 		    const double err      = sp_mag - y_meas;
-		    const double u_ff     = (sp_mag / RPM_FS[i]) * PWM_MAX;
+		    const double u_ff     = (sp_mag / (RPM_FS[i])*vin/11.8) * PWM_MAX;
 		    const double u_fb     = Kp*err + Ki*integ[i];
 		    const double duty_raw = u_ff + u_fb;
 

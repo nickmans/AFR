@@ -24,6 +24,8 @@ typedef struct {
 typedef struct {
     float   encoders[4];       // 4 × 4 B = 16 B
     int		flagencoders;				// 4 B
+    float 	BATT_V;
+    uint8_t _pad[8];       // pad to 32 B
 } Shared2Mem_t;
 
 // The mailbox lives at 0x3002_0100
