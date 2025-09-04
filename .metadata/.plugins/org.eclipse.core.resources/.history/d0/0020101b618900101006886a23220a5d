@@ -129,27 +129,6 @@ static void filter_init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-// Rotate (x,y) by angle theta radians
-static inline void rot(double theta,
-                       double x_in, double y_in,
-                       double *x_out, double *y_out)
-{
-    double c = cos(theta), s = sin(theta);
-    *x_out = c * x_in - s * y_in;
-    *y_out = s * x_in + c * y_in;
-}
-
-// Convert robot→world using pose (x,y,psi)
-static inline void robot_to_world(double xr, double yr,
-                                  double x, double y, double psi,
-                                  double *xw, double *yw)
-{
-    double rx, ry;
-    rot(psi, xr, yr, &rx, &ry);
-    *xw = rx + x;
-    *yw = ry + y;
-}
-
 #define NUM_VSAMPLES 10
 float averageVIN(float *VIN_ARRAY) {
     float sum = 0.0f;
@@ -655,7 +634,7 @@ void CONTROL(void *argument)
 		//printf("%.3f %.3f %.3f %.3f\n",measurements[3],measurements[4],measurements[5],measurements[6]);
 
 
-		measurements[0] = heading*pion180;
+		measurements[0] = heading;
 		measurements[1] = yawrate;
 		measurements[2] = ax;
 						// yaw			   yawrate 		    accel_x			 encoder robot v_x
@@ -801,12 +780,8 @@ void wayreceive(void *argument)
 			BSP_LED_Toggle(LED_GREEN);
 			//printf("_______\n");
 			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
-			double wx;
-			double wy;
-
-			robot_to_world(SHARED_MEM->tag_pos[0],SHARED_MEM->tag_pos[1],acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],&wx,&wy);
-
-
+			double wx = SHARED_MEM->tag_pos[0];
+			double wy = SHARED_MEM->tag_pos[1];
 			if (wait_5>5)
 			{
 				if (waypoint_count < MAX_WAYPOINTS)

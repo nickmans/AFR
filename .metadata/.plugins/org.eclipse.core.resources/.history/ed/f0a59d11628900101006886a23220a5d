@@ -39,8 +39,6 @@ static float x_min;
 static float y_min;
 
 Point2D waypoints[15];
-							// WHEN YOU GET BACK, SET UP SHIFTED WAYPOINT VARIABLES. CHANGE NAME OF GLOBAL WAYPOINTS. GOOD LUCK
-
 
 static const float hard_thresh2 = robot_radius * robot_radius;
 static const float soft_thresh2 = (robot_radius + 0.2f) * (robot_radius + 0.2f);

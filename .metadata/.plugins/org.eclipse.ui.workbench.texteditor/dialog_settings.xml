@@ -3,6 +3,9 @@
 	<item key="hasShownOverlayPopupBefore" value="true"/>
 	<item key="replaceBarOpen" value="false"/>
 	<list key="searchhistory">
+		<item value="RPM_FS"/>
+		<item value="duty"/>
+		<item value="vdda"/>
 		<item value="plan"/>
 		<item value="BNO055_ReadEuler"/>
 		<item value="opr"/>
@@ -15,8 +18,5 @@
 		<item value="chosen_dir"/>
 		<item value="DB_RPM"/>
 		<item value="SHARED"/>
-		<item value="pi"/>
-		<item value="flagm7"/>
-		<item value="_gettimeofday"/>
 	</list>
 </section>

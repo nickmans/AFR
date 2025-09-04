@@ -655,7 +655,7 @@ void CONTROL(void *argument)
 		//printf("%.3f %.3f %.3f %.3f\n",measurements[3],measurements[4],measurements[5],measurements[6]);
 
 
-		measurements[0] = heading*pion180;
+		measurements[0] = heading;
 		measurements[1] = yawrate;
 		measurements[2] = ax;
 						// yaw			   yawrate 		    accel_x			 encoder robot v_x
@@ -803,8 +803,7 @@ void wayreceive(void *argument)
 			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
 			double wx;
 			double wy;
-
-			robot_to_world(SHARED_MEM->tag_pos[0],SHARED_MEM->tag_pos[1],acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],&wx,&wy);
+			robot_to_world(SHARED_MEM->tag_pos[0],SHARED_MEM->tag_pos[1],acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],wx,wy);
 
 
 			if (wait_5>5)
