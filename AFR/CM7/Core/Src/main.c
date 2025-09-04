@@ -679,7 +679,7 @@ void CONTROL(void *argument)
 		if (step_counter++ % 10 == 0)			//every 10 steps new trajectory
 			trajectory(acadoVariables.x0);
 
-		xreffer(acadoVariables.x0[0],acadoVariables.x0[1], acadoVariables.y, acadoVariables.yN);
+		xreffer(acadoVariables.x0[0],acadoVariables.x0[1], acadoVariables.x0[2],acadoVariables.y, acadoVariables.yN);
 
 		controller_loop();
 
@@ -713,11 +713,11 @@ int _write(int file, char *ptr, int len) {
 }
 static void controller_loop(void)
 {
-	int iter = 0, status = 0;
+	int iter = 0;
 	for(iter = 0; iter < 2; ++iter)
 	{
 		acado_preparationStep();
-		status = acado_feedbackStep();
+		acado_feedbackStep();
 		acado_shiftStates(2, 0, 0);     // shift by 1, fill last with copy, don't reset multipliers
 	}
     // send u[0..3] back in one line
