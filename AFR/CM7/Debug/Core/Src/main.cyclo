@@ -10,7 +10,7 @@
 ../Core/Src/main.c:490:13:MX_USART2_UART_Init	5
 ../Core/Src/main.c:536:13:MX_DMA_Init	1
 ../Core/Src/main.c:549:13:MX_GPIO_Init	1
-../Core/Src/main.c:616:6:CONTROL	16
+../Core/Src/main.c:616:6:CONTROL	15
 ../Core/Src/main.c:710:5:_write	1
 ../Core/Src/main.c:714:13:controller_loop	2
 ../Core/Src/main.c:731:6:init_controller_weights	5
@@ -18,6 +18,6 @@
 ../Core/Src/main.c:764:5:_gettimeofday	2
 ../Core/Src/main.c:781:13:waypoints_within_radius	1
 ../Core/Src/main.c:787:6:wayreceive	16
-../Core/Src/main.c:868:6:BSP_PB_Callback	6
-../Core/Src/main.c:892:6:StartDefaultTask	1
-../Core/Src/main.c:907:6:Error_Handler	1
+../Core/Src/main.c:867:6:BSP_PB_Callback	6
+../Core/Src/main.c:891:6:StartDefaultTask	1
+../Core/Src/main.c:906:6:Error_Handler	1

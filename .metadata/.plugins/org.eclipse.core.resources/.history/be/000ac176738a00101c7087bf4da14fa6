@@ -37,6 +37,8 @@
 
 static float x_min;
 static float y_min;
+							// WHEN YOU GET BACK, SET UP SHIFTED WAYPOINT VARIABLES. CHANGE NAME OF GLOBAL WAYPOINTS. GOOD LUCK
+Point2D localwaypoints[15] = {0};
 
 static const float hard_thresh2 = robot_radius * robot_radius;
 static const float soft_thresh2 = (robot_radius + 0.2f) * (robot_radius + 0.2f);
@@ -162,13 +164,13 @@ int near_waypoint(float x, float y)					// NEED TO CHECK IF CLOSE TO NEXT COUPLE
 {
 	if (waypoint_count == 0) return 1;
 
-	float dx = fabsf(x - waypoints[0].x);
-	float dy = fabsf(y - waypoints[0].y);
+	float dx = fabsf(x - localwaypoints[0].x);
+	float dy = fabsf(y - localwaypoints[0].y);
 
 	if (dx < WAYPOINT_CLOSE && dy < WAYPOINT_CLOSE) {
 		// Shift all waypoints left
 		for (int i = 1; i < waypoint_count; i++) {
-			waypoints[i - 1] = waypoints[i];
+			localwaypoints[i - 1] = localwaypoints[i];
 		}
 		waypoint_count--;
 	}
@@ -207,7 +209,13 @@ static inline float heuristic(int r1, int c1, int r2, int c2)
          ? F*dx + (dy - dx)
          : F*dy + (dx - dy);
 }
-void xreffer(float x, float y, real_t ay[ACADO_N*ACADO_NY], real_t ayN[ACADO_NYN])
+static inline void shift_waypoints(float x,float y,float psi)
+{
+	// Convert world→robot using current pose (x,y,psi)
+	for (int i = 0; i < waypoint_count; i++)
+		world_to_robot(waypoints[i].x,waypoints[i].y,x,y,psi,&localwaypoints[i].x,&localwaypoints[i].y);
+}
+void xreffer(float x, float y, float psi, real_t ay[ACADO_N*ACADO_NY], real_t ayN[ACADO_NYN])
 {
 	prune_Xref_if_needed(x,y);
 	near_waypoint(x,y);
@@ -259,7 +267,7 @@ void trajectory(const real_t ax0[4])
     //printf("%.3f\n",ax0[0]);
     //uint32_t t0 = HAL_GetTick();
 
-    plan_local_trajectory(pos, waypoints, waypoint_count, occ_map);
+    plan_local_trajectory(pos, localwaypoints, waypoint_count, occ_map);
     //uint32_t t_elapsed = HAL_GetTick() - t0;
     //for (int i=0;i<15;++i)
 	//	printf("%.6f ",Xref[i].x);

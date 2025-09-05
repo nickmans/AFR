@@ -19,7 +19,7 @@ extern Point2D waypoints[15];
 extern uint8_t waypoint_count;
 
 void trajectory(const real_t ax0[4]);
-void xreffer(float x, float y, real_t ay[ACADO_N*ACADO_NY], real_t ayN[ACADO_NYN]);
+void xreffer(float x, float y,real_t ay[ACADO_N*ACADO_NY], real_t ayN[ACADO_NYN]);
 void ukf_update(double            xhat[3],
                 double            P[3][3],
                 const double      z[4],

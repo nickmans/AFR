@@ -631,7 +631,7 @@ void CONTROL(void *argument)
 			measurements[5] =  SHARED2_MEM->encoders[2];
 			measurements[6] =  SHARED2_MEM->encoders[3];
 
-			/*if (coonter<NUM_VSAMPLES)
+			if (coonter<NUM_VSAMPLES)
 			{
 				VIN[coonter] = SHARED2_MEM->BATT_V;
 				coonter++;
@@ -642,7 +642,7 @@ void CONTROL(void *argument)
 				printf("%.3f %.3f %.3f %.3f\n",measurements[3],measurements[4],measurements[5],measurements[6]);
 				printf("%.3f\n",BATTERY_VOLTAGE);
 				coonter = 0;
-			}*/
+			}
 
 			SHARED2_MEM->flagencoders = 0;
 			SCB_CleanDCache_by_Addr((uint32_t*)SHARED2_MEM, sizeof(*SHARED2_MEM));
@@ -675,16 +675,16 @@ void CONTROL(void *argument)
 		online_data(measurements,slips);
 
 		static int step_counter = 0;
+		//HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
 		if (step_counter++ % 10 == 0)			//every 10 steps new trajectory
 			trajectory(acadoVariables.x0);
 
-		xreffer(acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.y, acadoVariables.yN);		// Update existing trajectory
+		xreffer(acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.y, acadoVariables.yN);
 
 		controller_loop();
 
 		SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
-
-		// Wait to send new control inputs
+		// wait until flagm7 is cleared by the other core
 		while (SHARED_MEM->flagm7)
 		{
 		    SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
@@ -694,6 +694,7 @@ void CONTROL(void *argument)
 
 		if (!SHARED_MEM->flagm7)
 		{
+			BSP_LED_Toggle(LED_RED);
 			SHARED_MEM->control_u[0] = 0;//acadoVariables.u[0];
 			SHARED_MEM->control_u[1] = 0;//acadoVariables.u[2];
 			SHARED_MEM->control_u[2] = 0;//acadoVariables.u[1];
@@ -804,6 +805,7 @@ void wayreceive(void *argument)
 			double wy;
 
 			robot_to_world(SHARED_MEM->tag_pos[0],SHARED_MEM->tag_pos[1],acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],&wx,&wy);
+
 
 			if (wait_5>5)
 			{

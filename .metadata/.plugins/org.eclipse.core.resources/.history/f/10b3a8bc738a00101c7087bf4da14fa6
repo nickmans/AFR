@@ -207,7 +207,7 @@ static inline float heuristic(int r1, int c1, int r2, int c2)
          ? F*dx + (dy - dx)
          : F*dy + (dx - dy);
 }
-void xreffer(float x, float y, real_t ay[ACADO_N*ACADO_NY], real_t ayN[ACADO_NYN])
+void xreffer(float x, float y, float psi, real_t ay[ACADO_N*ACADO_NY], real_t ayN[ACADO_NYN])
 {
 	prune_Xref_if_needed(x,y);
 	near_waypoint(x,y);
