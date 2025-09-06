@@ -1,20 +1,17 @@
-02:21:03 **** Incremental Build of configuration Debug for project AFR_CM7 ****
+14:44:26 **** Incremental Build of configuration Debug for project AFR_CM7 ****
 make -j16 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DCORE_CM7 -DUSE_HAL_DRIVER -DSTM32H755xx -DUSE_PWR_DIRECT_SMPS_SUPPLY -DUSE_NUCLEO_64 -DSTM32_THREAD_SAFE_STRATEGY=4 -c -I../Core/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../../Middlewares/Third_Party/FreeRTOS/Source/include -I../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I../../Drivers/BSP/STM32H7xx_Nucleo -I../../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../../Drivers/CMSIS/Include -I../Core/ThreadSafe -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include/dsp" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/INCLUDE" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-../Core/Src/main.c:614:12: warning: 'coonter' defined but not used [-Wunused-variable]
-  614 | static int coonter = 0;
-      |            ^~~~~~~
 arm-none-eabi-g++ -o "AFR_CM7.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\STM32H755ZITX_FLASH.ld" -Wl,-Map="AFR_CM7.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 Finished building target: AFR_CM7.elf
  
 arm-none-eabi-size  AFR_CM7.elf 
 arm-none-eabi-objdump -h -S AFR_CM7.elf  > "AFR_CM7.list"
    text	   data	    bss	    dec	    hex	filename
- 261688	  65756	 161400	 488844	  7758c	AFR_CM7.elf
+ 262680	  65756	 161560	 489996	  77a0c	AFR_CM7.elf
 Finished building: default.size.stdout
  
 Finished building: AFR_CM7.list
  
 
-02:21:05 Build Finished. 0 errors, 1 warnings. (took 1s.455ms)
+14:44:28 Build Finished. 0 errors, 0 warnings. (took 1s.383ms)
 

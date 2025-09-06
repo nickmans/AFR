@@ -93,8 +93,6 @@ void MX_ADC3_Init(void);
 #define PWM_3_GPIO_Port GPIOE
 #define PWM_4_Pin GPIO_PIN_14
 #define PWM_4_GPIO_Port GPIOE
-#define HC06_RX_Pin GPIO_PIN_12
-#define HC06_RX_GPIO_Port GPIOB
 #define ENC_4_Pin GPIO_PIN_11
 #define ENC_4_GPIO_Port GPIOD
 #define ENC_4_EXTI_IRQn EXTI15_10_IRQn
@@ -113,8 +111,6 @@ void MX_ADC3_Init(void);
 #define M12STBY_GPIO_Port GPIOG
 #define HC05_RX_Pin GPIO_PIN_11
 #define HC05_RX_GPIO_Port GPIOC
-#define HC06_TX_Pin GPIO_PIN_12
-#define HC06_TX_GPIO_Port GPIOC
 
 /* USER CODE BEGIN Private defines */
 

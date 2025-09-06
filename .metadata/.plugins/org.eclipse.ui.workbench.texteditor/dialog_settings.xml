@@ -3,6 +3,14 @@
 	<item key="hasShownOverlayPopupBefore" value="true"/>
 	<item key="replaceBarOpen" value="false"/>
 	<list key="searchhistory">
+		<item value="localwaypoint"/>
+		<item value="localwaypoints"/>
+		<item value="waypoints"/>
+		<item value="compute_slips"/>
+		<item value="robot_to_world"/>
+		<item value="localwa"/>
+		<item value="print_xref"/>
+		<item value="shift"/>
 		<item value="RPM_FS"/>
 		<item value="duty"/>
 		<item value="vdda"/>
@@ -10,13 +18,5 @@
 		<item value="BNO055_ReadEuler"/>
 		<item value="opr"/>
 		<item value="heading"/>
-		<item value="BSP"/>
-		<item value="red"/>
-		<item value="RED"/>
-		<item value="GREEN"/>
-		<item value="bsp"/>
-		<item value="chosen_dir"/>
-		<item value="DB_RPM"/>
-		<item value="SHARED"/>
 	</list>
 </section>

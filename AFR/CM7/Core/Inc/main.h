@@ -64,6 +64,10 @@ void Error_Handler(void);
 #define IMU_SCL_GPIO_Port GPIOB
 #define IMU_SDA_Pin GPIO_PIN_11
 #define IMU_SDA_GPIO_Port GPIOB
+#define HC06_RX_Pin GPIO_PIN_12
+#define HC06_RX_GPIO_Port GPIOB
+#define HC06_TX_Pin GPIO_PIN_12
+#define HC06_TX_GPIO_Port GPIOC
 #define LIDAR_TX_Pin GPIO_PIN_5
 #define LIDAR_TX_GPIO_Port GPIOD
 #define LIDAR_RX_Pin GPIO_PIN_6

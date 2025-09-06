@@ -54,6 +54,7 @@ static double P    [3][3];       // covariance
 const double dt = 0.1;    // 1/10 Hz
 const double rw = 0.033;
 double halfW = 0.15 * 0.5;
+static int started = 0;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -84,6 +85,7 @@ COM_InitTypeDef BspCOMInit;
 
 I2C_HandleTypeDef hi2c2;
 
+UART_HandleTypeDef huart5;
 UART_HandleTypeDef huart2;
 
 /* Definitions for defaultTask */
@@ -116,6 +118,7 @@ static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_I2C2_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_UART5_Init(void);
 void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
@@ -279,6 +282,7 @@ Error_Handler();
   MX_DMA_Init();
   MX_I2C2_Init();
   MX_USART2_UART_Init();
+  MX_UART5_Init();
   /* USER CODE BEGIN 2 */
 	acado_initializeSolver();
 	init_controller_weights();
@@ -309,7 +313,7 @@ Error_Handler();
 
   /* Create the thread(s) */
   /* creation of defaultTask */
-  //defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   wayr_id = osThreadNew(wayreceive, NULL, &wayr_att);
@@ -483,6 +487,54 @@ static void MX_I2C2_Init(void)
 }
 
 /**
+  * @brief UART5 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_UART5_Init(void)
+{
+
+  /* USER CODE BEGIN UART5_Init 0 */
+
+  /* USER CODE END UART5_Init 0 */
+
+  /* USER CODE BEGIN UART5_Init 1 */
+
+  /* USER CODE END UART5_Init 1 */
+  huart5.Instance = UART5;
+  huart5.Init.BaudRate = 9600;
+  huart5.Init.WordLength = UART_WORDLENGTH_8B;
+  huart5.Init.StopBits = UART_STOPBITS_1;
+  huart5.Init.Parity = UART_PARITY_NONE;
+  huart5.Init.Mode = UART_MODE_TX_RX;
+  huart5.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart5.Init.OverSampling = UART_OVERSAMPLING_16;
+  huart5.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart5.Init.ClockPrescaler = UART_PRESCALER_DIV1;
+  huart5.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  if (HAL_UART_Init(&huart5) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_SetTxFifoThreshold(&huart5, UART_TXFIFO_THRESHOLD_1_8) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_SetRxFifoThreshold(&huart5, UART_RXFIFO_THRESHOLD_1_8) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_DisableFifoMode(&huart5) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN UART5_Init 2 */
+
+  /* USER CODE END UART5_Init 2 */
+
+}
+
+/**
   * @brief USART2 Initialization Function
   * @param None
   * @retval None
@@ -611,7 +663,6 @@ double heading, roll, pitch, ax, axx, ay, az, yawrate;
 const double g = 9.80665;
 const double pion180 = 0.01745329251;
 float VIN[NUM_VSAMPLES] = {0};
-static int coonter = 0;
 float BATTERY_VOLTAGE;
 void CONTROL(void *argument)
 {
@@ -622,92 +673,117 @@ void CONTROL(void *argument)
     __DSB();
 	for(;;)
 	{
-	    SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED2_MEM, sizeof(*SHARED2_MEM));
-	    __DSB();   // ensure memory order
-		if (SHARED2_MEM->flagencoders)				// CHECK FOR NEW ENCODER COUNT - IS UPDATED IN 25ms PWM LOOP ON M4
+		while(started)
 		{
-			measurements[3] =  SHARED2_MEM->encoders[0];
-			measurements[4] =  SHARED2_MEM->encoders[1];
-			measurements[5] =  SHARED2_MEM->encoders[2];
-			measurements[6] =  SHARED2_MEM->encoders[3];
-
-			/*if (coonter<NUM_VSAMPLES)
+			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED2_MEM, sizeof(*SHARED2_MEM));
+			__DSB();   // ensure memory order
+			if (SHARED2_MEM->flagencoders)				// CHECK FOR NEW ENCODER COUNT - IS UPDATED IN 25ms PWM LOOP ON M4
 			{
-				VIN[coonter] = SHARED2_MEM->BATT_V;
-				coonter++;
+				measurements[3] =  SHARED2_MEM->encoders[0];
+				measurements[4] =  SHARED2_MEM->encoders[1];
+				measurements[5] =  SHARED2_MEM->encoders[2];
+				measurements[6] =  SHARED2_MEM->encoders[3];
+
+				/*if (coonter<NUM_VSAMPLES)
+				{
+					VIN[coonter] = SHARED2_MEM->BATT_V;
+					coonter++;
+				}
+				else
+				{
+					BATTERY_VOLTAGE = averageVIN(VIN);
+					printf("%.3f %.3f %.3f %.3f\n",measurements[3],measurements[4],measurements[5],measurements[6]);
+					printf("%.3f\n",BATTERY_VOLTAGE);
+					coonter = 0;
+				}*/
+
+				SHARED2_MEM->flagencoders = 0;
+				SCB_CleanDCache_by_Addr((uint32_t*)SHARED2_MEM, sizeof(*SHARED2_MEM));
+				__DSB();
 			}
-			else
+
+			BNO055_ReadEuler(&heading, &pitch, &roll);
+			BNO055_ReadLinAccel_D(&ax, &ay, &az);
+			BNO055_ReadYawRate(&yawrate);
+			//printf("%.3f %.3f %.3f %.3f\n",measurements[3],measurements[4],measurements[5],measurements[6]);
+
+
+			measurements[0] = heading*pion180;
+			measurements[1] = yawrate;
+			measurements[2] = ax;
+							// yaw			   yawrate 		    accel_x			 encoder robot v_x
+			double z[4] = {measurements[0], measurements[1], measurements[2], rw*(measurements[3]+measurements[4]+measurements[5]+measurements[6])/4};
+
+			double xhat[3] = {acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[3]};
+			ukf_update(xhat,P,z,dt,Q,R);
+			acadoVariables.x0[0] = xhat[0];
+			acadoVariables.x0[1] = xhat[1];
+			acadoVariables.x0[2] = measurements[0];
+			acadoVariables.x0[3] = xhat[2];
+
+			double slips[4] = {0, 0, 0, 0};
+			double enc[4] = {measurements[3],measurements[4],measurements[5],measurements[6]};
+			compute_slips(xhat[2],measurements[1],enc,slips);
+
+			online_data(measurements,slips);
+
+			static int step_counter = 0;
+			if (step_counter++ % 10 == 0)			//every 10 steps new trajectory
+				trajectory(acadoVariables.x0);
+
+			xreffer(acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.y, acadoVariables.yN);		// Update existing trajectory
+
+			controller_loop();
+
+			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
+
+			// Wait to send new control inputs
+			while (SHARED_MEM->flagm7)
 			{
-				BATTERY_VOLTAGE = averageVIN(VIN);
-				printf("%.3f %.3f %.3f %.3f\n",measurements[3],measurements[4],measurements[5],measurements[6]);
-				printf("%.3f\n",BATTERY_VOLTAGE);
-				coonter = 0;
-			}*/
+				SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
+				__DSB();   // ensure memory order
+				osDelay(1);
+			}
 
-			SHARED2_MEM->flagencoders = 0;
-			SCB_CleanDCache_by_Addr((uint32_t*)SHARED2_MEM, sizeof(*SHARED2_MEM));
-			__DSB();
+			if (!SHARED_MEM->flagm7)
+			{
+				SHARED_MEM->control_u[0] = 0;//acadoVariables.u[0];
+				SHARED_MEM->control_u[1] = 0;//acadoVariables.u[2];
+				SHARED_MEM->control_u[2] = 0;//acadoVariables.u[1];
+				SHARED_MEM->control_u[3] = 0;//acadoVariables.u[3];
+				SHARED_MEM->flagm7 = 1;
+				SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
+				__DSB();
+			}
+
+			vTaskDelayUntil(&last_wake, period);   // align to 100 ms
 		}
-
-		BNO055_ReadEuler(&heading, &pitch, &roll);
-		BNO055_ReadLinAccel_D(&ax, &ay, &az);
-		BNO055_ReadYawRate(&yawrate);
-		//printf("%.3f %.3f %.3f %.3f\n",measurements[3],measurements[4],measurements[5],measurements[6]);
-
-
-		measurements[0] = heading*pion180;
-		measurements[1] = yawrate;
-		measurements[2] = ax;
-						// yaw			   yawrate 		    accel_x			 encoder robot v_x
-		double z[4] = {measurements[0], measurements[1], measurements[2], rw*(measurements[3]+measurements[4]+measurements[5]+measurements[6])/4};
-
-		double xhat[3] = {acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[3]};
-		ukf_update(xhat,P,z,dt,Q,R);
-		acadoVariables.x0[0] = xhat[0];
-		acadoVariables.x0[1] = xhat[1];
-		acadoVariables.x0[2] = measurements[0];
-		acadoVariables.x0[3] = xhat[2];
-
-		double slips[4] = {0, 0, 0, 0};
-		double enc[4] = {measurements[3],measurements[4],measurements[5],measurements[6]};
-		compute_slips(xhat[2],measurements[1],enc,slips);
-
-		online_data(measurements,slips);
-
-		static int step_counter = 0;
-		if (step_counter++ % 10 == 0)			//every 10 steps new trajectory
-			trajectory(acadoVariables.x0);
-
-		xreffer(acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.y, acadoVariables.yN);		// Update existing trajectory
-
-		controller_loop();
-
-		SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
-
-		// Wait to send new control inputs
-		while (SHARED_MEM->flagm7)
+		while(!started)
 		{
-		    SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
-		    __DSB();   // ensure memory order
-		    osDelay(1);
+			// Wait to send new control inputs
+			while (SHARED_MEM->flagm7)
+			{
+				SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
+				__DSB();   // ensure memory order
+				osDelay(1);
+			}
+			if (!SHARED_MEM->flagm7)
+			{
+				SHARED_MEM->control_u[0] = 0;//acadoVariables.u[0];
+				SHARED_MEM->control_u[1] = 0;//acadoVariables.u[2];
+				SHARED_MEM->control_u[2] = 0;//acadoVariables.u[1];
+				SHARED_MEM->control_u[3] = 0;//acadoVariables.u[3];
+				SHARED_MEM->flagm7 = 1;
+				SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
+				__DSB();
+			}
+			printf("waiting\n");
+			osDelay(1000);
 		}
-
-		if (!SHARED_MEM->flagm7)
-		{
-			SHARED_MEM->control_u[0] = 0;//acadoVariables.u[0];
-			SHARED_MEM->control_u[1] = 0;//acadoVariables.u[2];
-			SHARED_MEM->control_u[2] = 0;//acadoVariables.u[1];
-			SHARED_MEM->control_u[3] = 0;//acadoVariables.u[3];
-			SHARED_MEM->flagm7 = 1;
-			SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
-			__DSB();
-		}
-
-        vTaskDelayUntil(&last_wake, period);   // align to 100 ms
 	}
 }
 int _write(int file, char *ptr, int len) {
-    HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)ptr, len, HAL_MAX_DELAY);
+    HAL_UART_Transmit(&huart5, (uint8_t*)ptr, len, HAL_MAX_DELAY);
     return len;
 }
 static void controller_loop(void)

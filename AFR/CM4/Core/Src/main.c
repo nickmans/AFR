@@ -64,7 +64,6 @@ TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim6;
 
 UART_HandleTypeDef huart4;
-UART_HandleTypeDef huart5;
 
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -81,7 +80,6 @@ static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_UART4_Init(void);
-static void MX_UART5_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM6_Init(void);
 void StartDefaultTask(void *argument);
@@ -150,7 +148,6 @@ int main(void)
   MX_DMA_Init();
   MX_ADC1_Init();
   MX_UART4_Init();
-  MX_UART5_Init();
   MX_TIM1_Init();
   MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
@@ -181,7 +178,7 @@ int main(void)
 
   /* Create the thread(s) */
   /* creation of defaultTask */
-  //defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* USER CODE END RTOS_THREADS */
@@ -552,54 +549,6 @@ static void MX_UART4_Init(void)
 }
 
 /**
-  * @brief UART5 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_UART5_Init(void)
-{
-
-  /* USER CODE BEGIN UART5_Init 0 */
-
-  /* USER CODE END UART5_Init 0 */
-
-  /* USER CODE BEGIN UART5_Init 1 */
-
-  /* USER CODE END UART5_Init 1 */
-  huart5.Instance = UART5;
-  huart5.Init.BaudRate = 9600;
-  huart5.Init.WordLength = UART_WORDLENGTH_8B;
-  huart5.Init.StopBits = UART_STOPBITS_1;
-  huart5.Init.Parity = UART_PARITY_NONE;
-  huart5.Init.Mode = UART_MODE_TX_RX;
-  huart5.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart5.Init.OverSampling = UART_OVERSAMPLING_16;
-  huart5.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
-  huart5.Init.ClockPrescaler = UART_PRESCALER_DIV1;
-  huart5.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
-  if (HAL_UART_Init(&huart5) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_UARTEx_SetTxFifoThreshold(&huart5, UART_TXFIFO_THRESHOLD_1_8) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_UARTEx_SetRxFifoThreshold(&huart5, UART_RXFIFO_THRESHOLD_1_8) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_UARTEx_DisableFifoMode(&huart5) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN UART5_Init 2 */
-
-  /* USER CODE END UART5_Init 2 */
-
-}
-
-/**
   * Enable DMA controller clock
   */
 static void MX_DMA_Init(void)
@@ -631,7 +580,6 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOE_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOG_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();

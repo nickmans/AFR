@@ -54,6 +54,7 @@ static double P    [3][3];       // covariance
 const double dt = 0.1;    // 1/10 Hz
 const double rw = 0.033;
 double halfW = 0.15 * 0.5;
+static int started = 0;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -129,6 +130,35 @@ static void filter_init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+// Rotate (x,y) by angle theta radians
+static inline void rot(double theta,
+                       double x_in, double y_in,
+                       double *x_out, double *y_out)
+{
+    double c = cos(theta), s = sin(theta);
+    *x_out = c * x_in - s * y_in;
+    *y_out = s * x_in + c * y_in;
+}
+
+// Convert robot→world using pose (x,y,psi)
+static inline void robot_to_world(double xr, double yr,
+                                  double x, double y, double psi,
+                                  double *xw, double *yw)
+{
+    double rx, ry;
+    rot(psi, xr, yr, &rx, &ry);
+    *xw = rx + x;
+    *yw = ry + y;
+}
+
+#define NUM_VSAMPLES 10
+float averageVIN(float *VIN_ARRAY) {
+    float sum = 0.0f;
+    for (int i = 0; i < NUM_VSAMPLES; i++) {
+        sum += VIN_ARRAY[i];
+    }
+    return sum / NUM_VSAMPLES;
+}
 static inline void online_data(double meas[7], double slips[4])
 {
     for (int i = 0; i < ACADO_N+1; i++) {
@@ -254,6 +284,9 @@ Error_Handler();
 	acado_initializeSolver();
 	init_controller_weights();
 	filter_init();
+	//bno055_CONFIG();
+	bno055_NDOF();
+	BNO055_ApplyAllCalibration();
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -277,11 +310,11 @@ Error_Handler();
 
   /* Create the thread(s) */
   /* creation of defaultTask */
-  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+  //defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   wayr_id = osThreadNew(wayreceive, NULL, &wayr_att);
-  //CONTROL_id = osThreadNew(CONTROL, NULL, &CONTROL_att);
+  CONTROL_id = osThreadNew(CONTROL, NULL, &CONTROL_att);
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
 
@@ -575,9 +608,11 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 static double measurements[7] = {0, 0, 0, 0, 0, 0, 0};
-static float SPEEDS[4]  = {0, 0, 0, 0};
-static int COUNTER = 0;
-static int ccc = 0;
+double heading, roll, pitch, ax, axx, ay, az, yawrate;
+const double g = 9.80665;
+const double pion180 = 0.01745329251;
+float VIN[NUM_VSAMPLES] = {0};
+float BATTERY_VOLTAGE;
 void CONTROL(void *argument)
 {
     const TickType_t period = pdMS_TO_TICKS(100);  // 100 ms
@@ -587,70 +622,105 @@ void CONTROL(void *argument)
     __DSB();
 	for(;;)
 	{
-	    SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED2_MEM, sizeof(*SHARED2_MEM));
-	    __DSB();   // ensure memory order
-		if (SHARED2_MEM->flagencoders)				// CHECK FOR NEW ENCODER COUNT - IS UPDATED IN 25ms PWM LOOP ON M4
+		while(started)
 		{
-			measurements[3] =  SHARED2_MEM->encoders[0];
-			measurements[4] =  SHARED2_MEM->encoders[1];
-			measurements[5] =  SHARED2_MEM->encoders[2];
-			measurements[6] =  SHARED2_MEM->encoders[3];
-			SHARED2_MEM->flagencoders = 0;
-			SCB_CleanDCache_by_Addr((uint32_t*)SHARED2_MEM, sizeof(*SHARED2_MEM));
-			__DSB();
+			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED2_MEM, sizeof(*SHARED2_MEM));
+			__DSB();   // ensure memory order
+			if (SHARED2_MEM->flagencoders)				// CHECK FOR NEW ENCODER COUNT - IS UPDATED IN 25ms PWM LOOP ON M4
+			{
+				measurements[3] =  SHARED2_MEM->encoders[0];
+				measurements[4] =  SHARED2_MEM->encoders[1];
+				measurements[5] =  SHARED2_MEM->encoders[2];
+				measurements[6] =  SHARED2_MEM->encoders[3];
+
+				/*if (coonter<NUM_VSAMPLES)
+				{
+					VIN[coonter] = SHARED2_MEM->BATT_V;
+					coonter++;
+				}
+				else
+				{
+					BATTERY_VOLTAGE = averageVIN(VIN);
+					printf("%.3f %.3f %.3f %.3f\n",measurements[3],measurements[4],measurements[5],measurements[6]);
+					printf("%.3f\n",BATTERY_VOLTAGE);
+					coonter = 0;
+				}*/
+
+				SHARED2_MEM->flagencoders = 0;
+				SCB_CleanDCache_by_Addr((uint32_t*)SHARED2_MEM, sizeof(*SHARED2_MEM));
+				__DSB();
+			}
+
+			BNO055_ReadEuler(&heading, &pitch, &roll);
+			BNO055_ReadLinAccel_D(&ax, &ay, &az);
+			BNO055_ReadYawRate(&yawrate);
+			//printf("%.3f %.3f %.3f %.3f\n",measurements[3],measurements[4],measurements[5],measurements[6]);
+
+
+			measurements[0] = heading*pion180;
+			measurements[1] = yawrate;
+			measurements[2] = ax;
+							// yaw			   yawrate 		    accel_x			 encoder robot v_x
+			double z[4] = {measurements[0], measurements[1], measurements[2], rw*(measurements[3]+measurements[4]+measurements[5]+measurements[6])/4};
+
+			double xhat[3] = {acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[3]};
+			ukf_update(xhat,P,z,dt,Q,R);
+			acadoVariables.x0[0] = xhat[0];
+			acadoVariables.x0[1] = xhat[1];
+			acadoVariables.x0[2] = measurements[0];
+			acadoVariables.x0[3] = xhat[2];
+
+			double slips[4] = {0, 0, 0, 0};
+			double enc[4] = {measurements[3],measurements[4],measurements[5],measurements[6]};
+			compute_slips(xhat[2],measurements[1],enc,slips);
+
+			online_data(measurements,slips);
+
+			static int step_counter = 0;
+			if (step_counter++ % 10 == 0)			//every 10 steps new trajectory
+				trajectory(acadoVariables.x0);
+
+			xreffer(acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.y, acadoVariables.yN);		// Update existing trajectory
+
+			controller_loop();
+
+			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
+
+			// Wait to send new control inputs
+			while (SHARED_MEM->flagm7)
+			{
+				SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
+				__DSB();   // ensure memory order
+				osDelay(1);
+			}
+
+			if (!SHARED_MEM->flagm7)
+			{
+				SHARED_MEM->control_u[0] = 0;//acadoVariables.u[0];
+				SHARED_MEM->control_u[1] = 0;//acadoVariables.u[2];
+				SHARED_MEM->control_u[2] = 0;//acadoVariables.u[1];
+				SHARED_MEM->control_u[3] = 0;//acadoVariables.u[3];
+				SHARED_MEM->flagm7 = 1;
+				SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
+				__DSB();
+			}
+
+			vTaskDelayUntil(&last_wake, period);   // align to 100 ms
 		}
-		BNO055_ReadEuler(&heading, &roll, &pitch);
-		//BNO055_ReadLinAccel_D(&ax,&ay,&az);
-		ComputeLinearAccel(&ax, &ay, &az);
-		BSP_LED_Toggle(LED_YELLOW);
-		printf("%.3f %.3f %.3f\n",ax,ay,az);
-						// yaw			   yawrate 		    accel_x			 encoder robot v_x
-		double z[4] = {measurements[0], measurements[1], measurements[2], rw*(measurements[3]+measurements[4]+measurements[5]+measurements[6])/4};
-
-		double xhat[3] = {acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[3]};
-		ukf_update(xhat,P,z,dt,Q,R);
-		acadoVariables.x0[0] = xhat[0];
-		acadoVariables.x0[1] = xhat[1];
-		acadoVariables.x0[2] = measurements[0];
-		acadoVariables.x0[3] = xhat[2];
-
-		double slips[4] = {0, 0, 0, 0};
-		double enc[4] = {measurements[3],measurements[4],measurements[5],measurements[6]};
-		compute_slips(xhat[2],measurements[1],enc,slips);
-
-		online_data(measurements,slips);
-
-		static int step_counter = 0;
-		//HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-		if (step_counter++ % 10 == 0)			//every 10 steps new trajectory
-			trajectory(acadoVariables.x0);
-
-		xreffer(acadoVariables.x0[0],acadoVariables.x0[1], acadoVariables.y, acadoVariables.yN);
-
-		controller_loop();
-
-		SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
-		// wait until flagm7 is cleared by the other core
-		while (SHARED_MEM->flagm7)
+		while(!started)
 		{
-		    SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
-		    __DSB();   // ensure memory order
-		    osDelay(1);
+			if (!SHARED_MEM->flagm7)
+			{
+				SHARED_MEM->control_u[0] = 0;//acadoVariables.u[0];
+				SHARED_MEM->control_u[1] = 0;//acadoVariables.u[2];
+				SHARED_MEM->control_u[2] = 0;//acadoVariables.u[1];
+				SHARED_MEM->control_u[3] = 0;//acadoVariables.u[3];
+				SHARED_MEM->flagm7 = 1;
+				SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
+				__DSB();
+			}
+			osDelay(1000);
 		}
-
-		if (!SHARED_MEM->flagm7)
-		{
-			BSP_LED_Toggle(LED_RED);
-			SHARED_MEM->control_u[0] = acadoVariables.u[0];
-			SHARED_MEM->control_u[1] = acadoVariables.u[2];
-			SHARED_MEM->control_u[2] = acadoVariables.u[1];
-			SHARED_MEM->control_u[3] = acadoVariables.u[3];
-			SHARED_MEM->flagm7 = 1;
-			SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
-			__DSB();
-		}
-
-        vTaskDelayUntil(&last_wake, period);   // align to 100 ms
 	}
 }
 int _write(int file, char *ptr, int len) {
@@ -659,11 +729,11 @@ int _write(int file, char *ptr, int len) {
 }
 static void controller_loop(void)
 {
-	int iter = 0, status = 0;
+	int iter = 0;
 	for(iter = 0; iter < 2; ++iter)
 	{
 		acado_preparationStep();
-		status = acado_feedbackStep();
+		acado_feedbackStep();
 		acado_shiftStates(2, 0, 0);     // shift by 1, fill last with copy, don't reset multipliers
 	}
     // send u[0..3] back in one line
@@ -678,7 +748,7 @@ void init_controller_weights(void)
 {
     const float W_diag[12] = {
         1e4f, 1e4f, 1e-3f, 1e-1f,
-        1e-1f, 1e-1f, 1e-1f, 1e-1f,
+        3e-1f, 3e-1f, 3e-1f, 3e-1f,
         1e3f,  1e3f,  1e3f,  1e3f
     };
 
@@ -745,10 +815,13 @@ void wayreceive(void *argument)
 		if (SHARED_MEM->flagm4)
 		{
 			BSP_LED_Toggle(LED_GREEN);
-			printf("_______\n");
+			//printf("_______\n");
 			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
-			double wx = SHARED_MEM->tag_pos[0];
-			double wy = SHARED_MEM->tag_pos[1];
+			double wx;
+			double wy;
+
+			robot_to_world(SHARED_MEM->tag_pos[0],SHARED_MEM->tag_pos[1],acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],&wx,&wy);
+
 			if (wait_5>5)
 			{
 				if (waypoint_count < MAX_WAYPOINTS)
@@ -767,8 +840,8 @@ void wayreceive(void *argument)
 					waypoints[waypoint_count].x = wx;
 					waypoints[waypoint_count].y = wy;
 					waypoint_count++;
-					for (int k = 0; k < waypoint_count; k++)
-						printf("Tag Location: x=%3.3fm y=%3.3fm\r\n",waypoints[k].x,waypoints[k].y);
+					/*for (int k = 0; k < waypoint_count; k++)
+						printf("Tag Location: x=%3.3fm y=%3.3fm\r\n",waypoints[k].x,waypoints[k].y); */
 				}
 				else
 				{
@@ -779,7 +852,7 @@ void wayreceive(void *argument)
 						waypoint_count = 1;
 						waypoints[0].x = wx;
 						waypoints[0].y = wy;
-						printf("Tag Location: x=%3.3fm y=%3.3fm\r\n",wx,wy);
+						//printf("Tag Location: x=%3.3fm y=%3.3fm\r\n",wx,wy);
 						failed_count = 0;
 					}
 				}
@@ -807,7 +880,6 @@ void wayreceive(void *argument)
 
 }
 
-static int cc = 0;
 void BSP_PB_Callback(Button_TypeDef Button)
 {
 	SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
@@ -821,11 +893,6 @@ void BSP_PB_Callback(Button_TypeDef Button)
 		SHARED_MEM->flagm7 = 1;
 		SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
 		__DSB();
-
-		printf("%d\n",cc);
-		cc = cc + 5;
-		if (cc > 20)
-			cc = 0;
 	}
 }
 /* USER CODE END 4 */
