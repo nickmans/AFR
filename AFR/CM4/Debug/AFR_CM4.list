@@ -2739,43 +2739,44 @@ void pwm_init(void)
 {
  8101de8:	b580      	push	{r7, lr}
  8101dea:	af00      	add	r7, sp, #0
-	HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
- 8101dec:	2100      	movs	r1, #0
- 8101dee:	4818      	ldr	r0, [pc, #96]	@ (8101e50 <pwm_init+0x68>)
- 8101df0:	f00d fcf8 	bl	810f7e4 <HAL_TIM_PWM_Start>
-	HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_2);
- 8101df4:	2104      	movs	r1, #4
- 8101df6:	4816      	ldr	r0, [pc, #88]	@ (8101e50 <pwm_init+0x68>)
- 8101df8:	f00d fcf4 	bl	810f7e4 <HAL_TIM_PWM_Start>
-	HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_3);
- 8101dfc:	2108      	movs	r1, #8
- 8101dfe:	4814      	ldr	r0, [pc, #80]	@ (8101e50 <pwm_init+0x68>)
- 8101e00:	f00d fcf0 	bl	810f7e4 <HAL_TIM_PWM_Start>
-	HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
- 8101e04:	210c      	movs	r1, #12
- 8101e06:	4812      	ldr	r0, [pc, #72]	@ (8101e50 <pwm_init+0x68>)
- 8101e08:	f00d fcec 	bl	810f7e4 <HAL_TIM_PWM_Start>
-
 	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
- 8101e0c:	4b10      	ldr	r3, [pc, #64]	@ (8101e50 <pwm_init+0x68>)
- 8101e0e:	681b      	ldr	r3, [r3, #0]
- 8101e10:	2200      	movs	r2, #0
- 8101e12:	635a      	str	r2, [r3, #52]	@ 0x34
+ 8101dec:	4b18      	ldr	r3, [pc, #96]	@ (8101e50 <pwm_init+0x68>)
+ 8101dee:	681b      	ldr	r3, [r3, #0]
+ 8101df0:	2200      	movs	r2, #0
+ 8101df2:	635a      	str	r2, [r3, #52]	@ 0x34
 	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
- 8101e14:	4b0e      	ldr	r3, [pc, #56]	@ (8101e50 <pwm_init+0x68>)
- 8101e16:	681b      	ldr	r3, [r3, #0]
- 8101e18:	2200      	movs	r2, #0
- 8101e1a:	639a      	str	r2, [r3, #56]	@ 0x38
+ 8101df4:	4b16      	ldr	r3, [pc, #88]	@ (8101e50 <pwm_init+0x68>)
+ 8101df6:	681b      	ldr	r3, [r3, #0]
+ 8101df8:	2200      	movs	r2, #0
+ 8101dfa:	639a      	str	r2, [r3, #56]	@ 0x38
 	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 0);
- 8101e1c:	4b0c      	ldr	r3, [pc, #48]	@ (8101e50 <pwm_init+0x68>)
- 8101e1e:	681b      	ldr	r3, [r3, #0]
- 8101e20:	2200      	movs	r2, #0
- 8101e22:	63da      	str	r2, [r3, #60]	@ 0x3c
+ 8101dfc:	4b14      	ldr	r3, [pc, #80]	@ (8101e50 <pwm_init+0x68>)
+ 8101dfe:	681b      	ldr	r3, [r3, #0]
+ 8101e00:	2200      	movs	r2, #0
+ 8101e02:	63da      	str	r2, [r3, #60]	@ 0x3c
 	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, 0);
- 8101e24:	4b0a      	ldr	r3, [pc, #40]	@ (8101e50 <pwm_init+0x68>)
- 8101e26:	681b      	ldr	r3, [r3, #0]
- 8101e28:	2200      	movs	r2, #0
- 8101e2a:	641a      	str	r2, [r3, #64]	@ 0x40
+ 8101e04:	4b12      	ldr	r3, [pc, #72]	@ (8101e50 <pwm_init+0x68>)
+ 8101e06:	681b      	ldr	r3, [r3, #0]
+ 8101e08:	2200      	movs	r2, #0
+ 8101e0a:	641a      	str	r2, [r3, #64]	@ 0x40
+
+	HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
+ 8101e0c:	2100      	movs	r1, #0
+ 8101e0e:	4810      	ldr	r0, [pc, #64]	@ (8101e50 <pwm_init+0x68>)
+ 8101e10:	f00d fce8 	bl	810f7e4 <HAL_TIM_PWM_Start>
+	HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_2);
+ 8101e14:	2104      	movs	r1, #4
+ 8101e16:	480e      	ldr	r0, [pc, #56]	@ (8101e50 <pwm_init+0x68>)
+ 8101e18:	f00d fce4 	bl	810f7e4 <HAL_TIM_PWM_Start>
+	HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_3);
+ 8101e1c:	2108      	movs	r1, #8
+ 8101e1e:	480c      	ldr	r0, [pc, #48]	@ (8101e50 <pwm_init+0x68>)
+ 8101e20:	f00d fce0 	bl	810f7e4 <HAL_TIM_PWM_Start>
+	HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_4);
+ 8101e24:	210c      	movs	r1, #12
+ 8101e26:	480a      	ldr	r0, [pc, #40]	@ (8101e50 <pwm_init+0x68>)
+ 8101e28:	f00d fcdc 	bl	810f7e4 <HAL_TIM_PWM_Start>
+
 	pwm_id = osThreadNew(pwmgo, NULL, &pwm_att);
  8101e2c:	4a09      	ldr	r2, [pc, #36]	@ (8101e54 <pwm_init+0x6c>)
  8101e2e:	2100      	movs	r1, #0
@@ -3835,6 +3836,7 @@ int main(void)
  8102594:	f7ff fe3e 	bl	8102214 <uartt_init>
   cmd_line_init();
  8102598:	f7ff fe4a 	bl	8102230 <cmd_line_init>
+
   pwm_init();
  810259c:	f7ff fc24 	bl	8101de8 <pwm_init>
   HAL_ADC_Start(&hadc1);

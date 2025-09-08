@@ -27,6 +27,7 @@
 #include <stdbool.h>
 #include "trajectory.h"
 #include "sensor.h"
+#include "uart5_comm.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -54,7 +55,7 @@ static double P    [3][3];       // covariance
 const double dt = 0.1;    // 1/10 Hz
 const double rw = 0.033;
 double halfW = 0.15 * 0.5;
-static int started = 0;
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -132,6 +133,22 @@ static void filter_init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+static void control_reset_all(void)
+{
+    // --- MPC / ACADO ---
+    acado_initializeSolver();        // you already call this at boot:contentReference[oaicite:0]{index=0}
+    init_controller_weights();       // your weights init:contentReference[oaicite:1]{index=1}
+
+    // Seed state (cold start). If you prefer a warm start, you can read sensors here.
+    acadoVariables.x0[0] = 0.0;   // x
+    acadoVariables.x0[1] = 0.0;   // y
+    acadoVariables.x0[2] = 0.0;   // psi (will get overwritten from IMU each tick)
+    acadoVariables.x0[3] = 0.0;   // v_x
+
+    // --- Any filter/averagers you keep ---
+    filter_init();                 // you already call this once at CONTROL start:
+
+}
 // Rotate (x,y) by angle theta radians
 static inline void rot(double theta,
                        double x_in, double y_in,
@@ -286,10 +303,11 @@ Error_Handler();
   /* USER CODE BEGIN 2 */
 	acado_initializeSolver();
 	init_controller_weights();
-	filter_init();
 	//bno055_CONFIG();
 	bno055_NDOF();
 	BNO055_ApplyAllCalibration();
+
+
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -316,6 +334,7 @@ Error_Handler();
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
+	UART5_Comm_Init();    // creates queue + starts RX DMA
   wayr_id = osThreadNew(wayreceive, NULL, &wayr_att);
   CONTROL_id = osThreadNew(CONTROL, NULL, &CONTROL_att);
   /* add threads, ... */
@@ -662,12 +681,15 @@ static double measurements[7] = {0, 0, 0, 0, 0, 0, 0};
 double heading, roll, pitch, ax, axx, ay, az, yawrate;
 const double g = 9.80665;
 const double pion180 = 0.01745329251;
-float VIN[NUM_VSAMPLES] = {0};
 float BATTERY_VOLTAGE;
 void CONTROL(void *argument)
 {
     const TickType_t period = pdMS_TO_TICKS(100);  // 100 ms
     TickType_t last_wake = xTaskGetTickCount();
+    int coonter = 0;
+    int minutecoonter = 0;
+    float VIN[NUM_VSAMPLES] = {0};
+	filter_init();
 
     SHARED2_MEM->flagencoders = 0;
     __DSB();
@@ -675,6 +697,9 @@ void CONTROL(void *argument)
 	{
 		while(started)
 		{
+			if (waypoint_count<1)
+				started = 0;
+
 			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED2_MEM, sizeof(*SHARED2_MEM));
 			__DSB();   // ensure memory order
 			if (SHARED2_MEM->flagencoders)				// CHECK FOR NEW ENCODER COUNT - IS UPDATED IN 25ms PWM LOOP ON M4
@@ -684,18 +709,25 @@ void CONTROL(void *argument)
 				measurements[5] =  SHARED2_MEM->encoders[2];
 				measurements[6] =  SHARED2_MEM->encoders[3];
 
-				/*if (coonter<NUM_VSAMPLES)
-				{
-					VIN[coonter] = SHARED2_MEM->BATT_V;
-					coonter++;
-				}
+				if (minutecoonter > 50)
+					if (coonter<NUM_VSAMPLES)
+					{
+						VIN[coonter] = SHARED2_MEM->BATT_V;
+						coonter++;
+					}
+					else
+					{
+						BATTERY_VOLTAGE = averageVIN(VIN);
+						printf("%.3fV\n",BATTERY_VOLTAGE);
+						printf("%.3f %.3f %.3f %.3f\n",acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],acadoVariables.x0[3]);
+						if (BATTERY_VOLTAGE<9.8)
+							started = 0;
+						//printf("%.3f %.3f %.3f %.3f\n",measurements[3],measurements[4],measurements[5],measurements[6]);
+						minutecoonter = 0;
+						coonter = 0;
+					}
 				else
-				{
-					BATTERY_VOLTAGE = averageVIN(VIN);
-					printf("%.3f %.3f %.3f %.3f\n",measurements[3],measurements[4],measurements[5],measurements[6]);
-					printf("%.3f\n",BATTERY_VOLTAGE);
-					coonter = 0;
-				}*/
+					minutecoonter++;
 
 				SHARED2_MEM->flagencoders = 0;
 				SCB_CleanDCache_by_Addr((uint32_t*)SHARED2_MEM, sizeof(*SHARED2_MEM));
@@ -715,6 +747,7 @@ void CONTROL(void *argument)
 			double z[4] = {measurements[0], measurements[1], measurements[2], rw*(measurements[3]+measurements[4]+measurements[5]+measurements[6])/4};
 
 			double xhat[3] = {acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[3]};
+
 			ukf_update(xhat,P,z,dt,Q,R);
 			acadoVariables.x0[0] = xhat[0];
 			acadoVariables.x0[1] = xhat[1];
@@ -736,7 +769,7 @@ void CONTROL(void *argument)
 			controller_loop();
 
 			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
-
+			//printf("hello\n");
 			// Wait to send new control inputs
 			while (SHARED_MEM->flagm7)
 			{
@@ -777,7 +810,8 @@ void CONTROL(void *argument)
 				SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
 				__DSB();
 			}
-			printf("waiting\n");
+
+			printf("waiting %lu\n",userstop);
 			osDelay(1000);
 		}
 	}
@@ -851,9 +885,12 @@ int _gettimeofday(struct timeval *tv, void *tzvp)
  * @param  radius in metres (e.g. 0.20)
  * @return true if squared distance ≤ radius²
  */
-static double radius = 0.3;
+static double rtoothers = 0.3;
+static double rtotag = 0.7;
+double lastwx;
+double lastwy;
 #define MAX_WAYPOINTS 15
-static bool waypoints_within_radius(double x1,double y1,double x2,double y2)
+static bool waypoints_within_radius(double x1,double y1,double x2,double y2,double radius)
 {
     double dx = x1 - x2;
     double dy = y1 - y2;
@@ -879,17 +916,71 @@ void wayreceive(void *argument)
 			double wx;
 			double wy;
 
-			robot_to_world(SHARED_MEM->tag_pos[0],SHARED_MEM->tag_pos[1],acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],&wx,&wy);
+			double rawwx = SHARED_MEM->tag_pos[0];
+			double rawwy = SHARED_MEM->tag_pos[1];
+
+			printf("%.3f %.3f\n",rawwx,rawwy);
+
+			robot_to_world(rawwx,rawwy,acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],&wx,&wy);
+
+			//if (wx && wy) are within waypoint_radius of acadoVariables.x0[0],acadoVariables.x0[1] AND waypoint_count = 0, stop the control thread.
+		    //if true and waypoint_ count>0, ignore this waypoint.
 
 			if (wait_5>5)
 			{
+				if (waypoints_within_radius(lastwx,lastwy, rawwx, rawwy,2))
+				{
+					lastwx = rawwx;
+					lastwy = rawwy;
+					goto skip;
+				}
+				else
+				{
+					lastwx = rawwx;
+					lastwy = rawwy;
+				}
 				if (waypoint_count < MAX_WAYPOINTS)
 				{
+				    if (waypoints_within_radius(wx, wy, acadoVariables.x0[0], acadoVariables.x0[1],rtotag))	// if we are on top of the tag
+				    {
+				    	//printf("found you\n");
+				    	control_reset_all();
+				        if (waypoint_count == 0)
+				        {
+				        	if (started == 1)
+				        	{
+								started = 0;
+								goto skip;
+				        	}
+				        	else
+				        		goto skip;
+				        }
+				        else if (waypoint_count > 0)
+				        {
+				        	if (started == 1 || userstop == 1)
+				        	{
+								waypoint_count = 0;
+								started = 0;
+								goto skip;
+				        	}
+				        	else
+				        	{
+								waypoint_count = 0;
+								goto skip;
+				        	}
+				        }
+				    }
+				    else
+				    {
+				    	if (started == 0 && userstop == 0)
+				    		started = 1;
+				    }
+
 					if (waypoint_count>=1)
 					{
 						for (int i = 0; i < waypoint_count; i++)
 						{
-							if (waypoints_within_radius(wx,wy,waypoints[i].x,waypoints[i].y))
+							if (waypoints_within_radius(wx,wy,waypoints[i].x,waypoints[i].y,rtoothers))
 							{
 								goto failure;
 							}
@@ -899,8 +990,8 @@ void wayreceive(void *argument)
 					waypoints[waypoint_count].x = wx;
 					waypoints[waypoint_count].y = wy;
 					waypoint_count++;
-					/*for (int k = 0; k < waypoint_count; k++)
-						printf("Tag Location: x=%3.3fm y=%3.3fm\r\n",waypoints[k].x,waypoints[k].y); */
+					for (int k = 0; k < waypoint_count; k++)
+						printf("Tag Location: x=%3.3fm y=%3.3fm\r\n",waypoints[k].x,waypoints[k].y);
 				}
 				else
 				{
@@ -917,9 +1008,12 @@ void wayreceive(void *argument)
 				}
 			}
 			else
+			{
+				lastwx = rawwx;
+				lastwy = rawwy;
 				wait_5++;
-
-
+			}
+			skip:
 			//printf("Tag Location: x=%3.3fm y=%3.3fm z=%3.3fm\r\n",SHARED_MEM->tag_pos[0],SHARED_MEM->tag_pos[1],SHARED_MEM->tag_pos[2]);
 			//printf("Tag Location: a0=%dmm a1=%dmm a2=%dmm\r\n",SHARED_MEM->anchordis[0],SHARED_MEM->anchordis[1],SHARED_MEM->anchordis[2]);
 

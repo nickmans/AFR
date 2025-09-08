@@ -1,0 +1,31 @@
+/*
+ * uart5_comm.h
+ *
+ *  Created on: Sep 8, 2025
+ *      Author: nicks
+ */
+
+#ifndef INC_UART5_COMM_H_
+#define INC_UART5_COMM_H_
+
+#pragma once
+#include "main.h"
+#include "cmsis_os2.h"
+#include <stdint.h>
+
+// ===== Public API =====
+void UART5_Comm_Init(void);   // call once after HAL & scheduler init
+void UART5_StartRx(void);     // (re)start RX after errors, etc.
+void UART5_Task_Start(void);
+
+// Expose the queue handle if you want to receive in any task
+extern osMessageQueueId_t uart5Queue;
+
+// A simple fixed-size ASCII message (null-terminated)
+typedef struct {
+    char text[16];  // enough for "START"/"STOP" + CRLF
+} Uart5Msg;
+
+extern volatile uint32_t started;
+
+#endif /* INC_UART5_COMM_H_ */

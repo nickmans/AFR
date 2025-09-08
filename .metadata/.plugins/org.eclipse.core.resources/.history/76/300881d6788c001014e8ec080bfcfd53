@@ -1,0 +1,62 @@
+#include "uart5_comm.h"
+#include <stdio.h>
+
+extern UART_HandleTypeDef huart5;
+
+volatile uint32_t started = 0;
+
+static uint8_t rx_byte;
+
+static inline int8_t normalize_cmd(uint8_t b)
+{
+    if (b == '\r' || b == '\n') return -1;
+    if (b >= '0' && b <= '9') return (int8_t)(b - '0');
+    return (int8_t)b;
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+    if (huart == &huart5) {
+        int8_t cmd = normalize_cmd(rx_byte);
+        if (cmd >= 0) {
+            if (cmd == 1) { started = 1; printf("OK START\r\n"); }
+            else if (cmd == 0) { started = 0; printf("OK STOP\r\n"); }
+            else if (cmd == 9) { printf("PONG\r\n"); }
+            else { printf("ERR %d\r\n", (int)cmd); }
+        }
+        HAL_UART_Receive_IT(&huart5, &rx_byte, 1);   // re-arm
+    }
+}
+
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+    if (huart == &huart5) {
+        HAL_UART_Receive_IT(&huart5, &rx_byte, 1);   // re-arm on error
+    }
+}
+
+void UART5_Comm_Init(void)
+{
+    // Arm first 1-byte reception
+    HAL_UART_Receive_IT(&huart5, &rx_byte, 1);
+}
+
+static void UART5_CmdTask(void *arg)
+{
+    (void)arg;
+    // Heartbeat so you know the task is alive and see current state
+    for (;;) {
+        printf("HB started=%lu\r\n", (unsigned long)started);
+        osDelay(1000);
+    }
+}
+
+void UART5_Task_Start(void)
+{
+    const osThreadAttr_t attr = {
+        .name = "UART5_CmdTask",
+        .stack_size = 512,
+        .priority = osPriorityNormal,
+    };
+    (void)osThreadNew(UART5_CmdTask, NULL, &attr);
+}

@@ -11,6 +11,7 @@
 "./Core/Src/syscalls.o"
 "./Core/Src/sysmem.o"
 "./Core/Src/trajectory.o"
+"./Core/Src/uart5_comm.o"
 "./Core/Src/ukf.o"
 "./Core/Src/control_update_MPC/acado_auxiliary_functions.o"
 "./Core/Src/control_update_MPC/acado_integrator.o"

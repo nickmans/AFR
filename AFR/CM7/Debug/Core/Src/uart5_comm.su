@@ -1,0 +1,4 @@
+../Core/Src/uart5_comm.c:11:22:normalize_cmd	16	static
+../Core/Src/uart5_comm.c:18:6:HAL_UART_RxCpltCallback	24	static
+../Core/Src/uart5_comm.c:32:6:HAL_UART_ErrorCallback	16	static
+../Core/Src/uart5_comm.c:39:6:UART5_Comm_Init	8	static

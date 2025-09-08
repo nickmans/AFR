@@ -48,7 +48,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../../Middlewares/Third_Party/FreeRTOS/Source/include/list.h \
  ../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
  ../Core/Inc/shared_mem.h ../Core/Inc/trajectory.h ../Core/Inc/main.h \
- ../Core/Inc/sensor.h
+ ../Core/Inc/sensor.h ../Core/Inc/uart5_comm.h \
+ ../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h
 ../Core/Inc/main.h:
 ../../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h:
 ../Core/Inc/stm32h7xx_hal_conf.h:
@@ -102,3 +103,5 @@ C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update
 ../Core/Inc/trajectory.h:
 ../Core/Inc/main.h:
 ../Core/Inc/sensor.h:
+../Core/Inc/uart5_comm.h:
+../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:

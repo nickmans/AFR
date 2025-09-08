@@ -155,22 +155,23 @@ static inline void world_to_robot(float xw, float yw,
 	float dy = yw - y;
     rot(-psi, dx, dy, xr, yr);
 }
-
 #define WAYPOINT_CLOSE 0.15f
-
-int near_waypoint(float x, float y)					// NEED TO CHECK IF CLOSE TO NEXT COUPLE WAYS
+int near_waypoint(float x, float y)					// CHECK IF CLOSE TO FIRST 3 WAYS
 {
 	if (waypoint_count == 0) return 1;
 
-	float dx = fabsf(x - waypoints[0].x);
-	float dy = fabsf(y - waypoints[0].y);
+	for (int j = 0; j < waypoint_count && j < 3; j++) {
+		float dx = fabsf(x - waypoints[j].x);
+		float dy = fabsf(y - waypoints[j].y);
 
-	if (dx < WAYPOINT_CLOSE && dy < WAYPOINT_CLOSE) {
-		// Shift all waypoints left
-		for (int i = 1; i < waypoint_count; i++) {
-			waypoints[i - 1] = waypoints[i];
+		if (dx < WAYPOINT_CLOSE && dy < WAYPOINT_CLOSE) {
+			// Remove the first (j+1) waypoints
+			for (int i = j + 1; i < waypoint_count; i++) {
+				waypoints[i - (j + 1)] = waypoints[i];
+			}
+			waypoint_count -= (j + 1);
+			return 1;
 		}
-		waypoint_count--;
 	}
 	return 0;
 }

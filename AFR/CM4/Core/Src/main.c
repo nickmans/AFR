@@ -153,6 +153,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   uartt_init();
   cmd_line_init();
+
   pwm_init();
   HAL_ADC_Start(&hadc1);
   /* USER CODE END 2 */
