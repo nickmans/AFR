@@ -20,8 +20,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     if (huart == &huart5) {
         int8_t cmd = normalize_cmd(rx_byte);
         if (cmd >= 0) {
-            if (cmd == 1) { started = 1, userstop = 0; printf("OK START\r\n"); }
-            else if (cmd == 0) { started = 0, userstop = 1; printf("OK STOP\r\n"); }
+            if (cmd == 1) { started = 1; userstop = 0;  HAL_GPIO_WritePin(GPIOG,GPIO_PIN_8,1); HAL_GPIO_WritePin(GPIOG,GPIO_PIN_6,1); printf("OK START\r\n"); }
+            else if (cmd == 0) { started = 0; userstop = 1; HAL_GPIO_WritePin(GPIOG,GPIO_PIN_8,0); HAL_GPIO_WritePin(GPIOG,GPIO_PIN_6,0); printf("OK STOP\r\n"); }
+            else if (cmd == 2){ printf("RESET\r\n"); NVIC_SystemReset(); }
             else if (cmd == 9) { printf("PONG\r\n"); }
             else { printf("ERR %d\r\n", (int)cmd); }
         }

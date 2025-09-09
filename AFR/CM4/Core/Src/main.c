@@ -151,6 +151,8 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
+  HAL_GPIO_WritePin(GPIOG,GPIO_PIN_8,0);
+  HAL_GPIO_WritePin(GPIOG,GPIO_PIN_6,0);
   uartt_init();
   cmd_line_init();
 

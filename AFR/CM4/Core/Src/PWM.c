@@ -85,7 +85,7 @@ void M7control(void *arg)
 }
 const double twopi60 = 0.10471975512;
 const double sixty2pi = 9.54929658551;
-static int cunter = 0;
+static int firstflag = 0;
 float vin = 0;
 void pwmgo(void *arg)
 {
@@ -102,7 +102,7 @@ void pwmgo(void *arg)
 		// 3) if we woke on the flag, grab & convert the new control_u[]
 		if (flags & NEW_SP_FLAG)
 		{
-
+			firstflag = 1;
 			for (int i = 0; i < 4; i++)
 				sp_rpm[i] = SHARED_MEM->control_u[i] * sixty2pi;
 
@@ -225,7 +225,8 @@ void pwmgo(void *arg)
 		    if (integ[i] >  INTEG_CAP) integ[i] =  INTEG_CAP;
 		    if (integ[i] < -INTEG_CAP) integ[i] = -INTEG_CAP;
 
-		    __HAL_TIM_SET_COMPARE(&htim1, CH[i], (uint32_t)duty);
+		    if (firstflag)
+		    	__HAL_TIM_SET_COMPARE(&htim1, CH[i], (uint32_t)duty);
 
 		}
 		if (flags & NEW_SP_FLAG) // if woke on new flag

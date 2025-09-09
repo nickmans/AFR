@@ -9,8 +9,8 @@
 #include "sensor.h"
 
 __attribute__((aligned(32))) volatile uint16_t adc_buf[ADC_CH * N_SAMPLES];
-volatile float motor_currentwr[ADC_CH];    // filtered A, read by PWM.c
-volatile float motor_current[ADC_CH];    // filtered A, read by PWM.c
+volatile float motor_currentwr[ADC_CH] = {0};    // filtered A, read by PWM.c
+volatile float motor_current[ADC_CH] = {0};    // filtered A, read by PWM.c
 
 volatile uint16_t zero_counts[ADC_CH] = {32768,32768,32768,32768};
 volatile float    vdda_V = 3.19f;  // provisional VDDA from your measurements
