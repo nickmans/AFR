@@ -55,7 +55,7 @@ static const double R[4][4] = {
 static double P    [3][3];       // covariance
 const double dt = 0.1;    // 1/10 Hz
 const double rw = 0.033;
-double halfW = 0.15 * 0.5;
+double halfW = 0.175 * 0.5;
 
 /* USER CODE END PTD */
 
@@ -127,7 +127,7 @@ void StartDefaultTask(void *argument);
 void wayreceive(void *argument);
 void uset(void *argument);
 void CONTROL(void *argument);
-static void controller_loop(void);
+static int controller_loop(void);
 static void init_controller_weights(void);
 static void filter_init(void);
 /* USER CODE END PFP */
@@ -723,6 +723,7 @@ void CONTROL(void *argument)
 	{
 		while(started)
 		{
+
 			if (waypoint_count<1)
 				started = 0;
 
@@ -773,7 +774,7 @@ void CONTROL(void *argument)
 			//printf("%.3f %.3f %.3f %.3f\n",measurements[3],measurements[4],measurements[5],measurements[6]);
 
 
-			measurements[0] = BN0055heading_to_yaw(heading); //wrap_to_pi(heading*M_PI/180-init_yaw); //wrap_to_pi(heading);
+			measurements[0] = BN0055heading_to_yaw(heading);
 			measurements[1] = -yawrate;
 			measurements[2] = ax;
 							// yaw			   yawrate 		    accel_x			 encoder robot v_x
@@ -789,7 +790,7 @@ void CONTROL(void *argument)
 
 			double slips[4] = {0, 0, 0, 0};
 			double enc[4] = {measurements[3],measurements[4],measurements[5],measurements[6]};
-			compute_slips(xhat[2],measurements[1],enc,slips);
+			//compute_slips(xhat[2],measurements[1],enc,slips);
 
 			online_data(measurements,slips);
 
@@ -802,12 +803,24 @@ void CONTROL(void *argument)
 
 			xreffer(acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.y, acadoVariables.yN);		// Update existing trajectory
 
-			controller_loop();
+			int status = controller_loop();
+			if (status!=0 || isnan(acadoVariables.u[0]))
+			{
+				control_reset_all();
+				waypoint_count = 0;
+				step_counter = 0;
+				printf("Can't Do It\n");
+				//continue;
+			}
 
 			//static int done = 0;
 			//if (done++ % 10 == 0)
-				//printf("%.2f %.2f %.2f %.2f\n",acadoVariables.u[0],acadoVariables.u[1],acadoVariables.u[2],acadoVariables.u[3]);
+			//{
+				//printf("u: %.2f %.2f %.2f %.2f\n",acadoVariables.u[0],acadoVariables.u[1],acadoVariables.u[2],acadoVariables.u[3]);
+				//printf("meas: %.3f %.3f %.3f %.3f\n",z[0],z[1],z[2],z[3]);
 
+				//printf("yaw: %.2f\n",measurements[0]);
+			//}
 
 
 			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
@@ -822,10 +835,10 @@ void CONTROL(void *argument)
 
 			if (!SHARED_MEM->flagm7)
 			{
-				SHARED_MEM->control_u[0] = 0;//acadoVariables.u[0];	FL
-				SHARED_MEM->control_u[1] = 0;//acadoVariables.u[2]; RL
-				SHARED_MEM->control_u[2] = 0;//acadoVariables.u[1]; FR
-				SHARED_MEM->control_u[3] = 0;//acadoVariables.u[3]; RR
+				SHARED_MEM->control_u[0] = acadoVariables.u[0];	//FL
+				SHARED_MEM->control_u[1] = acadoVariables.u[2]; //RL
+				SHARED_MEM->control_u[2] = acadoVariables.u[1]; //FR
+				SHARED_MEM->control_u[3] = acadoVariables.u[3]; //RR
 				SHARED_MEM->flagm7 = 1;
 				SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
 				__DSB();
@@ -867,24 +880,20 @@ int _write(int file, char *ptr, int len) {
     HAL_UART_Transmit(&huart5, (uint8_t*)ptr, len, HAL_MAX_DELAY);
     return len;
 }
-static void controller_loop(void)
+static int controller_loop(void)
 {
 	int iter = 0, status;
 	for(iter = 0; iter < 2; ++iter)
 	{
 		acado_preparationStep();
 		status = acado_feedbackStep();
-
-		if (status != 0)
-		{
-			control_reset_all();
-			waypoint_count = 0;
-			printf("Can't Do It\n");
-			break;
-		}
-
 		acado_shiftStates(2, 0, 0);     // shift by 1, fill last with copy, don't reset multipliers
+		if (status != 0)
+			break;
 	}
+	if (status!=0)
+		acadoVariables.u[0] = 0,acadoVariables.u[1] = 0,acadoVariables.u[2] = 0,acadoVariables.u[3] = 0;	// guard NaN
+	return status;
     // send u[0..3] back in one line
     //char out[64];
     //int n = snprintf(out, sizeof(out),
@@ -942,7 +951,7 @@ int _gettimeofday(struct timeval *tv, void *tzvp)
  * @return true if squared distance ≤ radius²
  */
 static double rtoothers = 0.3;
-static double rtotag = 0.3;
+static double rtotag = 0.7;
 double lastwx;
 double lastwy;
 #define MAX_WAYPOINTS 15
@@ -973,16 +982,18 @@ void wayreceive(void *argument)
 			double wy;
 
 			double rawwx = SHARED_MEM->tag_pos[1];
-			double rawwy = -SHARED_MEM->tag_pos[0];
+			double rawwy = SHARED_MEM->tag_pos[0];
 
 			//printf("%.3f %.3f %.3f %.3f\n",acadoVariables.u[0],acadoVariables.u[1],acadoVariables.u[2],acadoVariables.u[3]);
 
 			//printf("current yaw: %.3f\n", acadoVariables.x0[2]);
-			//printf("relative pos: %.3f %.3f\n",rawwx,rawwy);
+			printf("relative pos: %.3f %.3f\n",rawwx,rawwy);
 
 			robot_to_world(rawwx,rawwy,acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],&wx,&wy);
 
-			//printf("shifted to world frame: %.3f %.3f\n",wx,wy);
+			//printf("world frame: %.3f %.3f\n",wx,wy);
+			//printf("%.3f %.3f %.3f %.3f\n",acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],acadoVariables.x0[3]);
+
 
 			//if (wx && wy) are within waypoint_radius of acadoVariables.x0[0],acadoVariables.x0[1] AND waypoint_count = 0, stop the control thread.
 		    //if true and waypoint_ count>0, ignore this waypoint.
@@ -1060,6 +1071,7 @@ void wayreceive(void *argument)
 					if (waypoint_count == 0)
 						control_reset_all();
 					waypoint_count++;
+					printf("+Waypoint\n");
 					//printf("%.3f %.3f %.3f\n",acadoVariables.x0[0], acadoVariables.x0[1], init_yaw);
 					//printf("current yaw: %.3f\n",acadoVariables.x0[2]);
 					//for (int k = 0; k < waypoint_count; k++)

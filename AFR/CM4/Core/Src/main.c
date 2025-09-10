@@ -155,9 +155,10 @@ int main(void)
   HAL_GPIO_WritePin(GPIOG,GPIO_PIN_6,0);
   uartt_init();
   cmd_line_init();
-
   pwm_init();
   HAL_ADC_Start(&hadc1);
+  //HAL_GPIO_WritePin(GPIOG,GPIO_PIN_8,1);
+  //HAL_GPIO_WritePin(GPIOG,GPIO_PIN_6,1);
   /* USER CODE END 2 */
 
   /* Init scheduler */
