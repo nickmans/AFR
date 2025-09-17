@@ -13,7 +13,8 @@
 #include "shared_mem.h"
 #include <stdbool.h>
 #define CPR               330u
-#define MAX_CURR_A        0.8
+#define MAX_CURR_A        1
+#define HARDMAX_CURR_A    1.5
 #define PWM_MAX           (__HAL_TIM_GET_AUTORELOAD(&htim1))
 #define CONTROL_TIMEOUT   pdMS_TO_TICKS(25u)
 #define NEW_SP_FLAG       (1U<<0)
@@ -194,8 +195,19 @@ void pwmgo(void *arg)
 		    // current limiting
 		    double duty = duty_raw;
 		    const double cur = motor_current[i];          // your current read
-		    if (cur > MAX_CURR_A && cur > 0.0) {
-		        duty *= (MAX_CURR_A / cur);
+
+	        if (fabs(cur) > 2)
+	        {
+	            HAL_GPIO_WritePin(GPIOG, GPIO_PIN_8, 0);
+	            HAL_GPIO_WritePin(GPIOG, GPIO_PIN_6, 0);
+	        }
+		    if (fabs(cur) > HARDMAX_CURR_A)
+		    {			//hard limit
+		        duty = 0;
+		    }
+		    if (fabs(cur) > MAX_CURR_A)
+		    {				//soft limit, ratio duty down
+		        duty *= (MAX_CURR_A / fabs(cur));
 		    }
 
 		    // clamp to [0, PWM_MAX]

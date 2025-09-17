@@ -31,10 +31,10 @@ static void average_block(uint16_t *base, int n){
         uint16_t avgc = (uint16_t)(acc[ch]/(uint32_t)n);
         motor_currentwr[ch] = amps_from_counts(avgc, zero_counts[ch]);
     }
-    motor_current[0] = motor_currentwr[1];
-    motor_current[1] = motor_currentwr[0];
-    motor_current[2] = motor_currentwr[3];
-    motor_current[3] = motor_currentwr[2];
+    motor_current[0] = motor_currentwr[1];	// FL
+    motor_current[1] = motor_currentwr[0];	// RL
+    motor_current[2] = motor_currentwr[3];	// FR
+    motor_current[3] = motor_currentwr[2];	// RR
 }
 
 void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc){

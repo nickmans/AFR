@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Delete resource &apos;AFR_CM7/Core/Inc/rplidar_parser.h&apos;" deleteContents="false" description="Delete resource &apos;AFR_CM7/Core/Inc/rplidar_parser.h&apos;" element1="/AFR_CM7/Core/Inc/rplidar_parser.h" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1757920603059"/>
+</session>

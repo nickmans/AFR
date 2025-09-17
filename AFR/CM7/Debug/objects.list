@@ -6,6 +6,7 @@
 "./Core/Src/IMU.o"
 "./Core/Src/freertos.o"
 "./Core/Src/main.o"
+"./Core/Src/rplidar_parser.o"
 "./Core/Src/stm32h7xx_hal_msp.o"
 "./Core/Src/stm32h7xx_it.o"
 "./Core/Src/syscalls.o"

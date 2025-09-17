@@ -13,6 +13,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include "uart5_comm.h"
 
 #define dt 0.1
 #define v_des 0.8
@@ -40,7 +41,7 @@ static float y_min;
 
 static const float hard_thresh2 = robot_radius * robot_radius;
 static const float soft_thresh2 = (robot_radius + 0.2f) * (robot_radius + 0.2f);
-static const int inflate_range = (int)((robot_radius + 0.2f) / map_res);
+static const int inflate_range = (int)((robot_radius + 0.0f) / map_res);
 const int nrow = MAP_DIM_CELLS;
 const int ncol = MAP_DIM_CELLS;
 typedef struct { uint8_t r, c; } Node;
@@ -124,10 +125,9 @@ void world_to_map(float pos_x, float pos_y, int* xi, int* yi);
 void map_to_world(int xi, int yi, float* xw, float* yw);
 float estimate_curvature_c(float x1, float y1, float x2, float y2, float x3, float y3);
 void prune_Xref_if_needed(float state0,float state1);
-void print_xref(void);
 
 void lidar_to_costmap(
-    float state[2],                     // robot  position [x, y]
+    float state[3],                     // robot  position [x, y]
     Point2D* lidar_points, int L,       // LiDAR points (robot frame)
     uint8_t occ_map[MAX_MAP_SIZE_CELLS][MAX_MAP_SIZE_CELLS]
 );
@@ -155,6 +155,12 @@ static inline void world_to_robot(float xw, float yw,
 	float dy = yw - y;
     rot(-psi, dx, dy, xr, yr);
 }
+static inline int world_to_cell(float coord) {
+    int idx = (int)((coord + map_size / 2.0f) / map_res);
+    if (idx < 0) idx = -10000;
+    if (idx >= MAP_DIM_CELLS) idx = -10000;
+    return idx;
+}
 #define WAYPOINT_CLOSE 0.15f
 int near_waypoint(float x, float y)					// CHECK IF CLOSE TO FIRST 3 WAYS
 {
@@ -164,9 +170,11 @@ int near_waypoint(float x, float y)					// CHECK IF CLOSE TO FIRST 3 WAYS
 		float dx = fabsf(x - waypoints[j].x);
 		float dy = fabsf(y - waypoints[j].y);
 
-		if (dx < WAYPOINT_CLOSE && dy < WAYPOINT_CLOSE) {
+		if (dx < WAYPOINT_CLOSE && dy < WAYPOINT_CLOSE)
+		{
 			// Remove the first (j+1) waypoints
-			for (int i = j + 1; i < waypoint_count; i++) {
+			for (int i = j + 1; i < waypoint_count; i++)
+			{
 				waypoints[i - (j + 1)] = waypoints[i];
 			}
 			waypoint_count -= (j + 1);
@@ -175,19 +183,7 @@ int near_waypoint(float x, float y)					// CHECK IF CLOSE TO FIRST 3 WAYS
 	}
 	return 0;
 }
-void print_xref(void)
-{
-    for (int i = 0; i < N; ++i) {
-        printf(
-          "%.6f %.6f %.6f %.6f ",
-          Xref[i].x,
-          Xref[i].y,
-          Xref[i].yaw,
-          Xref[i].v
-        );
-    }
-    printf("\n");
-}
+
 static inline float fast_hypotf(float x, float y)
 {
     x = fabsf(x);
@@ -212,7 +208,6 @@ void xreffer(float x, float y, real_t ay[ACADO_N*ACADO_NY], real_t ayN[ACADO_NYN
 {
 	prune_Xref_if_needed(x,y);
 	near_waypoint(x,y);
-	//print_xref();
     // ay is size ACADO_N * ACADO_NY
     for (int i = 0; i < ACADO_N; ++i) {
         ay[i*ACADO_NY + 0] = Xref[i].x;
@@ -244,10 +239,13 @@ void trajectory(const real_t ax0[4])
 	uint32_t  size_path_pts      = sizeof(Point2D) * (MAX_PATH_POINTS + 1);
 */
     float pos[3] = {ax0[0],ax0[1],ax0[2]};
-    near_waypoint(pos[0], pos[1]);
-    Point2D* lidar_pts; int cnt;
-    lidar_pts = NULL;
-    cnt = 0;                 // <-- no points
+
+    Point2D lidar_pts[cnt];
+
+    for (size_t i = 0; i < cnt; i++) {
+    	lidar_pts[i].x = pts[i].x;
+    	lidar_pts[i].y = pts[i].y;
+    }
 
     uint8_t occ_map[MAX_MAP_SIZE_CELLS][MAX_MAP_SIZE_CELLS];
 
@@ -257,8 +255,31 @@ void trajectory(const real_t ax0[4])
     y_min = pos[1] - map_size/2.0f;
     lidar_to_costmap(pos, lidar_pts, cnt, occ_map);
 
+    near_waypoint(pos[0], pos[1]);
+
     //printf("%.3f\n",ax0[0]);
     //uint32_t t0 = HAL_GetTick();
+
+	for (int j = 0; j < waypoint_count && j < 3; j++)
+	{
+		// --- Check if this waypoint is inside a hard cell ---
+		int gx = world_to_cell(waypoints[j].x);
+		if (gx == -10000)
+			continue;
+		int gy = world_to_cell(waypoints[j].y);
+		if (gy == -10000)
+			continue;
+		if (occ_map[gy][gx] == MAP_HARD)
+		{
+			// Remove this waypoint (shift array left)
+			for (int i = j + 1; i < waypoint_count; i++)
+			{
+				waypoints[i - 1] = waypoints[i];
+			}
+			waypoint_count--;
+			j--; // stay at same index since we pulled a new waypoint into slot j
+		}
+	}
 
     plan_local_trajectory(pos, waypoints, waypoint_count, occ_map);
     //uint32_t t_elapsed = HAL_GetTick() - t0;
@@ -531,7 +552,7 @@ void world_to_map(float px, float py, int* xi, int* yi) {
 }
 
 void lidar_to_costmap(
-    float state[2],                     // robot world position [x, y]
+    float state[3],                     // robot world position [x, y]
     Point2D* lidar_points, int L,       // LiDAR points (robot frame)
     uint8_t occ_map[MAX_MAP_SIZE_CELLS][MAX_MAP_SIZE_CELLS]
 ) {
@@ -548,6 +569,13 @@ void lidar_to_costmap(
         // After: rotate by yaw, then translate
         float rx  = lidar_points[i].x;
         float ry  = lidar_points[i].y;
+
+        // Ignore robot body
+        // Rectangle: x in [-0.30, 0.0], |y| <= 0.15
+        if ((rx >= -0.30f && rx <= 0.0f) && (fabsf(ry) <= 0.15f)) {
+            continue; // skip this point
+        }
+
         float yaw = state[2];
         float world_x =  cosf(yaw)*rx
                        - sinf(yaw)*ry

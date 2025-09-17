@@ -89,6 +89,7 @@ I2C_HandleTypeDef hi2c2;
 
 UART_HandleTypeDef huart5;
 UART_HandleTypeDef huart2;
+DMA_HandleTypeDef hdma_usart2_rx;
 
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -246,6 +247,50 @@ static inline void compute_slips(
             slips[i] = 0.0;
         }
     }
+}
+// LIDAR CMDS
+int lidarstarted = 0;
+int wantlidarstarted = 0;
+const uint8_t start_cmd[] = {0xA5, 0x20};  // legacy scan start
+const uint8_t motor_speed_cmd[] = {
+    0xA5,       // start flag
+    0xA8,       // MOTOR_SPEED_CTRL
+    0x02,       // payload length
+	0x58, 0x02, // RPM = 300
+    0x87        // checksum = 0xA8 ^ 0x02 ^ 0x2C ^ 0x01
+};
+const uint8_t stop_cmd[]  = {0xA5, 0x25};  // stop
+const uint8_t health_cmd[]  = {0xA5, 0x52};  // health
+const uint8_t info_cmd[]  = {0xA5, 0x50};  // info
+uint16_t cnt = 0;
+void get_lidar(void)
+{
+	if (lidarstarted)
+	{
+		if (!wantlidarstarted)
+		{
+			HAL_UART_Transmit(&huart2, (uint8_t*)stop_cmd, sizeof(stop_cmd), HAL_MAX_DELAY);
+			lidarstarted = 0;
+		}
+		else
+		{
+			rplidar_parser_get_scan(pts, &cnt);
+		}
+	}
+	else
+	{
+		if (wantlidarstarted)
+		{
+			rplidar_parser_init();
+			//printf("free heap %lu, hwmark %u\r\n", xPortGetFreeHeapSize(), uxTaskGetStackHighWaterMark(NULL));
+			//SCB_InvalidateDCache_by_Addr((uint32_t*)dma_rx_buf, DMA_BUF_SIZE);
+			HAL_UART_Receive_DMA(&huart2, dma_rx_buf, DMA_BUF_SIZE);
+			HAL_UART_Transmit(&huart2, (uint8_t*)start_cmd, sizeof(start_cmd), HAL_MAX_DELAY);
+			lidarstarted = 1;
+			uint16_t     cnt;
+			rplidar_parser_get_scan(pts, &cnt);
+		}
+	}
 }
 /* USER CODE END 0 */
 
@@ -591,7 +636,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
+  huart2.Init.BaudRate = 460800;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -631,6 +676,11 @@ static void MX_DMA_Init(void)
 
   /* DMA controller clock enable */
   __HAL_RCC_DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA1_Stream1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream1_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream1_IRQn);
 
 }
 
@@ -723,9 +773,10 @@ void CONTROL(void *argument)
 	{
 		while(started)
 		{
-
+			waypoint_count = 1;
 			if (waypoint_count<1)
 				started = 0;
+		    uint32_t t0 = HAL_GetTick();
 
 			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED2_MEM, sizeof(*SHARED2_MEM));
 			__DSB();   // ensure memory order
@@ -737,6 +788,7 @@ void CONTROL(void *argument)
 				measurements[6] =  SHARED2_MEM->encoders[3];
 
 				if (minutecoonter > 50)
+				{
 					if (coonter<NUM_VSAMPLES)
 					{
 						VIN[coonter] = SHARED2_MEM->BATT_V;
@@ -760,6 +812,7 @@ void CONTROL(void *argument)
 						minutecoonter = 0;
 						coonter = 0;
 					}
+				}
 				else
 					minutecoonter++;
 
@@ -797,11 +850,24 @@ void CONTROL(void *argument)
 			//waypoints[waypoint_count].x = wx;
 			//waypoints[waypoint_count].y = wy;
 
+			//get_lidar();
 			static int step_counter = 0;
 			if (step_counter++ % 10 == 0)			//every 10 steps new trajectory
+			{
+				get_lidar();
 				trajectory(acadoVariables.x0);
-
-			xreffer(acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.y, acadoVariables.yN);		// Update existing trajectory
+				// print every point's X, Y
+				/*char buf[64];   // buffer for one line of text
+				for (uint16_t i = 0; i < cnt; i++)
+				{
+				    int len = snprintf(buf, sizeof(buf), "(%.2f, %.2f),\r\n", pts[i].x, pts[i].y);
+				    if (len > 0) {
+				        HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)buf, len, HAL_MAX_DELAY);
+				    }
+				}*/
+			}
+			else
+				xreffer(acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.y, acadoVariables.yN);		// Update existing trajectory
 
 			int status = controller_loop();
 			if (status!=0 || isnan(acadoVariables.u[0]))
@@ -835,19 +901,62 @@ void CONTROL(void *argument)
 
 			if (!SHARED_MEM->flagm7)
 			{
-				SHARED_MEM->control_u[0] = acadoVariables.u[0];	//FL
-				SHARED_MEM->control_u[1] = acadoVariables.u[2]; //RL
-				SHARED_MEM->control_u[2] = acadoVariables.u[1]; //FR
-				SHARED_MEM->control_u[3] = acadoVariables.u[3]; //RR
+				SHARED_MEM->control_u[0] = 0;//acadoVariables.u[0];	//FL
+				SHARED_MEM->control_u[1] = 0;//acadoVariables.u[2]; //RL
+				SHARED_MEM->control_u[2] = 0;//acadoVariables.u[1]; //FR
+				SHARED_MEM->control_u[3] = 0;//acadoVariables.u[3]; //RR
 				SHARED_MEM->flagm7 = 1;
 				SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
 				__DSB();
 			}
-
+			uint32_t t_elapsed = HAL_GetTick() - t0;
+			//printf("%lu\n",t_elapsed);
 			vTaskDelayUntil(&last_wake, period);   // align to 100 ms
 		}
+		// IDLING
 		while(!started)
 		{
+			//printf("dma_rx_buf @ %p\r\n", dma_rx_buf);
+			//get_lidar();
+
+			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED2_MEM, sizeof(*SHARED2_MEM));
+			__DSB();   // ensure memory order
+			if (SHARED2_MEM->flagencoders)				// CHECK FOR NEW ENCODER COUNT - IS UPDATED IN 25ms PWM LOOP ON M4
+			{
+				if (minutecoonter > 5)
+				{
+					if (coonter<NUM_VSAMPLES)
+					{
+						VIN[coonter] = SHARED2_MEM->BATT_V;
+						coonter++;
+					}
+					else
+					{
+						BATTERY_VOLTAGE = averageVIN(VIN);
+						printf("%.3fV\n",BATTERY_VOLTAGE);
+						//printf("%.3f %.3f %.3f %.3f\n",acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],acadoVariables.x0[3]);
+						if (BATTERY_VOLTAGE<10.5)
+						{
+							printf("CHARGE THE ROBOT\n");
+						}
+						if (BATTERY_VOLTAGE<10)
+						{
+							printf("CHARGE NOW CHARGE NOW\n");
+							started = 0;
+						}
+						//printf("%.3f %.3f %.3f %.3f\n",measurements[3],measurements[4],measurements[5],measurements[6]);
+						minutecoonter = 0;
+						coonter = 0;
+					}
+				}
+				else
+					minutecoonter++;
+
+				SHARED2_MEM->flagencoders = 0;
+				SCB_CleanDCache_by_Addr((uint32_t*)SHARED2_MEM, sizeof(*SHARED2_MEM));
+				__DSB();
+			}
+
 			// Wait to send new control inputs
 			while (SHARED_MEM->flagm7)
 			{
@@ -904,14 +1013,14 @@ static int controller_loop(void)
 }
 void init_controller_weights(void)
 {
-    const float W_diag[12] = {
-        1e4f, 1e4f, 1e-3f, 1e-1f,
-        3e-1f, 3e-1f, 3e-1f, 3e-1f,
-        1e3f,  1e3f,  1e3f,  1e3f
+    const double W_diag[12] = {
+        1e4, 1e4, 1e-3, 1e-1,
+        5e-1, 5e-1, 5e-1, 5e-1,
+        1e4,  1e4,  1e4,  1e4
     };
 
-    const float WN_diag[4] = {
-        1e4f, 1e4f, 1e-3f, 1e-1f
+    const double WN_diag[4] = {
+        1e4, 1e4, 1e-3, 1e-1
     };
 
     // Clear and assign W (12x12)

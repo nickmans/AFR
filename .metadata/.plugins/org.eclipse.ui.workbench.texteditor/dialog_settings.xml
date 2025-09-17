@@ -3,22 +3,23 @@
 	<item key="hasShownOverlayPopupBefore" value="true"/>
 	<item key="replaceBarOpen" value="true"/>
 	<list key="searchhistory">
-		<item value="acadoVariables"/>
-		<item value="yawrate"/>
-		<item value="BN0055heading_to_yaw"/>
-		<item value="init_yaw"/>
-		<item value="heading"/>
-		<item value="waypoints"/>
-		<item value="printf"/>
-		<item value="wrap_deg_to_pi"/>
-		<item value="write"/>
-		<item value="]"/>
-		<item value="FORWARD12"/>
-		<item value="yaw_init"/>
-		<item value="pi"/>
-		<item value="wraptopi"/>
-		<item value="robot_to_world"/>
+		<item value="sin"/>
+		<item value="double"/>
+		<item value="RPLIDAR_MAX_POINTS"/>
+		<item value="stop_cmd"/>
+		<item value="stop_cmnd"/>
+		<item value="stop"/>
+		<item value="dma_rx_buf"/>
+		<item value="LidarPoint_t"/>
+		<item value="DMA_BUF_SIZE"/>
+		<item value="pts"/>
+		<item value="motor_speed_cmd"/>
+		<item value="MAX_CURR_A"/>
+		<item value="YawRate"/>
+		<item value="HAL_GPIO_WritePin(GPIOG,GPIO_PIN_8,1)"/>
+		<item value="yN"/>
 	</list>
 	<list key="replacehistory">
+		<item value="float"/>
 	</list>
 </section>
