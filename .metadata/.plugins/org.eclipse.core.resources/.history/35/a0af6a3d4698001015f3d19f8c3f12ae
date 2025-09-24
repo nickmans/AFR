@@ -207,23 +207,16 @@ static inline float heuristic(int r1, int c1, int r2, int c2)
 #define FRONT_X_MIN  0.00f   // at the sensor
 #define FRONT_X_MAX  0.20f   // 20 cm ahead
 #define FRONT_Y_HALF 0.10f   // ±10 cm left/right
-int OBJECT_INFRONT = 0;
 void xreffer(float x, float y, real_t ay[ACADO_N*ACADO_NY], real_t ayN[ACADO_NYN])
 {
 	prune_Xref_if_needed(x,y);
 	near_waypoint(x,y);
-	int FOUND = 0;
+
     for (size_t i = 0; i < cnt; i++)
     {
         if (pts[i].x >= FRONT_X_MIN && pts[i].x <= FRONT_X_MAX && fabsf(pts[i].y) <= FRONT_Y_HALF)
-        {
-        	FOUND = 1;
-        }
+            return true;
     }
-    if (FOUND == 1)
-    	OBJECT_INFRONT = 1;
-    else
-    	OBJECT_INFRONT = 0;
 
     // ay is size ACADO_N * ACADO_NY
     for (int i = 0; i < ACADO_N; ++i) {

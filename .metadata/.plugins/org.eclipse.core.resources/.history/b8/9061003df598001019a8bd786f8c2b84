@@ -905,26 +905,15 @@ void CONTROL(void *argument)
 
 			if (!SHARED_MEM->flagm7)
 			{
-				if (waypoint_count == 0)
-				{
-					SHARED_MEM->control_u[0] = 0;//acadoVariables.u[0];	//FL
-					SHARED_MEM->control_u[1] = 0;//acadoVariables.u[2]; //RL
-					SHARED_MEM->control_u[2] = 0;//acadoVariables.u[1]; //FR
-					SHARED_MEM->control_u[3] = 0;//acadoVariables.u[3]; //RR
-				}
-				else
-				{
-					SHARED_MEM->control_u[0] = acadoVariables.u[0];	//FL
-					SHARED_MEM->control_u[1] = acadoVariables.u[2]; //RL
-					SHARED_MEM->control_u[2] = acadoVariables.u[1]; //FR
-					SHARED_MEM->control_u[3] = acadoVariables.u[3]; //RR
-				}
-
+				SHARED_MEM->control_u[0] = 0;//acadoVariables.u[0];	//FL
+				SHARED_MEM->control_u[1] = 0;//acadoVariables.u[2]; //RL
+				SHARED_MEM->control_u[2] = 0;//acadoVariables.u[1]; //FR
+				SHARED_MEM->control_u[3] = 0;//acadoVariables.u[3]; //RR
 				SHARED_MEM->flagm7 = 1;
 				SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
 				__DSB();
 			}
-			//uint32_t t_elapsed = HAL_GetTick() - t0;
+			uint32_t t_elapsed = HAL_GetTick() - t0;
 			//printf("%lu\n",t_elapsed);
 			vTaskDelayUntil(&last_wake, period);   // align to 100 ms
 		}

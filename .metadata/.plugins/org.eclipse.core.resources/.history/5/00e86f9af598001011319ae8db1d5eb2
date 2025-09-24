@@ -924,7 +924,7 @@ void CONTROL(void *argument)
 				SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
 				__DSB();
 			}
-			//uint32_t t_elapsed = HAL_GetTick() - t0;
+			uint32_t t_elapsed = HAL_GetTick() - t0;
 			//printf("%lu\n",t_elapsed);
 			vTaskDelayUntil(&last_wake, period);   // align to 100 ms
 		}

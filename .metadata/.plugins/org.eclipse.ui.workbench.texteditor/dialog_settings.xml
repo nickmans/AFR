@@ -3,21 +3,21 @@
 	<item key="hasShownOverlayPopupBefore" value="true"/>
 	<item key="replaceBarOpen" value="true"/>
 	<list key="searchhistory">
-		<item value="sin"/>
-		<item value="double"/>
-		<item value="RPLIDAR_MAX_POINTS"/>
-		<item value="stop_cmd"/>
-		<item value="stop_cmnd"/>
-		<item value="stop"/>
-		<item value="dma_rx_buf"/>
-		<item value="LidarPoint_t"/>
-		<item value="DMA_BUF_SIZE"/>
-		<item value="pts"/>
-		<item value="motor_speed_cmd"/>
-		<item value="MAX_CURR_A"/>
-		<item value="YawRate"/>
-		<item value="HAL_GPIO_WritePin(GPIOG,GPIO_PIN_8,1)"/>
-		<item value="yN"/>
+		<item value="control_reset_all"/>
+		<item value="wantlidarstarted"/>
+		<item value="world_to_cell"/>
+		<item value="MAP_DIM_CELLS"/>
+		<item value="print_xref"/>
+		<item value="SET_BIT"/>
+		<item value="near_waypoint"/>
+		<item value="MAP_RES"/>
+		<item value="MAP_DIM_CELLS "/>
+		<item value="soft_thresh2"/>
+		<item value="costmap"/>
+		<item value="pad"/>
+		<item value="padding"/>
+		<item value="costma"/>
+		<item value="lidar_to_costmap"/>
 	</list>
 	<list key="replacehistory">
 		<item value="float"/>

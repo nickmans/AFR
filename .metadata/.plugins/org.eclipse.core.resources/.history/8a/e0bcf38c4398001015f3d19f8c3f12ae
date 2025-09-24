@@ -250,7 +250,7 @@ static inline void compute_slips(
 }
 // LIDAR CMDS
 int lidarstarted = 0;
-int wantlidarstarted = 1;
+int wantlidarstarted = 0;
 const uint8_t start_cmd[] = {0xA5, 0x20};  // legacy scan start
 const uint8_t motor_speed_cmd[] = {
     0xA5,       // start flag
@@ -773,10 +773,10 @@ void CONTROL(void *argument)
 	{
 		while(started)
 		{
-			//waypoint_count = 1;
+			waypoint_count = 1;
 			if (waypoint_count<1)
 				started = 0;
-		    //uint32_t t0 = HAL_GetTick();
+		    uint32_t t0 = HAL_GetTick();
 
 			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED2_MEM, sizeof(*SHARED2_MEM));
 			__DSB();   // ensure memory order
@@ -850,10 +850,11 @@ void CONTROL(void *argument)
 			//waypoints[waypoint_count].x = wx;
 			//waypoints[waypoint_count].y = wy;
 
-			get_lidar();
+			//get_lidar();
 			static int step_counter = 0;
 			if (step_counter++ % 10 == 0)			//every 10 steps new trajectory
 			{
+				get_lidar();
 				trajectory(acadoVariables.x0);
 				// print every point's X, Y
 				/*char buf[64];   // buffer for one line of text
@@ -868,13 +869,8 @@ void CONTROL(void *argument)
 			else
 				xreffer(acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.y, acadoVariables.yN);		// Update existing trajectory
 
-			if (OBJECT_INFRONT)
-			{
-				printf("BLOCKED!\n");
-			}
-
 			int status = controller_loop();
-			if (status!=0 || isnan(acadoVariables.u[0]) || OBJECT_INFRONT)
+			if (status!=0 || isnan(acadoVariables.u[0]))
 			{
 				control_reset_all();
 				waypoint_count = 0;
@@ -905,26 +901,15 @@ void CONTROL(void *argument)
 
 			if (!SHARED_MEM->flagm7)
 			{
-				if (waypoint_count == 0)
-				{
-					SHARED_MEM->control_u[0] = 0;//acadoVariables.u[0];	//FL
-					SHARED_MEM->control_u[1] = 0;//acadoVariables.u[2]; //RL
-					SHARED_MEM->control_u[2] = 0;//acadoVariables.u[1]; //FR
-					SHARED_MEM->control_u[3] = 0;//acadoVariables.u[3]; //RR
-				}
-				else
-				{
-					SHARED_MEM->control_u[0] = acadoVariables.u[0];	//FL
-					SHARED_MEM->control_u[1] = acadoVariables.u[2]; //RL
-					SHARED_MEM->control_u[2] = acadoVariables.u[1]; //FR
-					SHARED_MEM->control_u[3] = acadoVariables.u[3]; //RR
-				}
-
+				SHARED_MEM->control_u[0] = 0;//acadoVariables.u[0];	//FL
+				SHARED_MEM->control_u[1] = 0;//acadoVariables.u[2]; //RL
+				SHARED_MEM->control_u[2] = 0;//acadoVariables.u[1]; //FR
+				SHARED_MEM->control_u[3] = 0;//acadoVariables.u[3]; //RR
 				SHARED_MEM->flagm7 = 1;
 				SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
 				__DSB();
 			}
-			//uint32_t t_elapsed = HAL_GetTick() - t0;
+			uint32_t t_elapsed = HAL_GetTick() - t0;
 			//printf("%lu\n",t_elapsed);
 			vTaskDelayUntil(&last_wake, period);   // align to 100 ms
 		}
@@ -932,7 +917,7 @@ void CONTROL(void *argument)
 		while(!started)
 		{
 			//printf("dma_rx_buf @ %p\r\n", dma_rx_buf);
-			get_lidar();
+			//get_lidar();
 
 			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED2_MEM, sizeof(*SHARED2_MEM));
 			__DSB();   // ensure memory order
