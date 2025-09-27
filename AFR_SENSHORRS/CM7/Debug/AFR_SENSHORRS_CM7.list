@@ -1508,7 +1508,7 @@ Error_Handler();
   MX_USART2_UART_Init();
  8000f1a:	f000 fadb 	bl	80014d4 <MX_USART2_UART_Init>
  /*
-	bno055_CONFIG();;
+	bno055_CONFIG();
 	bno055_NDOF();
 	BNO055_ApplyAllCalibration();
 */

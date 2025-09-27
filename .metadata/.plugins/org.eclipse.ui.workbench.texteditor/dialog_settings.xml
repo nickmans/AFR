@@ -3,21 +3,21 @@
 	<item key="hasShownOverlayPopupBefore" value="true"/>
 	<item key="replaceBarOpen" value="true"/>
 	<list key="searchhistory">
+		<item value="lidar_to_costmap"/>
+		<item value="t0"/>
+		<item value="rplidar_parser_get_scan"/>
+		<item value="get_lidar"/>
+		<item value="OBJECT_INFRONT"/>
+		<item value="near_waypoint"/>
+		<item value="PRUNE_THRESH"/>
+		<item value="EPSILON"/>
+		<item value="rtoothers"/>
 		<item value="control_reset_all"/>
 		<item value="wantlidarstarted"/>
 		<item value="world_to_cell"/>
 		<item value="MAP_DIM_CELLS"/>
 		<item value="print_xref"/>
 		<item value="SET_BIT"/>
-		<item value="near_waypoint"/>
-		<item value="MAP_RES"/>
-		<item value="MAP_DIM_CELLS "/>
-		<item value="soft_thresh2"/>
-		<item value="costmap"/>
-		<item value="pad"/>
-		<item value="padding"/>
-		<item value="costma"/>
-		<item value="lidar_to_costmap"/>
 	</list>
 	<list key="replacehistory">
 		<item value="float"/>

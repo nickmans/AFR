@@ -274,13 +274,15 @@ void get_lidar(void)
 		}
 		else
 		{
-			rplidar_parser_get_scan(pts, &cnt);
+			if(rplidar_parser_is_scan_ready())
+				rplidar_parser_get_scan(pts, &cnt);			// only update lidar if scan is ready (just under 10hz, slower than control loop)
 		}
 	}
 	else
 	{
 		if (wantlidarstarted)
 		{
+			//HAL_UART_Transmit(&huart2, (uint8_t*)stop_cmd, sizeof(stop_cmd), HAL_MAX_DELAY);
 			rplidar_parser_init();
 			//printf("free heap %lu, hwmark %u\r\n", xPortGetFreeHeapSize(), uxTaskGetStackHighWaterMark(NULL));
 			//SCB_InvalidateDCache_by_Addr((uint32_t*)dma_rx_buf, DMA_BUF_SIZE);
@@ -775,8 +777,12 @@ void CONTROL(void *argument)
 		{
 			//waypoint_count = 1;
 			if (waypoint_count<1)
+			{
 				started = 0;
-		    //uint32_t t0 = HAL_GetTick();
+				continue;
+			}
+
+		    uint32_t t0 = HAL_GetTick();
 
 			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED2_MEM, sizeof(*SHARED2_MEM));
 			__DSB();   // ensure memory order
@@ -787,7 +793,7 @@ void CONTROL(void *argument)
 				measurements[5] =  SHARED2_MEM->encoders[2];
 				measurements[6] =  SHARED2_MEM->encoders[3];
 
-				if (minutecoonter > 50)
+				if (minutecoonter > 500)
 				{
 					if (coonter<NUM_VSAMPLES)
 					{
@@ -799,11 +805,11 @@ void CONTROL(void *argument)
 						BATTERY_VOLTAGE = averageVIN(VIN);
 						printf("%.3fV\n",BATTERY_VOLTAGE);
 						//printf("%.3f %.3f %.3f %.3f\n",acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],acadoVariables.x0[3]);
-						if (BATTERY_VOLTAGE<10.5)
+						if (BATTERY_VOLTAGE<SOFT_VOLTAGE)
 						{
 							printf("CHARGE THE ROBOT\n");
 						}
-						if (BATTERY_VOLTAGE<10)
+						if (BATTERY_VOLTAGE<HARD_VOLTAGE)
 						{
 							printf("CHARGE NOW CHARGE NOW\n");
 							started = 0;
@@ -863,14 +869,16 @@ void CONTROL(void *argument)
 				    if (len > 0) {
 				        HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)buf, len, HAL_MAX_DELAY);
 				    }
-				}*/
+				}
+				const char endline[] = "---- SCAN END ----\r\n";
+				HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)endline, sizeof(endline)-1, HAL_MAX_DELAY); */
 			}
 			else
 				xreffer(acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.y, acadoVariables.yN);		// Update existing trajectory
 
 			if (OBJECT_INFRONT)
 			{
-				printf("BLOCKED!\n");
+				printf("BLOCKED! %d\n",OBJECT_INFRONT);
 			}
 
 			int status = controller_loop();
@@ -879,7 +887,7 @@ void CONTROL(void *argument)
 				control_reset_all();
 				waypoint_count = 0;
 				step_counter = 0;
-				printf("Can't Do It\n");
+				printf("Can't\n");
 				//continue;
 			}
 
@@ -902,7 +910,7 @@ void CONTROL(void *argument)
 				__DSB();   // ensure memory order
 				osDelay(1);
 			}
-
+			uint32_t t_elapsed = HAL_GetTick() - t0;
 			if (!SHARED_MEM->flagm7)
 			{
 				if (waypoint_count == 0)
@@ -912,19 +920,27 @@ void CONTROL(void *argument)
 					SHARED_MEM->control_u[2] = 0;//acadoVariables.u[1]; //FR
 					SHARED_MEM->control_u[3] = 0;//acadoVariables.u[3]; //RR
 				}
-				else
+				else if ((t_elapsed<95))
 				{
 					SHARED_MEM->control_u[0] = acadoVariables.u[0];	//FL
 					SHARED_MEM->control_u[1] = acadoVariables.u[2]; //RL
 					SHARED_MEM->control_u[2] = acadoVariables.u[1]; //FR
 					SHARED_MEM->control_u[3] = acadoVariables.u[3]; //RR
 				}
+				else
+				{
+					SHARED_MEM->control_u[0] = 0;//acadoVariables.u[0];	//FL
+					SHARED_MEM->control_u[1] = 0;//acadoVariables.u[2]; //RL
+					SHARED_MEM->control_u[2] = 0;//acadoVariables.u[1]; //FR
+					SHARED_MEM->control_u[3] = 0;//acadoVariables.u[3]; //RR
+					printf("Too slow!\n");
+				}
 
 				SHARED_MEM->flagm7 = 1;
 				SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
 				__DSB();
 			}
-			//uint32_t t_elapsed = HAL_GetTick() - t0;
+
 			//printf("%lu\n",t_elapsed);
 			vTaskDelayUntil(&last_wake, period);   // align to 100 ms
 		}
@@ -1074,11 +1090,8 @@ int _gettimeofday(struct timeval *tv, void *tzvp)
  * @param  radius in metres (e.g. 0.20)
  * @return true if squared distance ≤ radius²
  */
-static double rtoothers = 0.3;
-static double rtotag = 0.7;
 double lastwx;
 double lastwy;
-#define MAX_WAYPOINTS 15
 static bool waypoints_within_radius(double x1,double y1,double x2,double y2,double radius)
 {
     double dx = x1 - x2;
@@ -1111,7 +1124,7 @@ void wayreceive(void *argument)
 			//printf("%.3f %.3f %.3f %.3f\n",acadoVariables.u[0],acadoVariables.u[1],acadoVariables.u[2],acadoVariables.u[3]);
 
 			//printf("current yaw: %.3f\n", acadoVariables.x0[2]);
-			printf("relative pos: %.3f %.3f\n",rawwx,rawwy);
+			//printf("relative pos: %.3f %.3f\n",rawwx,rawwy);
 
 			robot_to_world(rawwx,rawwy,acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],&wx,&wy);
 
@@ -1195,7 +1208,7 @@ void wayreceive(void *argument)
 					if (waypoint_count == 0)
 						control_reset_all();
 					waypoint_count++;
-					printf("+Waypoint\n");
+					//printf("+Waypoint\n");
 					//printf("%.3f %.3f %.3f\n",acadoVariables.x0[0], acadoVariables.x0[1], init_yaw);
 					//printf("current yaw: %.3f\n",acadoVariables.x0[2]);
 					//for (int k = 0; k < waypoint_count; k++)
@@ -1205,7 +1218,7 @@ void wayreceive(void *argument)
 				{
 					failure:
 					failed_count++;
-					if (failed_count>20)
+					if (failed_count>10)
 					{
 						waypoint_count = 1;
 						waypoints[0].x = wx;
@@ -1243,18 +1256,7 @@ void wayreceive(void *argument)
 
 void BSP_PB_Callback(Button_TypeDef Button)
 {
-	SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
-	if (!SHARED_MEM->flagm7)
-	{
-		BSP_LED_Toggle(LED_RED);
-		SHARED_MEM->control_u[0] = 0;
-		SHARED_MEM->control_u[1] = 0;
-		SHARED_MEM->control_u[2] = 0;
-		SHARED_MEM->control_u[3] = 0;
-		SHARED_MEM->flagm7 = 1;
-		SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
-		__DSB();
-	}
+	BSP_LED_Toggle(LED_RED);
 }
 /* USER CODE END 4 */
 

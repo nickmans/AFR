@@ -1,4 +1,4 @@
 ../Core/Src/rplidar_parser.c:29:6:rplidar_parser_init	16	static
 ../Core/Src/rplidar_parser.c:42:6:rplidar_parser_feed	64	static
-../Core/Src/rplidar_parser.c:83:6:rplidar_parser_is_scan_ready	4	static
-../Core/Src/rplidar_parser.c:87:6:rplidar_parser_get_scan	32	static
+../Core/Src/rplidar_parser.c:87:6:rplidar_parser_is_scan_ready	4	static
+../Core/Src/rplidar_parser.c:91:6:rplidar_parser_get_scan	32	static

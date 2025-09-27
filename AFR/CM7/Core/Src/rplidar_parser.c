@@ -59,6 +59,10 @@ void rplidar_parser_feed(uint8_t b) {
     raw_ang >>= 1;                    // drop sync bit
     float angle_deg = raw_ang / 64.0;
 
+    if (angle_deg + 5.0f < last_ang) {   // crossed 360→0; 5° hysteresis
+        scan_ready = true;
+    }
+
     last_ang = angle_deg;
     uint16_t raw_dist = ((uint16_t)pkt[4] << 8) | pkt[3];
     raw_dist >>= 2;                   // drop status bits
