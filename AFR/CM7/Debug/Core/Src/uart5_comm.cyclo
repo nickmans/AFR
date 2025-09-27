@@ -1,5 +1,5 @@
 ../../Drivers/CMSIS/Include/core_cm7.h:2156:34:__NVIC_SystemReset	1
 ../Core/Src/uart5_comm.c:13:22:normalize_cmd	5
-../Core/Src/uart5_comm.c:24:6:HAL_UART_RxCpltCallback	12
-../Core/Src/uart5_comm.c:63:6:HAL_UART_ErrorCallback	2
-../Core/Src/uart5_comm.c:70:6:UART5_Comm_Init	1
+../Core/Src/uart5_comm.c:28:6:HAL_UART_RxCpltCallback	21
+../Core/Src/uart5_comm.c:76:6:HAL_UART_ErrorCallback	2
+../Core/Src/uart5_comm.c:83:6:UART5_Comm_Init	1

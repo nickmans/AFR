@@ -168,21 +168,37 @@ int near_waypoint(float x, float y)					// CHECK IF CLOSE TO FIRST 3 WAYS
 {
 	if (waypoint_count == 0) return 1;
 
-	for (int j = 0; j < waypoint_count && j < 3; j++) {
-		float dx = fabsf(x - waypoints[j].x);
-		float dy = fabsf(y - waypoints[j].y);
-
-		if (dx < WAYPOINT_CLOSE && dy < WAYPOINT_CLOSE)
+	if (waypoint_count > 1)
+	{
+		for (int j = 0; j < waypoint_count && j < 3; j++)
 		{
-			// Remove the first (j+1) waypoints
-			for (int i = j + 1; i < waypoint_count; i++)
+			float dx = fabsf(x - waypoints[j].x);
+			float dy = fabsf(y - waypoints[j].y);
+
+			if (dx < WAYPOINT_CLOSE && dy < WAYPOINT_CLOSE)
 			{
-				waypoints[i - (j + 1)] = waypoints[i];
+				// Remove the first (j+1) waypoints
+				for (int i = j + 1; i < waypoint_count; i++)
+				{
+					waypoints[i - (j + 1)] = waypoints[i];
+				}
+				waypoint_count -= (j + 1);
+				return 1;
 			}
-			waypoint_count -= (j + 1);
-			return 1;
 		}
 	}
+	else
+	{
+		float dx = fabsf(x - waypoints[0].x);
+		float dy = fabsf(y - waypoints[0].y);
+
+		if (dx < LAST_WAYPOINT_CLOSE && dy < LAST_WAYPOINT_CLOSE)
+		{
+			waypoint_count = 0;
+			return 2;
+		}
+	}
+
 	return 0;
 }
 
@@ -606,8 +622,23 @@ void lidar_to_costmap(
 
         // Ignore robot body
         // Rectangle: x in [-0.30, 0.0], |y| <= 0.15
-        if ((rx >= -0.30f && rx <= 0.0f) && (fabsf(ry) <= 0.15f)) {
+        if ((rx >= -0.30f && rx <= 0.0f) && (fabsf(ry) <= 0.15f))
+        {
             continue; // skip this point
+        }
+
+        // Ignore points within 0.30 m of the last waypoint
+        if (waypoint_count > 0)
+        {
+            float wx = waypoints[waypoint_count - 1].x;
+            float wy = waypoints[waypoint_count - 1].y;
+
+            float dx = rx - wx;
+            float dy = ry - wy;
+            if ((dx * dx + dy * dy) <= (0.30f * 0.30f))
+            {
+                continue; // skip this point
+            }
         }
 
         float yaw = state[2];

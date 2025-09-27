@@ -19,6 +19,10 @@ static inline int8_t normalize_cmd(uint8_t b)
 LidarPoint_t pts[RPLIDAR_MAX_POINTS];
 uint8_t dma_rx_buf[DMA_BUF_SIZE];
 uint8_t buffa[buffasize];
+float leftturn = 1.0f, rightturn = 1.0f;
+int	fastforward = 0, slowforward = 0, medforward = 1;
+int following = 1;
+int stop = 0;
 static int header = 0;
 const uint8_t stopp_cmd[]  = {0xA5, 0x25};  // stop
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
@@ -33,7 +37,16 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
             else if (cmd == 2){ printf("RESET\r\n"); waypoint_count = 0; NVIC_SystemReset(); }
             else if (cmd == 3){wantlidarstarted = 1;}
             else if (cmd == 4){wantlidarstarted = 0; HAL_UART_Transmit(&huart2, (uint8_t*)stopp_cmd, sizeof(stopp_cmd), HAL_MAX_DELAY); printf("StopLidar\n");}
-            else if (cmd == 9) { printf("PONG\r\n"); }
+            else if (cmd == 5){fastforward = 1; slowforward = 0; medforward = 0;stop = 0;}
+            else if (cmd == 6){slowforward = 1; medforward = 0;  fastforward = 0;stop = 0;}
+            else if (cmd == 7){medforward = 1;  slowforward = 0; fastforward = 0;stop = 0;}
+            else if (cmd == 8){leftturn = 0.5f; rightturn = 1.0f;}
+            else if (cmd == 9){rightturn = 0.5f; leftturn = 1.0f; }
+            else if (cmd == 10){rightturn = 1.0f; leftturn = 1.0f;}
+            else if (cmd == 11){following = 1;}
+            else if (cmd == 12){following = 0;}
+            else if (cmd == 13){stop = 1;fastforward = 0; slowforward = 0; medforward = 0;}
+            else if (cmd == 14) { printf("PONG\r\n"); }
             else { printf("ERR %d\r\n", (int)cmd); }
         }
         HAL_UART_Receive_IT(&huart5, &rx_byte, 1);   // re-arm

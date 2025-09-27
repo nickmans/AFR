@@ -3,8 +3,10 @@
 	<item key="hasShownOverlayPopupBefore" value="true"/>
 	<item key="replaceBarOpen" value="true"/>
 	<list key="searchhistory">
-		<item value="lidar_to_costmap"/>
 		<item value="t0"/>
+		<item value="inflate_range"/>
+		<item value="MAP_SOFT "/>
+		<item value="lidar_to_costmap"/>
 		<item value="rplidar_parser_get_scan"/>
 		<item value="get_lidar"/>
 		<item value="OBJECT_INFRONT"/>
@@ -16,8 +18,6 @@
 		<item value="wantlidarstarted"/>
 		<item value="world_to_cell"/>
 		<item value="MAP_DIM_CELLS"/>
-		<item value="print_xref"/>
-		<item value="SET_BIT"/>
 	</list>
 	<list key="replacehistory">
 		<item value="float"/>

@@ -773,7 +773,7 @@ void CONTROL(void *argument)
 
 	for(;;)
 	{
-		while(started)
+		while(started && following)
 		{
 			//waypoint_count = 1;
 			if (waypoint_count<1)
@@ -945,7 +945,7 @@ void CONTROL(void *argument)
 			vTaskDelayUntil(&last_wake, period);   // align to 100 ms
 		}
 		// IDLING
-		while(!started)
+		while(!started && !following)
 		{
 			//printf("dma_rx_buf @ %p\r\n", dma_rx_buf);
 			get_lidar();
@@ -1014,6 +1014,102 @@ void CONTROL(void *argument)
 				waiting_counter++;
 			osDelay(1000);
 		}
+		while (following)
+		{
+			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED2_MEM, sizeof(*SHARED2_MEM));
+			__DSB();   // ensure memory order
+			if (SHARED2_MEM->flagencoders)				// CHECK FOR NEW ENCODER COUNT - IS UPDATED IN 25ms PWM LOOP ON M4
+			{
+				measurements[3] =  SHARED2_MEM->encoders[0];
+				measurements[4] =  SHARED2_MEM->encoders[1];
+				measurements[5] =  SHARED2_MEM->encoders[2];
+				measurements[6] =  SHARED2_MEM->encoders[3];
+
+				if (minutecoonter > 500)
+				{
+					if (coonter<NUM_VSAMPLES)
+					{
+						VIN[coonter] = SHARED2_MEM->BATT_V;
+						coonter++;
+					}
+					else
+					{
+						BATTERY_VOLTAGE = averageVIN(VIN);
+						printf("%.3fV\n",BATTERY_VOLTAGE);
+						//printf("%.3f %.3f %.3f %.3f\n",acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],acadoVariables.x0[3]);
+						if (BATTERY_VOLTAGE<SOFT_VOLTAGE)
+						{
+							printf("CHARGE THE ROBOT\n");
+						}
+						if (BATTERY_VOLTAGE<HARD_VOLTAGE)
+						{
+							printf("CHARGE NOW CHARGE NOW\n");
+							started = 0;
+						}
+						//printf("%.3f %.3f %.3f %.3f\n",measurements[3],measurements[4],measurements[5],measurements[6]);
+						minutecoonter = 0;
+						coonter = 0;
+					}
+				}
+				else
+					minutecoonter++;
+
+				SHARED2_MEM->flagencoders = 0;
+				SCB_CleanDCache_by_Addr((uint32_t*)SHARED2_MEM, sizeof(*SHARED2_MEM));
+				__DSB();
+			}
+			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
+			//printf("hello\n");
+			// Wait to send new control inputs
+			while (SHARED_MEM->flagm7)
+			{
+				SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
+				__DSB();   // ensure memory order
+				osDelay(1);
+			}
+
+			if (!SHARED_MEM->flagm7)
+			{
+				float speed;
+				if (fastforward)
+				{
+					speed = 26.0f;
+					SHARED_MEM->control_u[0] = speed*leftturn; //FL
+					SHARED_MEM->control_u[1] = speed*leftturn; //RL
+					SHARED_MEM->control_u[2] = speed*rightturn; //FR
+					SHARED_MEM->control_u[3] = speed*rightturn; //RR
+				}
+				else if (slowforward)
+				{
+					speed = 5.0f;
+					SHARED_MEM->control_u[0] = speed*leftturn;	//FL
+					SHARED_MEM->control_u[1] = speed*leftturn; //RL
+					SHARED_MEM->control_u[2] = speed*rightturn; //FR
+					SHARED_MEM->control_u[3] = speed*rightturn; //RR
+				}
+				else if (medforward)
+				{
+					speed = 15.0f;
+					SHARED_MEM->control_u[0] = speed*leftturn;	//FL
+					SHARED_MEM->control_u[1] = speed*leftturn; //RL
+					SHARED_MEM->control_u[2] = speed*rightturn; //FR
+					SHARED_MEM->control_u[3] = speed*rightturn; //RR
+				}
+				else if (stop)
+				{
+					speed = 0.0f;
+					SHARED_MEM->control_u[0] = speed*leftturn;	//FL
+					SHARED_MEM->control_u[1] = speed*leftturn; //RL
+					SHARED_MEM->control_u[2] = speed*rightturn; //FR
+					SHARED_MEM->control_u[3] = speed*rightturn; //RR
+				}
+
+				SHARED_MEM->flagm7 = 1;
+				SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
+				__DSB();
+			}
+		}
+		vTaskDelayUntil(&last_wake, period);   // align to 100 ms
 	}
 }
 int _write(int file, char *ptr, int len) {

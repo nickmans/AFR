@@ -18,7 +18,6 @@ typedef struct {
 extern Point2D waypoints[15];
 extern uint8_t waypoint_count;
 extern int OBJECT_INFRONT;
-
 void trajectory(const real_t ax0[4]);
 void xreffer(float x, float y, real_t ay[ACADO_N*ACADO_NY], real_t ayN[ACADO_NYN]);
 void ukf_update(double            xhat[3],
