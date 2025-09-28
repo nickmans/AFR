@@ -3,6 +3,11 @@
 	<item key="hasShownOverlayPopupBefore" value="true"/>
 	<item key="replaceBarOpen" value="true"/>
 	<list key="searchhistory">
+		<item value="costmap"/>
+		<item value="last_wake"/>
+		<item value="wp_count"/>
+		<item value="waypoint_count"/>
+		<item value="near_waypoint"/>
 		<item value="t0"/>
 		<item value="inflate_range"/>
 		<item value="MAP_SOFT "/>
@@ -10,14 +15,9 @@
 		<item value="rplidar_parser_get_scan"/>
 		<item value="get_lidar"/>
 		<item value="OBJECT_INFRONT"/>
-		<item value="near_waypoint"/>
 		<item value="PRUNE_THRESH"/>
 		<item value="EPSILON"/>
 		<item value="rtoothers"/>
-		<item value="control_reset_all"/>
-		<item value="wantlidarstarted"/>
-		<item value="world_to_cell"/>
-		<item value="MAP_DIM_CELLS"/>
 	</list>
 	<list key="replacehistory">
 		<item value="float"/>

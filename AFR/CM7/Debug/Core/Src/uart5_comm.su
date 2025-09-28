@@ -1,5 +1,5 @@
 ../../Drivers/CMSIS/Include/core_cm7.h:2156:34:__NVIC_SystemReset	4	static,ignoring_inline_asm
 ../Core/Src/uart5_comm.c:13:22:normalize_cmd	16	static
-../Core/Src/uart5_comm.c:28:6:HAL_UART_RxCpltCallback	32	static
-../Core/Src/uart5_comm.c:76:6:HAL_UART_ErrorCallback	16	static
-../Core/Src/uart5_comm.c:83:6:UART5_Comm_Init	8	static
+../Core/Src/uart5_comm.c:30:6:HAL_UART_RxCpltCallback	32	static
+../Core/Src/uart5_comm.c:74:6:HAL_UART_ErrorCallback	16	static
+../Core/Src/uart5_comm.c:81:6:UART5_Comm_Init	8	static

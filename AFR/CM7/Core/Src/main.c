@@ -38,8 +38,8 @@ uint8_t waypoint_count = 0;
 
 Point2D waypoints[15];
 
-ACADOvariables acadoVariables;
-ACADOworkspace acadoWorkspace;
+__attribute__((section(".DTCMRAM"))) ACADOvariables acadoVariables;
+__attribute__((section(".DTCMRAM"))) ACADOworkspace acadoWorkspace;
 static const double Q[3][3] = {
     { 1e-2,    0.0,    0.0 },
     { 0.0,    1e-2,    0.0 },
@@ -47,9 +47,9 @@ static const double Q[3][3] = {
 };
 static const double R[4][4] = {
     //   ψ    ψ̇    aₓ   v_enc
-    { 1e-3,  0.0,  0.0,  0.0  },  // yaw noise variance
-    { 0.0,  2e-3,  0.0,  0.0  },  // yaw-rate noise variance
-    { 0.0,   0.0,  1e-1,  0.0 },  // accel noise variance
+    { 3e-6,  0.0,  0.0,  0.0  },  // yaw noise variance
+    { 0.0,  3e-5,  0.0,  0.0  },  // yaw-rate noise variance
+    { 0.0,   0.0,  1.5e-3,  0.0 },  // accel noise variance
     { 0.0,   0.0,  0.0,  1e-3 }   // encoder‐velocity noise variance
 };
 static double P    [3][3];       // covariance
@@ -238,7 +238,7 @@ static inline void compute_slips(
     for (size_t i = 0; i < 4; i++) {
     	double u_lin = u[i] * rw;   // commanded linear speed
         if (vw[i] > SLIP_VW_TH) {
-            slips[i] = (u_lin - vw[i]) / vw[i];
+            slips[i] = fmin((u_lin - vw[i]) / vw[i], 1);
         }
         else if ((u_lin > SLIP_U_TH) && (vw[i] <= SLIP_VW_TH)) {
             slips[i] = 1.0;
@@ -250,8 +250,7 @@ static inline void compute_slips(
 }
 // LIDAR CMDS
 int lidarstarted = 0;
-int wantlidarstarted = 1;
-const uint8_t start_cmd[] = {0xA5, 0x20};  // legacy scan start
+int wantlidarstarted = 0;
 const uint8_t motor_speed_cmd[] = {
     0xA5,       // start flag
     0xA8,       // MOTOR_SPEED_CTRL
@@ -259,6 +258,7 @@ const uint8_t motor_speed_cmd[] = {
 	0x58, 0x02, // RPM = 300
     0x87        // checksum = 0xA8 ^ 0x02 ^ 0x2C ^ 0x01
 };
+const uint8_t start_cmd[] = {0xA5, 0x20};  // legacy scan start
 const uint8_t stop_cmd[]  = {0xA5, 0x25};  // stop
 const uint8_t health_cmd[]  = {0xA5, 0x52};  // health
 const uint8_t info_cmd[]  = {0xA5, 0x50};  // info
@@ -282,7 +282,7 @@ void get_lidar(void)
 	{
 		if (wantlidarstarted)
 		{
-			//HAL_UART_Transmit(&huart2, (uint8_t*)stop_cmd, sizeof(stop_cmd), HAL_MAX_DELAY);
+			HAL_UART_Transmit(&huart2, (uint8_t*)stop_cmd, sizeof(stop_cmd), HAL_MAX_DELAY);
 			rplidar_parser_init();
 			//printf("free heap %lu, hwmark %u\r\n", xPortGetFreeHeapSize(), uxTaskGetStackHighWaterMark(NULL));
 			//SCB_InvalidateDCache_by_Addr((uint32_t*)dma_rx_buf, DMA_BUF_SIZE);
@@ -376,6 +376,9 @@ Error_Handler();
 	bno055_NDOF();
 	BNO055_ApplyAllCalibration();
 
+    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+    DWT->CYCCNT = 0;
+    DWT->CTRL  |= DWT_CTRL_CYCCNTENA_Msk;
 
   /* USER CODE END 2 */
 
@@ -770,19 +773,25 @@ void CONTROL(void *argument)
 
     SHARED2_MEM->flagencoders = 0;
     __DSB();
-
+	static int juststarted = 1;
 	for(;;)
 	{
 		while(started && following)
 		{
+			if (juststarted)
+			{
+				get_lidar();
+				osDelay(1000);
+				juststarted = 0;
+			}
 			//waypoint_count = 1;
+			//waypoints[0].x = -0.5;
+			//waypoints[0].y = -1.0;
 			if (waypoint_count<1)
 			{
 				started = 0;
 				continue;
 			}
-
-		    uint32_t t0 = HAL_GetTick();
 
 			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED2_MEM, sizeof(*SHARED2_MEM));
 			__DSB();   // ensure memory order
@@ -855,7 +864,7 @@ void CONTROL(void *argument)
 
 			//waypoints[waypoint_count].x = wx;
 			//waypoints[waypoint_count].y = wy;
-
+			uint32_t tt = HAL_GetTick();
 			get_lidar();
 			static int step_counter = 0;
 			if (step_counter++ % 10 == 0)			//every 10 steps new trajectory
@@ -871,24 +880,38 @@ void CONTROL(void *argument)
 				    }
 				}
 				const char endline[] = "---- SCAN END ----\r\n";
-				HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)endline, sizeof(endline)-1, HAL_MAX_DELAY); */
+				HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)endline, sizeof(endline)-1, HAL_MAX_DELAY);*/
 			}
 			else
 				xreffer(acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.y, acadoVariables.yN);		// Update existing trajectory
 
+			uint32_t t_elapsed = HAL_GetTick() - tt;
+			if (t_elapsed>30)
+			{
+				printf("traj slow\n");
+			}
 			if (OBJECT_INFRONT)
 			{
 				printf("BLOCKED! %d\n",OBJECT_INFRONT);
 			}
 
+			uint32_t tc = HAL_GetTick();
+
 			int status = controller_loop();
+			uint32_t c_elapsed = HAL_GetTick() - tc;
+
+			if (c_elapsed>30)
+			{
+				printf("control slow\n");
+			}
+
 			if (status!=0 || isnan(acadoVariables.u[0]) || OBJECT_INFRONT)
 			{
 				control_reset_all();
 				waypoint_count = 0;
 				step_counter = 0;
 				printf("Can't\n");
-				//continue;
+				continue;
 			}
 
 			//static int done = 0;
@@ -910,7 +933,6 @@ void CONTROL(void *argument)
 				__DSB();   // ensure memory order
 				osDelay(1);
 			}
-			uint32_t t_elapsed = HAL_GetTick() - t0;
 			if (!SHARED_MEM->flagm7)
 			{
 				if (waypoint_count == 0)
@@ -920,20 +942,12 @@ void CONTROL(void *argument)
 					SHARED_MEM->control_u[2] = 0;//acadoVariables.u[1]; //FR
 					SHARED_MEM->control_u[3] = 0;//acadoVariables.u[3]; //RR
 				}
-				else if ((t_elapsed<95))
+				else
 				{
 					SHARED_MEM->control_u[0] = acadoVariables.u[0];	//FL
 					SHARED_MEM->control_u[1] = acadoVariables.u[2]; //RL
 					SHARED_MEM->control_u[2] = acadoVariables.u[1]; //FR
 					SHARED_MEM->control_u[3] = acadoVariables.u[3]; //RR
-				}
-				else
-				{
-					SHARED_MEM->control_u[0] = 0;//acadoVariables.u[0];	//FL
-					SHARED_MEM->control_u[1] = 0;//acadoVariables.u[2]; //RL
-					SHARED_MEM->control_u[2] = 0;//acadoVariables.u[1]; //FR
-					SHARED_MEM->control_u[3] = 0;//acadoVariables.u[3]; //RR
-					printf("Too slow!\n");
 				}
 
 				SHARED_MEM->flagm7 = 1;
@@ -945,10 +959,16 @@ void CONTROL(void *argument)
 			vTaskDelayUntil(&last_wake, period);   // align to 100 ms
 		}
 		// IDLING
-		while(!started && !following)
+		while(!started && following)
 		{
+			juststarted = 1;
 			//printf("dma_rx_buf @ %p\r\n", dma_rx_buf);
 			get_lidar();
+
+			//BNO055_ReadLinAccel_D(&ax, &ay, &az);
+			//BNO055_ReadYawRate(&yawrate);
+
+			//printf("a_x: %.3f yawrate: %.3f\n",ax,yawrate);
 
 			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED2_MEM, sizeof(*SHARED2_MEM));
 			__DSB();   // ensure memory order
@@ -964,7 +984,7 @@ void CONTROL(void *argument)
 					else
 					{
 						BATTERY_VOLTAGE = averageVIN(VIN);
-						printf("%.3fV\n",BATTERY_VOLTAGE);
+						//printf("%.3fV\n",BATTERY_VOLTAGE);
 						//printf("%.3f %.3f %.3f %.3f\n",acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],acadoVariables.x0[3]);
 						if (BATTERY_VOLTAGE<10.5)
 						{
@@ -1007,15 +1027,16 @@ void CONTROL(void *argument)
 			}
 			if (waiting_counter>5)
 			{
-				printf("waiting %lu\n",userstop);
+				//printf("waiting %lu\n",userstop);
 				waiting_counter = 0;
 			}
 			else
 				waiting_counter++;
 			osDelay(1000);
 		}
-		while (following)
+		while (!following)
 		{
+			juststarted = 1;
 			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED2_MEM, sizeof(*SHARED2_MEM));
 			__DSB();   // ensure memory order
 			if (SHARED2_MEM->flagencoders)				// CHECK FOR NEW ENCODER COUNT - IS UPDATED IN 25ms PWM LOOP ON M4

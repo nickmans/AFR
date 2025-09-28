@@ -63,6 +63,9 @@ extern uint8_t buffa[buffasize];
 extern LidarPoint_t pts[RPLIDAR_MAX_POINTS];
 extern uint16_t cnt;
 
+extern int fastforward, slowforward, medforward, following, stop;
+extern float leftturn, rightturn;
+
 #ifdef __cplusplus
 }
 #endif

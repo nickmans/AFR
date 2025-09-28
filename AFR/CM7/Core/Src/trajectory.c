@@ -18,14 +18,14 @@
 #define dt 0.1
 #define v_des 0.8
 #define N 25
-#define map_size 6
-#define map_res 0.1
-#define MAP_DIM_CELLS  60
+#define map_size 8
+#define map_res 0.05
+#define MAP_DIM_CELLS 160
 #define robot_radius 0.2
 #define MAP_FREE 0
 #define MAP_SOFT 1
 #define MAP_HARD 2
-#define MAX_MAP_SIZE_CELLS 60  // adjust for your resolution
+#define MAX_MAP_SIZE_CELLS 160  // adjust for your resolution
 #define INF 1e9f
 #define MAX_PATH_POINTS 200
 #define MAX_NODES MAP_DIM_CELLS
@@ -40,13 +40,16 @@ static float x_min;
 static float y_min;
 
 static const float hard_thresh2 = robot_radius * robot_radius;
-static const float soft_thresh2 = (robot_radius + 0.2f) * (robot_radius + 0.2f);
-static const int inflate_range = (int)((robot_radius + 0.2f) / map_res);
+static const float soft_thresh2 = (robot_radius + 0.1f) * (robot_radius + 0.1f);
+static const int inflate_range = (int)((robot_radius + 0.1f) / map_res);
 static const float SOFT_PENALTY = 3.0f;
 
 const int nrow = MAP_DIM_CELLS;
 const int ncol = MAP_DIM_CELLS;
 typedef struct { uint8_t r, c; } Node;
+
+__attribute__((section(".RAM_D2"))) static uint8_t occ_map[MAX_MAP_SIZE_CELLS][MAX_MAP_SIZE_CELLS];
+__attribute__((section(".RAM_D2"))) static uint8_t raw_map[MAX_MAP_SIZE_CELLS][MAX_MAP_SIZE_CELLS];
 
 // Bit manipulation macros
 #define BIT_IDX(r,c)    ((r)*MAX_NODES + (c))
@@ -55,11 +58,11 @@ typedef struct { uint8_t r, c; } Node;
 #define TST_BIT(arr,i)  (((arr)[(i)>>3] >> ((i)&7)) & 1U)
 
 // Global A* buffers (to avoid stack usage)
-static float g_global[MAX_NODES][MAX_NODES] __attribute__((section(".RAM_D2")));
-static Node came_from_global[MAX_NODES][MAX_NODES] __attribute__((section(".RAM_D2")));
+__attribute__((section(".RAM_D1"))) static float g_global[MAX_NODES][MAX_NODES];
+__attribute__((section(".RAM_D2"))) static Node came_from_global[MAX_NODES][MAX_NODES];
 // Bit-packed open/closed sets
-static uint8_t open_bits[(MAX_NODES*MAX_NODES + 7)/8];
-static uint8_t closed_bits[(MAX_NODES*MAX_NODES + 7)/8];
+__attribute__((section(".DTCMRAM"))) static uint8_t open_bits[(MAX_NODES*MAX_NODES + 7)/8];
+__attribute__((section(".DTCMRAM"))) static uint8_t closed_bits[(MAX_NODES*MAX_NODES + 7)/8];
 // at top of trajectory.c
 
 static inline void set_open(int r,int c)   { SET_BIT(open_bits, BIT_IDX(r,c)); }
@@ -71,11 +74,11 @@ static inline bool is_closed(int r,int c)   { return TST_BIT(closed_bits, BIT_ID
 
 // A tiny fixed-size min-heap keyed on f = g + h
 typedef struct {
-    int r, c;
+	uint16_t r, c;
     float f;
 } HeapNode;
 
-static HeapNode open_heap[MAX_NODES*MAX_NODES] __attribute__((section(".RAM_D2")));
+__attribute__((section(".RAM_D1"))) static HeapNode open_heap[MAX_NODES*MAX_NODES];
 static int      open_heap_sz;
 
 // push onto the open heap
@@ -121,7 +124,7 @@ typedef struct {
     float v;
 } State4D;
 
-static State4D Xref[N] __attribute__((section(".DTCMRAM")));
+static State4D Xref[N];
 int near_waypoint(float x, float y);
 void world_to_map(float pos_x, float pos_y, int* xi, int* yi);
 void map_to_world(int xi, int yi, float* xw, float* yw);
@@ -130,15 +133,13 @@ void prune_Xref_if_needed(float state0,float state1);
 
 void lidar_to_costmap(
     float state[3],                     // robot  position [x, y]
-    Point2D* lidar_points, int L,       // LiDAR points (robot frame)
-    uint8_t occ_map[MAX_MAP_SIZE_CELLS][MAX_MAP_SIZE_CELLS]
+    Point2D* lidar_points, int L       // LiDAR points (robot frame)
 );
 
 void plan_local_trajectory(
     float state[3],
     Point2D* waypoints,
-    int wp_count,
-    const uint8_t occ_map[][MAX_NODES]
+    int wp_count
 );
 static inline void rot(float theta,
 		float x_in, float y_in,
@@ -260,7 +261,6 @@ void xreffer(float x, float y, real_t ay[ACADO_N*ACADO_NY], real_t ayN[ACADO_NYN
     	ayN[k] = ay[last + k];
     }
 }
-
 // Main trajectory function
 void trajectory(const real_t ax0[4])
 {
@@ -283,13 +283,16 @@ void trajectory(const real_t ax0[4])
     	lidar_pts[i].y = pts[i].y;
     }
 
-    uint8_t occ_map[MAX_MAP_SIZE_CELLS][MAX_MAP_SIZE_CELLS];
+    // Step 0: Clear occupancy map
+	memset(occ_map, 0, sizeof(occ_map));   // MAP_FREE == 0
+	memset(raw_map, 0, sizeof(raw_map));
+    //uint8_t occ_map[MAX_MAP_SIZE_CELLS][MAX_MAP_SIZE_CELLS];
 
     //uint32_t  size_occ_map      = sizeof(occ_map);
 
     x_min = pos[0] - map_size/2.0f;
     y_min = pos[1] - map_size/2.0f;
-    lidar_to_costmap(pos, lidar_pts, cnt, occ_map);
+    lidar_to_costmap(pos, lidar_pts, cnt);
 
     near_waypoint(pos[0], pos[1]);
 
@@ -317,7 +320,7 @@ void trajectory(const real_t ax0[4])
 		}
 	}*/
 
-    plan_local_trajectory(pos, waypoints, waypoint_count, occ_map);
+    plan_local_trajectory(pos, waypoints, waypoint_count);
 
 	/*int FOUND = 0;
     for (size_t i = 0; i < cnt; i++)
@@ -338,20 +341,19 @@ void trajectory(const real_t ax0[4])
 	//printf("\n");
 
 }
-
+#define ASTAR_CYCLE_BUDGET   (4800000U)  // ~8 ms @ 300 MHz
+#define ASTAR_MAX_EXPANSIONS (12000)     // backstop
 // -----------------------------------------------------------------------------
 // A* PATHFINDING ON AN 8-WAY GRID WITH SOFT/HARD COSTS
 // -----------------------------------------------------------------------------
 int astar(
-    const uint8_t occ[][MAX_NODES],   // occupancy grid [row][col]
-    int rows,                         // MAP_DIM_CELLS
-    int cols,                         // MAP_DIM_CELLS
-    Node start,                       // { r, c }
-    Node goal,                        // { r, c }
-    Node *out_path,                   // output array of Nodes
-    int *out_len,                     // output path length
-    int max_len                       // capacity of out_path
+    const uint8_t occ[][MAX_NODES], int rows, int cols,
+    Node start, Node goal, Node *out_path, int *out_len, int max_len
 ) {
+    // NEW: timing + counters
+    uint32_t t0 = DWT->CYCCNT;
+    int expansions = 0;
+
     // 1) Reset
     for (int r = 0; r < rows; ++r)
         for (int c = 0; c < cols; ++c)
@@ -366,32 +368,53 @@ int astar(
     heap_push(start.r, start.c, h0);
     set_open(start.r, start.c);
 
+    // NEW: best-so-far
+    int   best_r = start.r, best_c = start.c;
+    float best_f = h0;
+
     // 3) Main loop
     while (open_heap_sz > 0) {
+        // NEW: time/expansion guard
+        if ((DWT->CYCCNT - t0) > ASTAR_CYCLE_BUDGET || expansions > ASTAR_MAX_EXPANSIONS) {
+            // reconstruct partial path to best-so-far
+            int len = 0, cr = best_r, cc = best_c;
+            while (!(cr==start.r && cc==start.c) && len < max_len) {
+                out_path[len++] = (Node){ cr, cc };
+                Node p = came_from_global[cr][cc];
+                cr = p.r; cc = p.c;
+            }
+            if (len < max_len) out_path[len++] = start;
+            for (int i = 0; i < len/2; ++i) {
+                Node t = out_path[i];
+                out_path[i] = out_path[len-1-i];
+                out_path[len-1-i] = t;
+            }
+            *out_len = len;
+            return 2; // PARTIAL (non-zero → caller accepts)
+        }
+
         HeapNode cur = heap_pop();
         int cr = cur.r, cc = cur.c;
 
-        // stale‐entry or already closed?
-        if (is_closed(cr,cc))         continue;
-        float best_f = g_global[cr][cc]
-                     + heuristic(cr, cc, goal.r, goal.c);
-        if (cur.f > best_f + 1e-6f)   continue;
+        if (is_closed(cr,cc)) continue;
+        float cur_f = g_global[cr][cc] + heuristic(cr, cc, goal.r, goal.c);
+        if (cur.f > cur_f + 1e-6f) continue;
 
         clr_open(cr,cc);
         set_closed(cr,cc);
 
-        // reached goal?
+        // NEW: track best-so-far
+        if (cur_f < best_f) { best_f = cur_f; best_r = cr; best_c = cc; }
+
+        // reached goal? (unchanged)
         if (cr == goal.r && cc == goal.c) {
-            // reconstruct path
             int len = 0;
             while (!(cr==start.r && cc==start.c) && len < max_len) {
                 out_path[len++] = (Node){ cr, cc };
                 Node p = came_from_global[cr][cc];
                 cr = p.r; cc = p.c;
             }
-            if (len < max_len)
-                out_path[len++] = start;
-            // reverse in place
+            if (len < max_len) out_path[len++] = start;
             for (int i = 0; i < len/2; ++i) {
                 Node tmp = out_path[i];
                 out_path[i] = out_path[len-1-i];
@@ -401,20 +424,16 @@ int astar(
             return 1;
         }
 
-        // explore neighbors
-        const int dirs[8][2] = {
-            { 1,0},{-1,0},{0,1},{0,-1},
-            { 1,1},{-1,1},{ 1,-1},{-1,-1}
+        // neighbors (unchanged)
+        static const int dirs[8][2] = {
+            { 1,0},{-1,0},{0,1},{0,-1},{ 1,1},{-1,1},{ 1,-1},{-1,-1}
         };
         for (int d = 0; d < 8; ++d) {
             int nr = cr + dirs[d][0];
             int nc = cc + dirs[d][1];
             if (nr<0||nc<0||nr>=rows||nc>=cols) continue;
-            if (is_closed(nr,nc) || occ[nr][nc] == MAP_HARD)
-                continue;
-            // no corner cutting
-            if (d>=4 && (occ[cr+dirs[d][0]][cc] == MAP_HARD
-                       || occ[cr][cc+dirs[d][1]] == MAP_HARD))
+            if (is_closed(nr,nc) || occ[nr][nc] == MAP_HARD) continue;
+            if (d>=4 && (occ[cr+dirs[d][0]][cc] == MAP_HARD || occ[cr][cc+dirs[d][1]] == MAP_HARD))
                 continue;
 
             float move_cost = (d<4 ? 1.0f : 1.4142f)
@@ -428,12 +447,12 @@ int astar(
                 set_open(nr, nc);
             }
         }
+        ++expansions; // NEW
     }
 
-    // no path found
-    return 0;
+    return 0; // no path
 }
-// :contentReference[oaicite:1]{index=1}
+
 
 
 
@@ -443,8 +462,7 @@ int astar(
 void plan_local_trajectory(
     float state[3],                   // robot [x, y, yaw]
     Point2D waypoints[],              // array of waypoints
-    int wp_count,                     // total waypoints remaining
-    const uint8_t occ_map[][MAX_NODES]
+    int wp_count                     // total waypoints remaining
 ) {
     // --- Early exit: no waypoints left → hold pose, v = 0 ---
     if (wp_count <= 0) {
@@ -462,28 +480,47 @@ void plan_local_trajectory(
     int    full_len = 0;
     float  cur_x = state[0], cur_y = state[1];
     int    sx, sy, gx, gy;
-    /*
-    // PRINT MAP TO SERIAL
+
+    occ_map[MAP_DIM_CELLS/2][MAP_DIM_CELLS/2] = MAP_HARD; // should print a '2' in the middle
+
+    /*// PRINT MAP TO SERIAL (over &hcom_uart[COM1])
     world_to_map(state[0], state[1], &sx, &sy);
     world_to_map(waypoints[0].x, waypoints[0].y, &gx, &gy);
 
-    // print the raw occupancy value at start and goal
-    printf("OCC[start=(%d,%d)]=%d  OCC[goal=(%d,%d)]=%d\n",
-           sy, sx, occ_map[sy][sx],
-           gy, gx, occ_map[gy][gx]);
+    // Divider start
+    {
+        const char divider1[] = "---- FULL MAP (digits) ----\r\n";
+        HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)divider1, sizeof(divider1)-1, HAL_MAX_DELAY);
 
-    // print a 7×7 block around the goal (0=free,1=soft,2=hard)
-    for (int dy = -3; dy <= 3; ++dy) {
-        for (int dx = -3; dx <= 3; ++dx) {
-            int yy = gy + dy, xx = gx + dx;
-            if (yy >= 0 && yy < MAP_DIM_CELLS && xx >= 0 && xx < MAP_DIM_CELLS)
-                printf("%d", occ_map[yy][xx]);
-            else
-                printf(" ");
+        // Header with start/goal info
+        {
+            char buf[128];
+            int len = snprintf(buf, sizeof(buf),
+                "OCC[start=(%d,%d)]=%d  OCC[goal=(%d,%d)]=%d\r\n",
+                sy, sx, occ_map[sy][sx],
+                gy, gx, occ_map[gy][gx]);
+            if (len > 0) HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)buf, (uint16_t)len, HAL_MAX_DELAY);
         }
-        printf("\n");
-    }
-    */
+
+        // One line per row; overlay S/G (S has priority if same cell)
+        char line[MAP_DIM_CELLS + 4]; // row + \r\n + safety
+        for (int yy = 0; yy < MAP_DIM_CELLS; ++yy) {
+            int pos = 0;
+            for (int xx = 0; xx < MAP_DIM_CELLS; ++xx) {
+                char c = (char)('0' + (occ_map[yy][xx] % 10)); // '0','1','2'
+                if (yy == gy && xx == gx) c = 'G';
+                if (yy == sy && xx == sx) c = 'S';
+                line[pos++] = c;
+            }
+            line[pos++] = '\r';
+            line[pos++] = '\n';
+            HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)line, (uint16_t)pos, HAL_MAX_DELAY);
+        }
+
+        const char divider2[] = "---------------------------\r\n";
+        HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)divider2, sizeof(divider2)-1, HAL_MAX_DELAY);
+    }*/
+
     for (int w = 0; w < wp_count && w < 3; ++w) {
         world_to_map(cur_x, cur_y, &sx, &sy);
         world_to_map(waypoints[w].x, waypoints[w].y, &gx, &gy);
@@ -603,18 +640,15 @@ void world_to_map(float px, float py, int* xi, int* yi) {
 
 void lidar_to_costmap(
     float state[3],                     // robot world position [x, y]
-    Point2D* lidar_points, int L,       // LiDAR points (robot frame)
-    uint8_t occ_map[MAX_MAP_SIZE_CELLS][MAX_MAP_SIZE_CELLS]
+    Point2D* lidar_points, int L       // LiDAR points (robot frame)
 ) {
 
-    // Step 0: Clear occupancy map
-    for (int y = 0; y < MAP_DIM_CELLS; y++)
-        for (int x = 0; x < MAP_DIM_CELLS; x++)
-            occ_map[y][x] = MAP_FREE;
-
     // Step 1: Mark raw obstacle points into raw_map
-    uint8_t raw_map[MAX_MAP_SIZE_CELLS][MAX_MAP_SIZE_CELLS] = {0};
+    //uint8_t raw_map[MAX_MAP_SIZE_CELLS][MAX_MAP_SIZE_CELLS] = {0};
 
+    float yaw = state[2];
+    float cosyaw = cosf(yaw);
+    float sinyaw = sinf(yaw);
     for (int i = 0; i < L; i++) {
         // After: rotate by yaw, then translate
         float rx  = lidar_points[i].x;
@@ -641,18 +675,18 @@ void lidar_to_costmap(
             }
         }
 
-        float yaw = state[2];
-        float world_x =  cosf(yaw)*rx
-                       - sinf(yaw)*ry
+        float world_x =  cosyaw*rx
+                       - sinyaw*ry
                        + state[0];
-        float world_y =  sinf(yaw)*rx
-                       + cosf(yaw)*ry
+        float world_y =  sinyaw*rx
+                       + cosyaw*ry
                        + state[1];
 
         int xi, yi;
         world_to_map(world_x, world_y, &xi, &yi);
 
-        if (xi >= 0 && xi < MAP_DIM_CELLS && yi >= 0 && yi < MAP_DIM_CELLS) {
+        if (xi >= 0 && xi < MAP_DIM_CELLS && yi >= 0 && yi < MAP_DIM_CELLS)
+        {
             raw_map[yi][xi] = 1;
         }
     }

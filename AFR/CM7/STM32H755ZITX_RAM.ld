@@ -152,6 +152,15 @@ SECTIONS
     _edata = .;        /* define a global symbol at data end */
 
   } >RAM_D1
+  
+    /* Put variables explicitly into D2 SRAM (0x3000_0000) 
+	.RAM_D2 (NOLOAD) :
+	{
+	  KEEP(*(.ram_d2))
+	  KEEP(*(.ram_d2.*))
+	  KEEP(*(.RAM_D2))
+	  KEEP(*(.RAM_D2.*))
+	} >RAM_D2*/
 
   /* Uninitialized data section into "RAM" Ram type memory */
   . = ALIGN(4);
@@ -179,7 +188,8 @@ SECTIONS
     . = . + _Min_Stack_Size;
     . = ALIGN(8);
   } >RAM_D1
-  
+ 
+	  
       .shared_dummy (NOLOAD) :
   {
     . = ALIGN(4);
