@@ -20,9 +20,9 @@ LidarPoint_t pts[RPLIDAR_MAX_POINTS];
 uint8_t dma_rx_buf[DMA_BUF_SIZE];
 uint8_t buffa[buffasize];
 volatile float leftturn = 1.0f, rightturn = 1.0f;
-volatile int	fastforward = 0, slowforward = 0, medforward = 1;
+volatile int	fastforward = 0, slowforward = 0, medforward = 0;
 volatile int following = 1;
-volatile int stop = 0;
+volatile int stop = 1;
 static int header = 0;
 const uint8_t stopp_cmd[]  = {0xA5, 0x25};  // stop
 const uint8_t startt_cmd[] = {0xA5, 0x20};  // legacy scan start
@@ -37,7 +37,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
             if (cmd == 1) { started = 1; userstop = 0; waypoint_count = 0; HAL_GPIO_WritePin(GPIOG,GPIO_PIN_8,1); HAL_GPIO_WritePin(GPIOG,GPIO_PIN_6,1); wantlidarstarted = 1; printf("OK START\r\n"); }
             else if (cmd == 0) { started = 0; userstop = 1; waypoint_count = 0;HAL_GPIO_WritePin(GPIOG,GPIO_PIN_8,0); HAL_GPIO_WritePin(GPIOG,GPIO_PIN_6,0);HAL_UART_Transmit(&huart2, (uint8_t*)stopp_cmd, sizeof(stopp_cmd), HAL_MAX_DELAY); wantlidarstarted = 0; printf("OK STOP\r\n"); }
             else if (cmd == 2){ printf("RESET\r\n"); waypoint_count = 0; NVIC_SystemReset(); }
-            else if (cmd == 3){if(following){following= 0;printf("follow");}else if(!following){following= 1;}}
+            else if (cmd == 3){if(following){following= 0;HAL_GPIO_WritePin(GPIOG,GPIO_PIN_8,1); HAL_GPIO_WritePin(GPIOG,GPIO_PIN_6,1);printf("control\n");}else if(!following){following= 1;}}
             else if (cmd == 4){stop = 1;fastforward = 0; slowforward = 0; medforward = 0;}
             else if (cmd == 5){fastforward = 1; slowforward = 0; medforward = 0;stop = 0;}
             else if (cmd == 6){slowforward = 1; medforward = 0;  fastforward = 0;stop = 0;}
