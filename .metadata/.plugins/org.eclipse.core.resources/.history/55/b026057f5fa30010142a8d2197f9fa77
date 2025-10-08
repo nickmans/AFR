@@ -1,0 +1,871 @@
+/*
+ * trajectory.c
+ *
+ *  Created on: Jul 8, 2025
+ *      Author: nicks
+ */
+
+#include "trajectory.h"
+#include "main.h"
+#include <math.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
+#include "uart5_comm.h"
+
+#define dt 0.1
+#define v_des 0.8
+#define N 25
+#define map_size 8
+#define map_res 0.05
+#define MAP_DIM_CELLS 160
+#define robot_radius 0.2
+#define MAP_FREE 0
+#define MAP_SOFT 1
+#define MAP_HARD 2
+#define MAX_MAP_SIZE_CELLS 160  // adjust for your resolution
+#define INF 1e9f
+#define MAX_PATH_POINTS 200
+#define MAX_NODES MAP_DIM_CELLS
+#define PI 3.14159265358979323846
+
+#define EPSILON 0.05f
+#define PRUNE_THRESH 0.15f
+#define PRUNE_LEN 5
+
+static float x_min;
+static float y_min;
+
+static const float hard_thresh2 = robot_radius * robot_radius;
+static const float soft_thresh2 = (robot_radius + 0.1f) * (robot_radius + 0.1f);
+static const int inflate_range = (int)((robot_radius + 0.1f) / map_res);
+static const float SOFT_PENALTY = 3.0f;
+
+const int nrow = MAP_DIM_CELLS;
+const int ncol = MAP_DIM_CELLS;
+typedef struct { uint8_t r, c; } Node;
+
+__attribute__((section(".RAM_D2"))) static uint8_t occ_map[MAX_MAP_SIZE_CELLS][MAX_MAP_SIZE_CELLS];
+__attribute__((section(".RAM_D2"))) static uint8_t raw_map[MAX_MAP_SIZE_CELLS][MAX_MAP_SIZE_CELLS];
+
+// Bit manipulation macros
+#define BIT_IDX(r,c)    ((r)*MAX_NODES + (c))
+#define SET_BIT(arr,i)  ((arr)[(i)>>3] |=  (1U<<((i)&7)))
+#define CLR_BIT(arr,i)  ((arr)[(i)>>3] &= ~(1U<<((i)&7)))
+#define TST_BIT(arr,i)  (((arr)[(i)>>3] >> ((i)&7)) & 1U)
+
+// Global A* buffers (to avoid stack usage)
+__attribute__((section(".RAM_D1"))) static float g_global[MAX_NODES][MAX_NODES];
+__attribute__((section(".RAM_D2"))) static Node came_from_global[MAX_NODES][MAX_NODES];
+// Bit-packed open/closed sets
+__attribute__((section(".DTCMRAM"))) static uint8_t open_bits[(MAX_NODES*MAX_NODES + 7)/8];
+__attribute__((section(".DTCMRAM"))) static uint8_t closed_bits[(MAX_NODES*MAX_NODES + 7)/8];
+// at top of trajectory.c
+
+static inline void set_open(int r,int c)   { SET_BIT(open_bits, BIT_IDX(r,c)); }
+static inline void clr_open(int r,int c)   { CLR_BIT(open_bits, BIT_IDX(r,c)); }
+static inline bool is_open(int r,int c)     { return TST_BIT(open_bits, BIT_IDX(r,c)); }
+static inline void set_closed(int r,int c) { SET_BIT(closed_bits, BIT_IDX(r,c)); }
+static inline void clr_closed(int r,int c) { CLR_BIT(closed_bits, BIT_IDX(r,c)); }
+static inline bool is_closed(int r,int c)   { return TST_BIT(closed_bits, BIT_IDX(r,c)); }
+
+// A tiny fixed-size min-heap keyed on f = g + h
+typedef struct {
+	uint16_t r, c;
+    float f;
+} HeapNode;
+
+__attribute__((section(".RAM_D1"))) static HeapNode open_heap[MAX_NODES*MAX_NODES];
+static int      open_heap_sz;
+
+// push onto the open heap
+static void heap_push(int r, int c, float f) {
+	if (open_heap_sz < MAX_NODES*MAX_NODES) {
+		int i = open_heap_sz++;
+		open_heap[i] = (HeapNode){r,c,f};
+		// sift up
+		while (i>0) {
+			int p = (i-1)>>1;
+			if (open_heap[p].f <= open_heap[i].f) break;
+			HeapNode tmp = open_heap[p];
+			open_heap[p] = open_heap[i];
+			open_heap[i] = tmp;
+			i = p;
+		}
+	}
+}
+
+// pop the smallest‐f element
+static HeapNode heap_pop(void) {
+    HeapNode top = open_heap[0];
+    open_heap[0] = open_heap[--open_heap_sz];
+    // sift down
+    int i = 0;
+    while (1) {
+        int l = 2*i+1, r = l+1, best = i;
+        if (l < open_heap_sz && open_heap[l].f < open_heap[best].f) best = l;
+        if (r < open_heap_sz && open_heap[r].f < open_heap[best].f) best = r;
+        if (best==i) break;
+        HeapNode tmp = open_heap[i];
+        open_heap[i] = open_heap[best];
+        open_heap[best] = tmp;
+        i = best;
+    }
+    return top;
+}
+
+typedef struct {
+    float x;
+    float y;
+    float yaw;
+    float v;
+} State4D;
+
+static State4D Xref[N];
+int near_waypoint(float x, float y);
+void world_to_map(float pos_x, float pos_y, int* xi, int* yi);
+void map_to_world(int xi, int yi, float* xw, float* yw);
+float estimate_curvature_c(float x1, float y1, float x2, float y2, float x3, float y3);
+void prune_Xref_if_needed(float state0,float state1);
+
+void lidar_to_costmap(
+    float state[3],                     // robot  position [x, y]
+    Point2D* lidar_points, int L       // LiDAR points (robot frame)
+);
+
+void plan_local_trajectory(
+    float state[3],
+    Point2D* waypoints,
+    int wp_count
+);
+static inline void rot(float theta,
+		float x_in, float y_in,
+		float *x_out, float *y_out)
+{
+	float c = cos(theta), s = sin(theta);
+    *x_out = c * x_in - s * y_in;
+    *y_out = s * x_in + c * y_in;
+}
+// Convert world→robot using current pose (x,y,psi)
+static inline void world_to_robot(float xw, float yw,
+		float x, float y, float psi,
+                                  float *xr, float *yr)
+{
+	float dx = xw - x;
+	float dy = yw - y;
+    rot(-psi, dx, dy, xr, yr);
+}
+static inline int world_to_cell(float coord) {
+    int idx = (int)((coord + map_size / 2.0f) / map_res);
+    if (idx < 0) idx = -10000;
+    if (idx >= MAP_DIM_CELLS) idx = -10000;
+    return idx;
+}
+
+int near_waypoint(float x, float y)					// CHECK IF CLOSE TO FIRST 3 WAYS
+{
+	if (waypoint_count == 0) return 1;
+
+	if (waypoint_count > 1)
+	{
+		for (int j = 0; j < waypoint_count && j < 3; j++)
+		{
+			float dx = fabsf(x - waypoints[j].x);
+			float dy = fabsf(y - waypoints[j].y);
+
+			if (dx < WAYPOINT_CLOSE && dy < WAYPOINT_CLOSE)
+			{
+				// Remove the first (j+1) waypoints
+				for (int i = j + 1; i < waypoint_count; i++)
+				{
+					waypoints[i - (j + 1)] = waypoints[i];
+				}
+				waypoint_count -= (j + 1);
+				return 1;
+			}
+		}
+	}
+	else
+	{
+		float dx = fabsf(x - waypoints[0].x);
+		float dy = fabsf(y - waypoints[0].y);
+
+		if (dx < LAST_WAYPOINT_CLOSE && dy < LAST_WAYPOINT_CLOSE)
+		{
+			waypoint_count = 0;
+			return 2;
+		}
+	}
+
+	return 0;
+}
+
+static void move_wp(Point2D *wp, const float robot[3])
+{
+    // If not in-bounds or already non-hard, nothing to do.
+    int gx, gy;
+    world_to_map(wp->x, wp->y, &gx, &gy);
+    if (gx < 0 || gy < 0 || gx >= MAP_DIM_CELLS || gy >= MAP_DIM_CELLS) return;
+    if (occ_map[gy][gx] != MAP_HARD) return;
+
+    // Direction from waypoint -> robot (world frame)
+    float dx = robot[0] - wp->x;
+    float dy = robot[1] - wp->y;
+    float L  = sqrtf(dx*dx + dy*dy);
+    if (L < 1e-6f) {
+        // Degenerate: nudge a tiny step; ring-search will catch if needed.
+        dx = 0.0f; dy = 1.0f; L = 1.0f;
+    }
+    dx /= L; dy /= L;
+
+    // March in ~half-cell steps to avoid skipping narrow gaps
+    const float step = 0.5f * map_res;
+    const int   max_steps = (int)fminf(200, (L / step) + 10);
+
+    float xw = wp->x, yw = wp->y;
+    for (int s = 0; s < max_steps; ++s) {
+        xw += dx * step;
+        yw += dy * step;
+
+        int cx, cy;
+        world_to_map(xw, yw, &cx, &cy);
+        if (cx < 0 || cy < 0 || cx >= MAP_DIM_CELLS || cy >= MAP_DIM_CELLS) break;
+
+        if (occ_map[cy][cx] != MAP_HARD) {
+            wp->x = xw;
+            wp->y = yw;
+            return;
+        }
+    }
+
+    // Fallback: local ring search around the original hard cell, preferring cells
+    // closer to the robot than the original hard-cell center (prevents snapping behind walls).
+    float hard_cx_w, hard_cy_w;
+    map_to_world(gx, gy, &hard_cx_w, &hard_cy_w);
+    const float D0 = (robot[0]-hard_cx_w)*(robot[0]-hard_cx_w)
+                   + (robot[1]-hard_cy_w)*(robot[1]-hard_cy_w);
+
+    float best_cost = 1e30f;
+    float best_xw = wp->x, best_yw = wp->y;
+
+    const int R = 6; // ~30 cm if map_res=0.05
+    for (int dr = -R; dr <= R; ++dr) {
+        for (int dc = -R; dc <= R; ++dc) {
+            int rr = gy + dr, cc = gx + dc;
+            if (rr < 0 || cc < 0 || rr >= MAP_DIM_CELLS || cc >= MAP_DIM_CELLS) continue;
+            if (occ_map[rr][cc] == MAP_HARD) continue;
+
+            float wx, wy;
+            map_to_world(cc, rr, &wx, &wy);
+
+            float D1 = (robot[0]-wx)*(robot[0]-wx) + (robot[1]-wy)*(robot[1]-wy);
+            if (D1 >= D0) continue;  // must be strictly closer to robot
+
+            float cst = (wx - wp->x)*(wx - wp->x) + (wy - wp->y)*(wy - wp->y);
+            if (cst < best_cost) {
+                best_cost = cst;
+                best_xw = wx; best_yw = wy;
+            }
+        }
+    }
+    if (best_cost < 1e20f) {
+        wp->x = best_xw;
+        wp->y = best_yw;
+    }
+}
+
+static inline float fast_hypotf(float x, float y)
+{
+    x = fabsf(x);
+    y = fabsf(y);
+    float f = (x > y) ? x : y;
+    float s = (x > y) ? y : x;
+    // a ≈ 0.941246, b ≈ 0.389792 gives max error ~4%
+    return f * 0.941246f + s * 0.389792f;
+}
+
+// Octile distance for 8-way grid (admissible & fast)
+static inline float heuristic(int r1, int c1, int r2, int c2)
+{
+    int dx = abs(c2 - c1);
+    int dy = abs(r2 - r1);
+    const float F = 1.41421356f;  // sqrt(2)
+    return (dx < dy)
+         ? F*dx + (dy - dx)
+         : F*dy + (dx - dy);
+}
+#define FRONT_X_MIN  0.05f   // at the sensor
+#define FRONT_X_MAX  0.20f   // 20 cm ahead
+#define FRONT_Y_HALF 0.12f   // ±10 cm left/right
+int OBJECT_INFRONT = 0;
+void xreffer(float x, float y, real_t ay[ACADO_N*ACADO_NY], real_t ayN[ACADO_NYN])
+{
+	prune_Xref_if_needed(x,y);
+	near_waypoint(x,y);
+	int FOUND = 0;
+	int hits = 0;
+    for (size_t i = 0; i < cnt; i++)
+    {
+        if (pts[i].x >= FRONT_X_MIN && pts[i].x <= FRONT_X_MAX && fabsf(pts[i].y) <= FRONT_Y_HALF)
+        {
+        	hits++;
+        	if (hits>3)
+        	{
+        		FOUND = 1;
+        		break;
+        	}
+        }
+    }
+    if (FOUND == 1)
+    	OBJECT_INFRONT = 1;
+    else
+    	OBJECT_INFRONT = 0;
+
+    // ay is size ACADO_N * ACADO_NY
+    for (int i = 0; i < ACADO_N; ++i) {
+        ay[i*ACADO_NY + 0] = Xref[i].x;
+        ay[i*ACADO_NY + 1] = Xref[i].y;
+        ay[i*ACADO_NY + 2] = Xref[i].yaw;
+        ay[i*ACADO_NY + 3] = Xref[i].v;
+        for (int j = 4; j < ACADO_NY; ++j) {
+            ay[i*ACADO_NY + j] = 0.0f;
+        }
+    }
+    // yN is size ACADO_NYN
+    int last = (ACADO_N - 1) * ACADO_NY;
+    for (int k = 0; k < ACADO_NYN; ++k) {
+    	ayN[k] = ay[last + k];
+    }
+}
+// Main trajectory function
+void trajectory(const real_t ax0[4])
+{
+/*
+	uint32_t  size_g_global      = sizeof(g_global);
+	uint32_t  size_open_heap     = sizeof(open_heap);
+	uint32_t  size_Xref          = sizeof(Xref);
+	uint32_t  size_open_bits     = sizeof(open_bits);
+	uint32_t  size_closed_bits   = sizeof(closed_bits);
+	uint32_t  size_came_from     = sizeof(came_from_global);
+	uint32_t  size_full_cells    = sizeof(Node) * MAX_PATH_POINTS;
+	uint32_t  size_path_pts      = sizeof(Point2D) * (MAX_PATH_POINTS + 1);
+*/
+
+
+    float pos[3] = {ax0[0],ax0[1],ax0[2]};
+
+    Point2D lidar_pts[cnt];
+
+    for (size_t i = 0; i < cnt; i++) {
+    	lidar_pts[i].x = pts[i].x;
+    	lidar_pts[i].y = pts[i].y;
+    }
+
+
+    // Step 0: Clear occupancy map
+	memset(occ_map, 0, sizeof(occ_map));   // MAP_FREE == 0
+	memset(raw_map, 0, sizeof(raw_map));
+    //uint8_t occ_map[MAX_MAP_SIZE_CELLS][MAX_MAP_SIZE_CELLS];
+
+    //uint32_t  size_occ_map      = sizeof(occ_map);
+
+    x_min = pos[0] - map_size/2.0f;
+    y_min = pos[1] - map_size/2.0f;
+
+    lidar_to_costmap(pos, lidar_pts, cnt);
+
+    for (int i = 0; i < waypoint_count && i < 2; ++i) {
+        move_wp(&waypoints[i], pos);  // pos is your float state[3]
+    }
+
+    near_waypoint(pos[0], pos[1]);
+
+    //printf("%.3f\n",ax0[0]);
+    //uint32_t t0 = HAL_GetTick();
+
+	/*for (int j = 0; j < waypoint_count && j < 3; j++)
+	{
+		// --- Check if this waypoint is inside a hard cell ---
+		int gx = world_to_cell(waypoints[j].x);
+		if (gx == -10000)
+			continue;
+		int gy = world_to_cell(waypoints[j].y);
+		if (gy == -10000)
+			continue;
+		if (occ_map[gy][gx] == MAP_HARD)
+		{
+			// Remove this waypoint (shift array left)
+			for (int i = j + 1; i < waypoint_count; i++)
+			{
+				waypoints[i - 1] = waypoints[i];
+			}
+			waypoint_count--;
+			j--; // stay at same index since we pulled a new waypoint into slot j
+		}
+	}*/
+
+    plan_local_trajectory(pos, waypoints, waypoint_count);
+
+	//prune_Xref_if_needed(pos[0],pos[1]);
+
+	int FOUND = 0;
+    for (size_t i = 0; i < cnt; i++)
+    {
+        if (pts[i].x >= FRONT_X_MIN && pts[i].x <= FRONT_X_MAX && fabsf(pts[i].y) <= FRONT_Y_HALF)
+        {
+        	FOUND = 1;
+        	break;
+        }
+    }
+    if (FOUND == 1)
+    	OBJECT_INFRONT = 1;
+    else
+    	OBJECT_INFRONT = 0;
+    //uint32_t t_elapsed = HAL_GetTick() - t0;
+    /*for (int i=0;i<2;++i)
+    {
+		printf("%.6f %.6f %.6f\n",Xref[i].x,Xref[i].y,pos[2]);
+    }
+    printf("-\n");*/
+
+    /*for (int i = 0; i < 3; i++)
+    {
+        char buf[64];
+        int len = snprintf(buf, sizeof(buf), "%.3f,%.3f\r\n", Xref[i].x, Xref[i].y);
+        if (len > 0) {
+            HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)buf, (uint16_t)len, HAL_MAX_DELAY);
+        }
+    }*/
+}
+
+#define ASTAR_TIME_BUDGET 30 //ms
+// -----------------------------------------------------------------------------
+// A* PATHFINDING ON AN 8-WAY GRID WITH SOFT/HARD COSTS
+// -----------------------------------------------------------------------------
+int astar(
+    const uint8_t occ[][MAX_NODES], int rows, int cols,
+    Node start, Node goal, Node *out_path, int *out_len, int max_len
+) {
+    // NEW: timing + counters
+    uint32_t t0 = HAL_GetTick();
+    int expansions = 0;
+
+    // 1) Reset
+    for (int r = 0; r < rows; ++r)
+        for (int c = 0; c < cols; ++c)
+            g_global[r][c] = INF;
+    memset(open_bits,   0, sizeof(open_bits));
+    memset(closed_bits, 0, sizeof(closed_bits));
+    open_heap_sz = 0;
+
+    // 2) Seed start
+    g_global[start.r][start.c] = 0.0f;
+    float h0 = heuristic(start.r, start.c, goal.r, goal.c);
+    heap_push(start.r, start.c, h0);
+    set_open(start.r, start.c);
+
+    // NEW: best-so-far
+    int   best_r = start.r, best_c = start.c;
+    float best_f = h0;
+
+    // 3) Main loop
+    while (open_heap_sz > 0) {
+        // NEW: time/expansion guard
+        if ((HAL_GetTick() - t0) > ASTAR_TIME_BUDGET)
+        {
+            // reconstruct partial path to best-so-far
+            int len = 0, cr = best_r, cc = best_c;
+            while (!(cr==start.r && cc==start.c) && len < max_len) {
+                out_path[len++] = (Node){ cr, cc };
+                Node p = came_from_global[cr][cc];
+                cr = p.r; cc = p.c;
+            }
+            if (len < max_len) out_path[len++] = start;
+            for (int i = 0; i < len/2; ++i) {
+                Node t = out_path[i];
+                out_path[i] = out_path[len-1-i];
+                out_path[len-1-i] = t;
+            }
+            *out_len = len;
+            return 2; // PARTIAL (non-zero → caller accepts)
+        }
+
+        HeapNode cur = heap_pop();
+        int cr = cur.r, cc = cur.c;
+
+        if (is_closed(cr,cc)) continue;
+        float cur_f = g_global[cr][cc] + heuristic(cr, cc, goal.r, goal.c);
+        if (cur.f > cur_f + 1e-6f) continue;
+
+        clr_open(cr,cc);
+        set_closed(cr,cc);
+
+        // NEW: track best-so-far
+        if (cur_f < best_f) { best_f = cur_f; best_r = cr; best_c = cc; }
+
+        // reached goal? (unchanged)
+        if (cr == goal.r && cc == goal.c) {
+            int len = 0;
+            while (!(cr==start.r && cc==start.c) && len < max_len) {
+                out_path[len++] = (Node){ cr, cc };
+                Node p = came_from_global[cr][cc];
+                cr = p.r; cc = p.c;
+            }
+            if (len < max_len) out_path[len++] = start;
+            for (int i = 0; i < len/2; ++i) {
+                Node tmp = out_path[i];
+                out_path[i] = out_path[len-1-i];
+                out_path[len-1-i] = tmp;
+            }
+            *out_len = len;
+            return 1;
+        }
+
+        // neighbors (unchanged)
+        static const int dirs[8][2] = {
+            { 1,0},{-1,0},{0,1},{0,-1},{ 1,1},{-1,1},{ 1,-1},{-1,-1}
+        };
+        for (int d = 0; d < 8; ++d) {
+            int nr = cr + dirs[d][0];
+            int nc = cc + dirs[d][1];
+            if (nr<0||nc<0||nr>=rows||nc>=cols) continue;
+            if (is_closed(nr,nc) || occ[nr][nc] == MAP_HARD) continue;
+            if (d>=4 && (occ[cr+dirs[d][0]][cc] == MAP_HARD || occ[cr][cc+dirs[d][1]] == MAP_HARD))
+                continue;
+
+            float move_cost = (d<4 ? 1.0f : 1.4142f)
+                            * (occ[nr][nc]==MAP_SOFT ? SOFT_PENALTY : 1.0f);
+            float gnew = g_global[cr][cc] + move_cost;
+            if (gnew + 1e-6f < g_global[nr][nc]) {
+                came_from_global[nr][nc] = (Node){ cr, cc };
+                g_global[nr][nc] = gnew;
+                float h = heuristic(nr, nc, goal.r, goal.c);
+                heap_push(nr, nc, gnew + h);
+                set_open(nr, nc);
+            }
+        }
+        ++expansions; // NEW
+    }
+
+    return 0; // no path
+}
+
+
+
+
+// -----------------------------------------------------------------------------
+// PLAN LOCAL TRAJECTORY FOR NEXT UP TO 3 WAYPOINTS
+// -----------------------------------------------------------------------------
+void plan_local_trajectory(
+    float state[3],                   // robot [x, y, yaw]
+    Point2D waypoints[],              // array of waypoints
+    int wp_count                     // total waypoints remaining
+) {
+    // --- Early exit: no waypoints left → hold pose, v = 0 ---
+    if (wp_count <= 0) {
+        for (int k = 0; k < N; ++k) {
+            Xref[k].x   = state[0];
+            Xref[k].y   = state[1];
+            Xref[k].yaw = state[2];
+            Xref[k].v   = 0.0f;              // stop
+        }
+        return;
+    }
+
+    // 1) Build a combined grid‐cell path for up to 3 waypoints
+    Node   full_cells[MAX_PATH_POINTS];
+    int    full_len = 0;
+    float  cur_x = state[0], cur_y = state[1];
+    int    sx, sy, gx, gy;
+
+    // PRINT MAP TO SERIAL (over &hcom_uart[COM1])
+
+    /*world_to_map(state[0], state[1], &sx, &sy);
+    world_to_map(waypoints[0].x, waypoints[0].y, &gx, &gy);
+        const char divider1[] = "---- FULL MAP (digits) ----\r\n";
+        HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)divider1, sizeof(divider1)-1, HAL_MAX_DELAY);
+
+        // Header with start/goal info
+        {
+            char buf[128];
+            int len = snprintf(buf, sizeof(buf),
+                "OCC[start=(%d,%d)]=%d  OCC[goal=(%d,%d)]=%d\r\n",
+                sy, sx, occ_map[sy][sx],
+                gy, gx, occ_map[gy][gx]);
+            if (len > 0) HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)buf, (uint16_t)len, HAL_MAX_DELAY);
+        }
+
+        // One line per row; overlay S/G (S has priority if same cell)
+        char line[MAP_DIM_CELLS + 4]; // row + \r\n + safety
+        for (int yy = 0; yy < MAP_DIM_CELLS; ++yy) {
+            int pos = 0;
+            for (int xx = 0; xx < MAP_DIM_CELLS; ++xx) {
+                char c = (char)('0' + (occ_map[yy][xx] % 10)); // '0','1','2'
+                if (yy == gy && xx == gx) c = 'G';
+                if (yy == sy && xx == sx) c = 'S';
+                line[pos++] = c;
+            }
+            line[pos++] = '\r';
+            line[pos++] = '\n';
+            HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)line, (uint16_t)pos, HAL_MAX_DELAY);
+        }
+
+        const char divider2[] = "---------------------------\r\n";
+        HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)divider2, sizeof(divider2)-1, HAL_MAX_DELAY);
+
+        // Print state[2] (yaw) with 3 decimal places
+        {
+            char buf[64];
+            int len = snprintf(buf, sizeof(buf), "Yaw: %.3f rad\r\n", state[2]);
+            if (len > 0) {
+                HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)buf, (uint16_t)len, HAL_MAX_DELAY);
+            }
+        }*/
+
+
+    for (int w = 0; w < wp_count && w < 2; ++w) {
+        world_to_map(cur_x, cur_y, &sx, &sy);
+        world_to_map(waypoints[w].x, waypoints[w].y, &gx, &gy);
+
+        Node segment[MAX_PATH_POINTS];
+        int  seg_len = 0;
+        if (!astar(occ_map, MAP_DIM_CELLS, MAP_DIM_CELLS,
+                   (Node){sy,sx}, (Node){gy,gx},
+                   segment, &seg_len, MAX_PATH_POINTS))
+            continue;
+
+        // skip duplicate start cell except for the very first
+        int start_i = (w==0 ? 0 : 1);
+        for (int i = start_i; i < seg_len && full_len < MAX_PATH_POINTS; ++i)
+            full_cells[full_len++] = segment[i];
+
+        cur_x = waypoints[w].x;
+        cur_y = waypoints[w].y;
+    }
+
+    // 2) Convert cell list to world‐coordinates polyline
+    Point2D path_pts[MAX_PATH_POINTS+1];
+    int path_len = 1;
+    path_pts[0].x = state[0];
+    path_pts[0].y = state[1];
+    for (int i = 0; i < full_len; ++i) {
+        float wx, wy;
+        map_to_world(full_cells[i].c,
+                     full_cells[i].r,
+                     &wx, &wy);
+        path_pts[path_len++] = (Point2D){ wx, wy };
+    }
+
+    // 3) Interpolate along polyline at fixed dt intervals
+    int   out_idx = 0;
+    float x = state[0], y = state[1];
+
+    const float alpha = 6.0f;    // curvature sensitivity
+
+    for (int i = 1; i < path_len && out_idx < N; ++i) {
+        float dx = path_pts[i].x - x;
+        float dy = path_pts[i].y - y;
+        float seg_len = sqrtf(dx*dx + dy*dy);
+        float seg_yaw = atan2f(dy, dx);
+
+        // adjust speed by curvature at this segment
+        float vk = v_des;
+        if (i > 0 && i < path_len-1) {
+            float k = estimate_curvature_c(
+                path_pts[i-1].x, path_pts[i-1].y,
+                path_pts[i  ].x, path_pts[i  ].y,
+                path_pts[i+1].x, path_pts[i+1].y
+            );
+            vk = fminf(v_des, v_des / (1.0f + alpha * fabsf(k)));
+        }
+
+        int steps = (int)floorf(seg_len / (dt * vk));
+        if (steps < 1) continue;
+
+        for (int s = 1; s <= steps && out_idx < N; ++s) {
+            float frac = (float)s / steps;
+            Xref[out_idx].x   = x + frac * dx;
+            Xref[out_idx].y   = y + frac * dy;
+            Xref[out_idx].yaw = seg_yaw;
+            Xref[out_idx].v   = vk;
+            ++out_idx;
+        }
+        x = path_pts[i].x;
+        y = path_pts[i].y;
+    }
+
+    // 4) Pad remainder
+    if (out_idx == 0) {
+        // no movement: fill with current state
+        for (int k = 0; k < N; ++k) {
+            Xref[k].x = state[0];
+            Xref[k].y = state[1];
+            Xref[k].yaw = state[2];
+            Xref[k].v = 0.0f;
+        }
+    } else {
+        // repeat last point
+        for (int k = out_idx; k < N; ++k)
+            Xref[k] = Xref[out_idx-1];
+    }
+}
+// :contentReference[oaicite:2]{index=2}
+
+// === Helper function for curvature ===
+float estimate_curvature_c(float x1, float y1, float x2, float y2, float x3, float y3) {
+    float a = fast_hypotf(x2 - x1, y2 - y1);
+    float b = fast_hypotf(x3 - x2, y3 - y2);
+    float c = fast_hypotf(x3 - x1, y3 - y1);
+    float s = (a + b + c) / 2.0f;
+    float A = sqrtf(fmaxf(s * (s - a) * (s - b) * (s - c), 0.0f));
+    if (A == 0) return 0.0f;
+    float R = (a * b * c) / (4.0f * A);
+    return 1.0f / R;
+}
+
+void map_to_world(int xi, int yi, float* xw, float* yw) {
+    *xw = x_min + xi * map_res;
+    *yw = y_min + yi * map_res;
+}
+
+void world_to_map(float px, float py, int* xi, int* yi) {
+    // raw index
+    int ix = (int)((px - x_min) / map_res + 0.5f);
+    int iy = (int)((py - y_min) / map_res + 0.5f);
+    // clamp into [0 .. MAP_DIM_CELLS-1]
+    if (ix < 0)          ix = 0;
+    else if (ix >= MAP_DIM_CELLS) ix = MAP_DIM_CELLS - 1;
+    if (iy < 0)          iy = 0;
+    else if (iy >= MAP_DIM_CELLS) iy = MAP_DIM_CELLS - 1;
+    *xi = ix;
+    *yi = iy;
+}
+float cell_thresh_hard2 = hard_thresh2 / (map_res * map_res);
+float cell_thresh_soft2 = soft_thresh2 / (map_res * map_res);
+void lidar_to_costmap(
+    float state[3],                     // robot world position [x, y]
+    Point2D* lidar_points, int L       // LiDAR points (robot frame)
+) {
+
+    // Step 1: Mark raw obstacle points into raw_map
+    //uint8_t raw_map[MAX_MAP_SIZE_CELLS][MAX_MAP_SIZE_CELLS] = {0};
+
+    float yaw = state[2];
+    float cosyaw = cosf(yaw);
+    float sinyaw = sinf(yaw);
+    int hit_cells[L];
+    int hit_count = 0;
+
+    for (int i = 0; i < L; i++) {
+        //rotate by yaw, then translate
+        float rx  = lidar_points[i].x;
+        float ry  = lidar_points[i].y;
+
+        // Ignore robot body
+        // Rectangle: x in [-0.30, 0.0], |y| <= 0.15
+        if ((rx >= -0.30f && rx <= 0.0f) && (fabsf(ry) <= 0.15f))
+        {
+            continue; // skip this point
+        }
+
+        float world_x =  cosyaw*rx
+                       - sinyaw*ry
+                       + state[0];
+        float world_y =  sinyaw*rx
+                       + cosyaw*ry
+                       + state[1];
+
+        /*// Ignore points within 0.30 m of the last waypoint
+        if (waypoint_count > 0)
+        {
+            float wx = waypoints[waypoint_count - 1].x;
+            float wy = waypoints[waypoint_count - 1].y;
+
+            float dx = world_x - wx;
+            float dy = world_y - wy;
+            if ((dx * dx + dy * dy) <= (0.30f * 0.30f))
+            {
+                continue; // skip this point
+            }
+        }*/
+
+        int xi, yi;
+        world_to_map(world_x, world_y, &xi, &yi);
+
+        if (xi >= 0 && xi < MAP_DIM_CELLS && yi >= 0 && yi < MAP_DIM_CELLS) {
+            if (raw_map[yi][xi] == 0) {              // first time we mark it
+                raw_map[yi][xi] = 1;
+                hit_cells[hit_count++] = (yi<<16) | xi;  // pack indices
+            }
+        }
+    }
+
+    for (int n = 0; n < hit_count; n++) {
+        int y = hit_cells[n] >> 16;
+        int x = hit_cells[n] & 0xFFFF;
+
+        if (occ_map[y][x] == MAP_HARD) continue;
+
+        for (int dy = -inflate_range; dy <= inflate_range; dy++) {
+            for (int dx = -inflate_range; dx <= inflate_range; dx++) {
+                int ny = y + dy, nx = x + dx;
+                if ((unsigned)ny >= MAP_DIM_CELLS || (unsigned)nx >= MAP_DIM_CELLS)
+                    continue;
+                float dist2 = dx*dx + dy*dy;
+                if (dist2 <= cell_thresh_hard2)
+                    occ_map[ny][nx] = MAP_HARD;
+                else if (dist2 <= cell_thresh_soft2 && occ_map[ny][nx] != MAP_HARD)
+                    occ_map[ny][nx] = MAP_SOFT;
+            }
+        }
+    }
+}
+void shift_Xref_left(int i_xref) {
+    int remove_count;
+
+    // If they asked to drop an out‐of‐bounds index, just remove one
+    if (i_xref < 1 || i_xref >= N) {
+        remove_count = 1;
+    } else {
+        remove_count = i_xref + 1;   // drop entries 0..i_xref inclusive
+    }
+    int keep = N - remove_count;
+    // Move everything after remove_count up to the front
+    memmove(&Xref[0],
+            &Xref[remove_count],
+            (N - remove_count) * sizeof(State4D));
+    for (int k = keep; k < N; ++k)
+    	Xref[k] = Xref[keep - 1];
+}
+
+void prune_Xref_if_needed(float state0,float state1) {
+    if (PRUNE_LEN >= N) return;  // Sanity check
+
+    float dists[PRUNE_LEN - 1];
+    float total = 0.0f;
+
+    // Compute distances between first PRUNE_LEN points
+    for (int i = 0; i < PRUNE_LEN - 1; i++) {
+        float dx = Xref[i+1].x - Xref[i].x;
+        float dy = Xref[i+1].y - Xref[i].y;
+        dists[i] = sqrtf(dx*dx + dy*dy);
+        total += dists[i];
+    }
+
+    float avg = total / (PRUNE_LEN - 1);
+    if (avg > EPSILON)
+    {
+        for (int i = PRUNE_LEN-1; i > -1; --i)
+        {
+            float dx = state0 - Xref[i].x;
+            float dy = state1 - Xref[i].y;
+            if (fabsf(dx) < PRUNE_THRESH && fabsf(dy) < PRUNE_THRESH)
+            {
+            	shift_Xref_left(i);
+                break;
+            }
+        }
+    }
+}

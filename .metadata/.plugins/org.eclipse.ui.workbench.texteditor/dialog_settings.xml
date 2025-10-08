@@ -3,21 +3,21 @@
 	<item key="hasShownOverlayPopupBefore" value="true"/>
 	<item key="replaceBarOpen" value="true"/>
 	<list key="searchhistory">
-		<item value="NUM_LIDAR_POINTS"/>
+		<item value="dt"/>
+		<item value="steps"/>
+		<item value="int steps"/>
+		<item value="v_des"/>
+		<item value="step_counter"/>
 		<item value="lidar_to_costmap"/>
+		<item value="R"/>
+		<item value="bins_filled_count"/>
+		<item value="compute_slips"/>
+		<item value="near_waypoint"/>
+		<item value="occ_map"/>
+		<item value="NUM_LIDAR_POINTS"/>
 		<item value="OBJECT_INFRONT"/>
 		<item value="map_size"/>
-		<item value="occ_map"/>
 		<item value="aligned"/>
-		<item value="heap_idx"/>
-		<item value="acadovar"/>
-		<item value="angle_bins"/>
-		<item value="shared"/>
-		<item value="RAM_D2"/>
-		<item value="plan_local_trajectory"/>
-		<item value="RAM_D1"/>
-		<item value="HeapNode"/>
-		<item value="start"/>
 	</list>
 	<list key="replacehistory">
 		<item value="float"/>

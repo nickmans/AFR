@@ -7,4 +7,4 @@
 ../Core/Src/ukf.c:75:13:outer4	3
 ../Core/Src/ukf.c:85:13:chol3	4
 ../Core/Src/ukf.c:115:13:inv4	17
-../Core/Src/ukf.c:177:6:ukf_update	51
+../Core/Src/ukf.c:177:6:ukf_update	50

@@ -75,7 +75,7 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN Private defines */
 #define WAYPOINT_CLOSE 0.15f
-#define LAST_WAYPOINT_CLOSE 0.4
+#define LAST_WAYPOINT_CLOSE 0.6
 static double rtoothers = 0.3;  // min. radius to other waypoints
 static double rtotag = 0.5;		// min. radius to tag
 #define MAX_WAYPOINTS 15		// MAX STORED WAYPOINTS

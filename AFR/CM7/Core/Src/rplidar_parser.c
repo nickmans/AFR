@@ -24,9 +24,22 @@ static uint8_t hdr_pos;
 // Raw 5‑byte packet framing
 static uint8_t pkt[5];
 static uint8_t pkt_pos;
+static float cos_tbl[NUM_BINS], sin_tbl[NUM_BINS];
 
+void trig_table_init(void)
+{
+    for (int b = 0; b < NUM_BINS; ++b)
+    {
+        float ang_deg = (b + 0.5f) * (360.0f / NUM_BINS);
+        float ang_rad = ang_deg * (float)M_PI / 180.0f;
+        cos_tbl[b] = cosf(ang_rad);
+        sin_tbl[b] = sinf(ang_rad);
+    }
+}
 // ————————————————————————————————————————————————————————
-void rplidar_parser_init(void) {
+void rplidar_parser_init(void)
+{
+	trig_table_init();
     // reset header skip and framing
     hdr_pos           = 0;
     pkt_pos           = 0;
@@ -38,6 +51,7 @@ void rplidar_parser_init(void) {
     }
 }
 static float last_ang = 0;
+static const float angletobin =  NUM_BINS / 360.0f;
 // feed one raw UART byte into the parser
 void rplidar_parser_feed(uint8_t b) {
 
@@ -57,32 +71,43 @@ void rplidar_parser_feed(uint8_t b) {
 
     uint16_t raw_ang  = ((uint16_t)pkt[2] << 8) | pkt[1];
     raw_ang >>= 1;                    // drop sync bit
-    float angle_deg = raw_ang / 64.0;
+    float angle_deg = raw_ang * 0.015625f;
 
     if (angle_deg + 5.0f < last_ang) {   // crossed 360→0; 5° hysteresis
         scan_ready = true;
     }
 
     last_ang = angle_deg;
-    uint16_t raw_dist = ((uint16_t)pkt[4] << 8) | pkt[3];
-    raw_dist >>= 2;                   // drop status bits
-    float dist_m     = raw_dist / 1000.0;
+    int bin = (int)(angle_deg * angletobin);   // angle_deg in [0,360)
 
-    LidarPoint_t pt = {
-        .angle_deg = angle_deg,
-        .dist_m    = dist_m,
-        .x         = dist_m * cosf(angle_deg * M_PI / 180.0),
-        .y         = dist_m * sinf(angle_deg * M_PI / 180.0),
-        .quality   = quality
-    };
-
-    // 5) Bin by angle into 500 slots for rplidar resolution
-    int bin = (int)(angle_deg * NUM_BINS / 360.0) % NUM_BINS;
-    if (!bin_filled[bin]) {
-        bin_filled[bin] = true;
+    if (bin >= NUM_BINS)
+    {
+    	bin = NUM_BINS - 1;
     }
-    angle_bins[bin] = pt;
+
+	if (!bin_filled[bin])
+	{
+		uint16_t raw_dist = ((uint16_t)pkt[4] << 8) | pkt[3];
+		raw_dist >>= 2;                   // drop status bits
+		float dist_m     = raw_dist * 0.001f;
+
+
+		LidarPoint_t pt = {
+			.angle_deg = angle_deg,
+			.dist_m    = dist_m,
+			.x         = dist_m * cos_tbl[bin],
+			.y         = dist_m * sin_tbl[bin],
+			.quality   = quality
+		};
+
+		// 5) Bin by angle into 500 slots for rplidar resolution
+
+		bin_filled[bin] = true;
+		angle_bins[bin] = pt;
+		bins_filled_count++;
+	}
 }
+
 
 bool rplidar_parser_is_scan_ready(void) {
     return scan_ready;

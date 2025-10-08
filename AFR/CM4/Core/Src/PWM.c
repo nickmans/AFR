@@ -19,6 +19,7 @@
 #define CONTROL_TIMEOUT   pdMS_TO_TICKS(25u)
 #define NEW_SP_FLAG       (1U<<0)
 #define PI 3.14159265358979323846
+#define ZERO_GUARD_RPM  1.0   // treat |setpoint| < 1 RPM as "zero command"
 
 // ---- DIRECTION CONFIG----
 const double DB_RPM       = 5.0;   // sign deadband
@@ -183,6 +184,12 @@ void pwmgo(void *arg)
 		        sp_mag *= LOSER_SCALE;               // or set to 0.0 if you prefer hard brake
 		    }
 
+		    if (sp_mag < ZERO_GUARD_RPM) {
+		        integ[i] = 0.0;                               // dump stored torque
+		        if (firstflag) __HAL_TIM_SET_COMPARE(&htim1, CH[i], 0);  // PWM=0
+		        continue;                                     // skip PI for this wheel
+		    }
+
 		    // measured speed magnitude (you’re using EXTI ticks, so signless anyway)
 		    const double y_meas = fabs(rpm[i]);
 
@@ -214,22 +221,13 @@ void pwmgo(void *arg)
 		    if (duty < 0.0) duty = 0.0;
 		    if (duty > PWM_MAX) duty = PWM_MAX;
 
-		    // --- tracking anti-windup (robust) ---
-		    // If saturated, nudge integrator so (u_ff + Kp*e + Ki*I) tracks the clamped duty.
-		    const double aw_term = (duty - duty_raw);
-		    if (fabs(Ki) > 1e-12) {
-		        if ((duty <= 0.0 && err < 0.0) || (duty >= PWM_MAX && err > 0.0)) {
-		            // would push further into saturation → apply back-calc only
-		            integ[i] += aw_term / Ki;
-		        } else {
-		            // either not saturated or error would drive out of saturation → integrate error + back-calc
-		            integ[i] += err*dt + aw_term / Ki;
-		        }
-		    } else {
-		        // Ki ~ 0: plain conditional integration
-		        const bool sat_lo = (duty <= 0.0), sat_hi = (duty >= PWM_MAX);
-		        const bool allow  = (!sat_lo && !sat_hi) || (sat_lo && err > 0.0) || (sat_hi && err < 0.0);
-		        if (allow) integ[i] += err*dt;
+		    // after you computed: err, duty (clamped to [0, PWM_MAX])
+		    bool sat_lo = (duty <= 0.0);
+		    bool sat_hi = (duty >= PWM_MAX);
+		    bool drives_deeper = (sat_lo && err < 0.0) || (sat_hi && err > 0.0);
+
+		    if (!drives_deeper) {
+		        integ[i] += err * dt;     // integrate only when it won't push deeper into saturation
 		    }
 
 		    // cap integrator

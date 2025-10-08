@@ -29,6 +29,7 @@
 #include "sensor.h"
 #include "uart5_comm.h"
 #include "math.h"
+#include <stdlib.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -41,13 +42,13 @@ Point2D waypoints[15];
  ACADOvariables acadoVariables;
  ACADOworkspace acadoWorkspace;
 static const double Q[3][3] = {
-    { 1e-2,    0.0,    0.0 },
-    { 0.0,    1e-2,    0.0 },
-    { 0.0,     0.0,   5e-2  }
+    { 1e-6,    0.0,    0.0 },
+    { 0.0,    1e-6,    0.0 },
+    { 0.0,     0.0,   1e3  }
 };
 static const double R[4][4] = {
     //   ψ    ψ̇    aₓ   v_enc
-    { 3e-6,  0.0,  0.0,  0.0  },  // yaw noise variance
+    { 3e-4,  0.0,  0.0,  0.0  },  // yaw noise variance
     { 0.0,  3e-2,  0.0,  0.0  },  // yaw-rate noise variance
     { 0.0,   0.0,  1e-1,  0.0 },  // accel noise variance
     { 0.0,   0.0,  0.0,  1e-3 }   // encoder‐velocity noise variance
@@ -135,6 +136,12 @@ static void filter_init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+static void filter_init(void) {
+    // initialize P
+    P[0][0] = 1e-6;  P[0][1]=0;  P[0][2]=0;
+    P[1][0] = 0;  P[1][1]=1e-6;  P[1][2]=0;
+    P[2][0] = 0;  P[2][1]=0;  P[2][2]=1e-1;
+}
 double wrap_to_pi(double rad) {
     // Convert degrees to radians
     //double rad = deg * M_PI / 180.0;
@@ -151,7 +158,7 @@ static inline double BN0055heading_to_yaw(double heading_deg) {
     return wrap_to_pi(psi);
 }
 //double init_yaw = 0;
-double heading, roll, pitch, ax, axx, ay, az, yawrate;
+double heading, roll, pitch, ax, axx, ay, az, yawrate;	// IMU vars
 static void control_reset_all(void)
 {
     // --- MPC / ACADO ---
@@ -159,24 +166,22 @@ static void control_reset_all(void)
     init_controller_weights();
 
 	BNO055_ReadEuler(&heading, &pitch, &roll);
-	//init_yaw = heading*M_PI/180;//wrap_to_pi(heading);
+
 	acadoVariables.u[0] = 0;
 	acadoVariables.u[1] = 0;
 	acadoVariables.u[2] = 0;
 	acadoVariables.u[3] = 0;
-    // Seed state (cold start). If you prefer a warm start, you can read sensors here.
-    acadoVariables.x0[0] = 0.0;   // x
+
+	acadoVariables.x0[0] = 0.0;   // x
     acadoVariables.x0[1] = 0.0;   // y
-    acadoVariables.x0[2] = BN0055heading_to_yaw(heading);   // psi (will get overwritten from IMU each tick)
+    acadoVariables.x0[2] = BN0055heading_to_yaw(heading);   // psi
     acadoVariables.x0[3] = 0.0;   // v_x
 
     // --- Any filter/averagers you keep ---
     filter_init();                 // you already call this once at CONTROL start:
 }
 // Rotate (x,y) by angle theta radians
-static inline void rot(double theta,
-                       double x_in, double y_in,
-                       double *x_out, double *y_out)
+static inline void rot(double theta,double x_in, double y_in,double *x_out, double *y_out)
 {
     double c = cos(theta), s = sin(theta);
     *x_out = c * x_in - s * y_in;
@@ -222,13 +227,9 @@ static inline void online_data(double meas[7], double slips[4])
             acadoVariables.od[base + c++] = slips[j];
     }
 }
-#define SLIP_VW_TH   (1e-1)
-#define SLIP_U_TH    (1e-1)
-static inline void compute_slips(
-		double velocity,
-		double yawrate,
-    const double u[4],
-	double slips[4]
+#define SLIP_VW_TH   (1e-2)	// minimum robot velocity for slip calc
+#define SLIP_U_TH    (1e-2) // minimum encoder velocity for slip calc
+static inline void compute_slips(double velocity,double yawrate,const double u[4],double slips[4]
 ) {
 
     // wheel longitudinal velocities
@@ -238,15 +239,19 @@ static inline void compute_slips(
     vw[2] = velocity + yawrate * halfW;  // wheel 3
     vw[3] = velocity - yawrate * halfW;  // wheel 4
 
-    for (size_t i = 0; i < 4; i++) {
-    	double u_lin = u[i] * rw;   // commanded linear speed
-        if (vw[i] > SLIP_VW_TH) {
+    for (int i = 0; i < 4; i++)
+    {
+    	double u_lin = u[i] * rw;   // encoder linear speed
+        if (vw[i] > SLIP_VW_TH)
+        {
             slips[i] = fmin(abs((u_lin - vw[i]) / vw[i]), 1);
         }
-        else if ((u_lin > SLIP_U_TH) && (vw[i] <= SLIP_VW_TH)) {
+        else if ((u_lin > SLIP_U_TH) && (vw[i] <= SLIP_VW_TH))
+        {
             slips[i] = 1.0;
         }
-        else {
+        else
+        {
             slips[i] = 0.0;
         }
     }
@@ -270,7 +275,7 @@ void get_lidar(void)
 {
 	if (lidarstarted)
 	{
-		if (!wantlidarstarted)
+		if (!wantlidarstarted)			// updated via command in usart5_comm.c
 		{
 			HAL_UART_Transmit(&huart2, (uint8_t*)stop_cmd, sizeof(stop_cmd), HAL_MAX_DELAY);
 			lidarstarted = 0;
@@ -371,8 +376,9 @@ Error_Handler();
   MX_USART2_UART_Init();
   MX_UART5_Init();
   /* USER CODE BEGIN 2 */
-  HAL_GPIO_WritePin(GPIOG,GPIO_PIN_8,0);
+  HAL_GPIO_WritePin(GPIOG,GPIO_PIN_8,0);	// kill motors
   HAL_GPIO_WritePin(GPIOG,GPIO_PIN_6,0);
+
 	acado_initializeSolver();
 	init_controller_weights();
 	//bno055_CONFIG();
@@ -405,9 +411,9 @@ Error_Handler();
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
-	UART5_Comm_Init();    // creates queue + starts RX DMA
-  wayr_id = osThreadNew(wayreceive, NULL, &wayr_att);
-  CONTROL_id = osThreadNew(CONTROL, NULL, &CONTROL_att);
+  UART5_Comm_Init();    // creates queue + starts RX DMA
+  wayr_id = osThreadNew(wayreceive, NULL, &wayr_att);		// waypoint receive thread from M4 core
+  CONTROL_id = osThreadNew(CONTROL, NULL, &CONTROL_att);	// control thread
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
 
@@ -758,7 +764,7 @@ const double g = 9.80665;
 const double pion180 = 0.01745329251;
 float BATTERY_VOLTAGE;
 static int waiting_counter = 0;
-static int notmoved = 0;	// if robot not moving while waypoint active counter
+static int notmoved = 0;	// robot not moving while waypoint active counter
 void CONTROL(void *argument)
 {
     const TickType_t period = pdMS_TO_TICKS(100);  // 100 ms
@@ -774,6 +780,8 @@ void CONTROL(void *argument)
     SHARED2_MEM->flagencoders = 0;
     __DSB();
 	static int juststarted = 1;
+	static int step_counter = 0;
+	uint32_t t_prev = 0;
 	for(;;)
 	{
 		while(started)
@@ -781,8 +789,10 @@ void CONTROL(void *argument)
 			if (juststarted)
 			{
 				get_lidar();
-				osDelay(3000);
+				osDelay(2000);
+				step_counter = 0;
 				juststarted = 0;
+				last_wake = xTaskGetTickCount();   // realign the vTaskDelayUntil baseline
 			}
 			/*waypoint_count = 1;
 			double rawwx = 0.5;//SHARED_MEM->tag_pos[1];
@@ -807,7 +817,7 @@ void CONTROL(void *argument)
 				measurements[5] =  SHARED2_MEM->encoders[2];
 				measurements[6] =  SHARED2_MEM->encoders[3];
 
-				if (minutecoonter > 500)
+				if (minutecoonter > 100)
 				{
 					if (coonter<NUM_VSAMPLES)
 					{
@@ -855,7 +865,20 @@ void CONTROL(void *argument)
 
 			double xhat[3] = {acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[3]};
 
-			ukf_update(xhat,P,z,dt,Q,R);
+		    uint32_t t_now = HAL_GetTick();
+		    double dt_real;
+			if (t_prev == 0)
+			{
+				dt_real = 0.1;
+			}
+			else
+			{
+				dt_real = (t_now - t_prev) / 1000.0;   // convert to seconds
+
+			}
+		    t_prev = t_now;
+
+			ukf_update(xhat,P,z,dt_real,Q,R);
 
 			if (acadoVariables.x0[0] == xhat[0] && acadoVariables.x0[1] == xhat[1])
 			{
@@ -872,19 +895,21 @@ void CONTROL(void *argument)
 
 			double slips[4] = {0, 0, 0, 0};
 			double enc[4] = {measurements[3],measurements[4],measurements[5],measurements[6]};
-			//compute_slips(xhat[2],measurements[1],enc,slips);
+			compute_slips(xhat[2],measurements[1],enc,slips);
 
 			online_data(measurements,slips);
 
 			//waypoints[waypoint_count].x = wx;
 			//waypoints[waypoint_count].y = wy;
-			//uint32_t tt = HAL_GetTick();
 			get_lidar();
-			static int step_counter = 0;
+			//printf("lidar time: %lu\n",t_elapsed);
+
+			uint32_t tt = HAL_GetTick();
+
 			if (step_counter++ % 10 == 0)			//every 10 steps new trajectory
 			{
 				trajectory(acadoVariables.x0);
-				// print every point's X, Y
+				// print every lidar point's X, Y
 				/*char buf[64];   // buffer for one line of text
 				for (uint16_t i = 0; i < cnt; i++)
 				{
@@ -899,38 +924,48 @@ void CONTROL(void *argument)
 			else
 				xreffer(acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.y, acadoVariables.yN);		// Update existing trajectory
 
-			//uint32_t t_elapsed = HAL_GetTick() - tt;
-			//if (t_elapsed>40)
+			uint32_t t_elapsed = HAL_GetTick() - tt;
+
+			if (t_elapsed > 60)
+				printf("t %lu\n",t_elapsed);
+
+			//if (OBJECT_INFRONT)
 			{
-				//printf("traj slow\n");
-			}
-			if (OBJECT_INFRONT)
-			{
-				printf("BLOCK\n",OBJECT_INFRONT);
+				//printf("BLOCK\n");
 			}
 
-			//uint32_t tc = HAL_GetTick();
+			uint32_t tc = HAL_GetTick();
 
 			//printf("%.3f %.3f %.3f %.3f %.3f %.3f %.3f\n",measurements[0],measurements[1],measurements[2],measurements[3],measurements[4],measurements[5],measurements[6]);
 
 			int status = controller_loop();
 			//printf("u: %.2f %.2f %.2f %.2f\n",acadoVariables.u[0],acadoVariables.u[1],acadoVariables.u[2],acadoVariables.u[3]);
-			//uint32_t c_elapsed = HAL_GetTick() - tc;
+			uint32_t c_elapsed = HAL_GetTick() - tc;
 
-			//if (c_elapsed>30)
+			if (c_elapsed>50)
 			{
-				//printf("control slow\n");
+				printf("c %lu\n",c_elapsed);
 			}
 
-			if (status!=0 || isnan(acadoVariables.u[0]) || OBJECT_INFRONT || notmoved > 100)
+			if (status!=0 || isnan(acadoVariables.u[0]) || OBJECT_INFRONT)
 			{
+				/*if (status!=0)
+					printf("status %d\n",status);
+				if (isnan(acadoVariables.u[0]))
+						printf("u is nan\n");
+				if (notmoved > 50)
+					printf("not moved\n");*/
+
+				if (OBJECT_INFRONT)
+					printf("BLOCK\n");
+
+				//printf("terminal: %.3f %.3f %.3f %.3f, x0: %.3f %.3f %.3f %.3f\n",acadoVariables.yN[0],acadoVariables.yN[1],acadoVariables.yN[2],acadoVariables.yN[3],acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],acadoVariables.x0[3]);
 				control_reset_all();
 				waypoint_count = 0;
-				step_counter = 0;
+				//step_counter = 0;
 				notmoved = 0;
-				vTaskDelayUntil(&last_wake, period);   // align to 100 ms
-				//printf("Can't\n");
-				continue;
+				//vTaskDelayUntil(&last_wake, period);   // align to 100 ms
+				//continue;
 			}
 
 			//static int done = 0;
@@ -998,7 +1033,7 @@ void CONTROL(void *argument)
 				measurements[5] =  SHARED2_MEM->encoders[2];
 				measurements[6] =  SHARED2_MEM->encoders[3];
 
-				if (minutecoonter > 40)
+				if (minutecoonter > 100)
 				{
 
 					if (coonter<NUM_VSAMPLES)
@@ -1009,7 +1044,7 @@ void CONTROL(void *argument)
 					else
 					{
 						BATTERY_VOLTAGE = averageVIN(VIN);
-						//printf("%.3fV\n",BATTERY_VOLTAGE);
+						printf("%.3fV\n",BATTERY_VOLTAGE);
 						//printf("%.3f %.3f %.3f %.3f\n",acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],acadoVariables.x0[3]);
 						if (BATTERY_VOLTAGE<10.5)
 						{
@@ -1033,7 +1068,7 @@ void CONTROL(void *argument)
 				__DSB();
 			}
 
-			/*BNO055_ReadEuler(&heading, &pitch, &roll);
+			BNO055_ReadEuler(&heading, &pitch, &roll);
 			BNO055_ReadLinAccel_D(&ax, &ay, &az);
 			BNO055_ReadYawRate(&yawrate);
 			//printf("%.3f %.3f %.3f %.3f\n",measurements[3],measurements[4],measurements[5],measurements[6]);
@@ -1047,27 +1082,28 @@ void CONTROL(void *argument)
 
 			double xhat[3] = {acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[3]};
 
-			ukf_update(xhat,P,z,dt,Q,R);
+		    uint32_t t_now = HAL_GetTick();
+		    double dt_real;
+			if (t_prev == 0)
+			{
+				dt_real = 0.1;
+			}
+			else
+			{
+				dt_real = (t_now - t_prev) / 1000.0;   // convert to seconds
+
+			}
+		    t_prev = t_now;
+
+			ukf_update(xhat,P,z,dt_real,Q,R);
 			acadoVariables.x0[0] = xhat[0];
 			acadoVariables.x0[1] = xhat[1];
 			acadoVariables.x0[2] = measurements[0];
 			acadoVariables.x0[3] = xhat[2];
 
-			static float saved_state[4][5] = {0};
-			if (waiting_counter>4)
-			{
-				for (int i=0;i<5;i++)
-					printf("%.2f %.2f %.2f %.2f %.2f\n",saved_state[0][i],saved_state[1][i],saved_state[2][i],saved_state[3][i],z[3]);
-				waiting_counter = 0;
-			}
-			else
-			{
-				saved_state[0][waiting_counter] = acadoVariables.x0[0];
-				saved_state[1][waiting_counter] = acadoVariables.x0[1];
-				saved_state[2][waiting_counter] = acadoVariables.x0[2];
-				saved_state[3][waiting_counter] = acadoVariables.x0[3];
-				waiting_counter++;
-			}*/
+			double slips[4] = {0, 0, 0, 0};
+			double enc[4] = {measurements[3],measurements[4],measurements[5],measurements[6]};
+			compute_slips(xhat[2],measurements[1],enc,slips);
 
 			// Wait to send new control inputs
 			while (SHARED_MEM->flagm7)
@@ -1087,10 +1123,7 @@ void CONTROL(void *argument)
 				}
 				else
 				{
-					SHARED_MEM->control_u[0] = 0;//acadoVariables.u[0];
-					SHARED_MEM->control_u[1] = 0;//acadoVariables.u[2];
-					SHARED_MEM->control_u[2] = 0;//acadoVariables.u[1];
-					SHARED_MEM->control_u[3] = 0;//acadoVariables.u[3];
+					printf("%.2f %.2f %.2f %.2f\n",acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],acadoVariables.x0[3]);
 					float speed = 0.0f;
 					if (fastforward)
 					{
@@ -1118,7 +1151,7 @@ void CONTROL(void *argument)
 					}
 					else if (stop)
 					{
-						SHARED_MEM->control_u[0] = 0;	//FL
+						SHARED_MEM->control_u[0] = 0; //FL
 						SHARED_MEM->control_u[1] = 0; //RL
 						SHARED_MEM->control_u[2] = 0; //FR
 						SHARED_MEM->control_u[3] = 0; //RR
@@ -1129,7 +1162,7 @@ void CONTROL(void *argument)
 				__DSB();
 			}
 
-			osDelay(100);
+			vTaskDelayUntil(&last_wake, period);   // align to 100 ms
 		}
 	}
 }
@@ -1184,12 +1217,6 @@ void init_controller_weights(void)
 
     for (int i = 0; i < 4; ++i)
         acadoVariables.WN[i * 4 + i] = WN_diag[i];
-}
-static void filter_init(void) {
-    // initialize P to large uncertainty
-    P[0][0] = 1e-2;  P[0][1]=0;  P[0][2]=0;
-    P[1][0] = 0;  P[1][1]=1e-2;  P[1][2]=0;
-    P[2][0] = 0;  P[2][1]=0;  P[2][2]=2e-1;
 }
 
 int _gettimeofday(struct timeval *tv, void *tzvp)

@@ -1,10 +1,10 @@
-12:26:34 **** Incremental Build of configuration Debug for project AFR_CM4 ****
+17:04:27 **** Incremental Build of configuration Debug for project AFR_CM4 ****
 make -j16 all 
 arm-none-eabi-size  AFR_CM4.elf 
    text	   data	    bss	    dec	    hex	filename
- 111000	    584	  88800	 200384	  30ec0	AFR_CM4.elf
+ 110872	    584	  88800	 200256	  30e40	AFR_CM4.elf
 Finished building: default.size.stdout
  
 
-12:26:35 Build Finished. 0 errors, 0 warnings. (took 661ms)
+17:04:27 Build Finished. 0 errors, 0 warnings. (took 342ms)
 
