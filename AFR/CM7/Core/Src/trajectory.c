@@ -62,7 +62,6 @@ __attribute__((section(".RAM_D2"))) static Node came_from_global[MAX_NODES][MAX_
 // Bit-packed open/closed sets
 __attribute__((section(".DTCMRAM"))) static uint8_t open_bits[(MAX_NODES*MAX_NODES + 7)/8];
 __attribute__((section(".DTCMRAM"))) static uint8_t closed_bits[(MAX_NODES*MAX_NODES + 7)/8];
-// at top of trajectory.c
 
 static inline void set_open(int r,int c)   { SET_BIT(open_bits, BIT_IDX(r,c)); }
 static inline void clr_open(int r,int c)   { CLR_BIT(open_bits, BIT_IDX(r,c)); }
@@ -140,7 +139,7 @@ void plan_local_trajectory(
     Point2D* waypoints,
     int wp_count
 );
-static inline void rot(float theta,
+static inline void rot(float theta,			// ASSUMES CCW THETA, PASS -CW
 		float x_in, float y_in,
 		float *x_out, float *y_out)
 {
@@ -376,9 +375,9 @@ void trajectory(const real_t ax0[4])
 
     lidar_to_costmap(pos, lidar_pts, cnt);
 
-    for (int i = 0; i < waypoint_count && i < 2; ++i) {
-        move_wp(&waypoints[i], pos);  // pos is your float state[3]
-    }
+    //for (int i = 0; i < waypoint_count && i < 2; ++i) {
+       // move_wp(&waypoints[i], pos);  // pos is your float state[3]
+    //}
 
     near_waypoint(pos[0], pos[1]);
 
@@ -581,8 +580,7 @@ void plan_local_trajectory(
     int    sx, sy, gx, gy;
 
     // PRINT MAP TO SERIAL (over &hcom_uart[COM1])
-
-    /*world_to_map(state[0], state[1], &sx, &sy);
+    world_to_map(state[0], state[1], &sx, &sy);
     world_to_map(waypoints[0].x, waypoints[0].y, &gx, &gy);
         const char divider1[] = "---- FULL MAP (digits) ----\r\n";
         HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)divider1, sizeof(divider1)-1, HAL_MAX_DELAY);
@@ -622,7 +620,7 @@ void plan_local_trajectory(
             if (len > 0) {
                 HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)buf, (uint16_t)len, HAL_MAX_DELAY);
             }
-        }*/
+        }
 
 
     for (int w = 0; w < wp_count && w < 2; ++w) {
@@ -668,7 +666,7 @@ void plan_local_trajectory(
         float dx = path_pts[i].x - x;
         float dy = path_pts[i].y - y;
         float seg_len = sqrtf(dx*dx + dy*dy);
-        float seg_yaw = atan2f(dy, dx);
+        float seg_yaw = -atan2f(dy, dx);
 
         // adjust speed by curvature at this segment
         float vk = v_des;
@@ -770,12 +768,8 @@ void lidar_to_costmap(
             continue; // skip this point
         }
 
-        float world_x =  cosyaw*rx
-                       - sinyaw*ry
-                       + state[0];
-        float world_y =  sinyaw*rx
-                       + cosyaw*ry
-                       + state[1];
+        float world_x =  cosyaw*rx + sinyaw*ry + state[0];
+        float world_y =  -sinyaw*rx + cosyaw*ry + state[1];
 
         /*// Ignore points within 0.30 m of the last waypoint
         if (waypoint_count > 0)

@@ -3,12 +3,14 @@
 	<item key="hasShownOverlayPopupBefore" value="true"/>
 	<item key="replaceBarOpen" value="true"/>
 	<list key="searchhistory">
+		<item value="robot_to_world"/>
+		<item value="robot"/>
+		<item value="lidar_to_costmap"/>
 		<item value="dt"/>
 		<item value="steps"/>
 		<item value="int steps"/>
 		<item value="v_des"/>
 		<item value="step_counter"/>
-		<item value="lidar_to_costmap"/>
 		<item value="R"/>
 		<item value="bins_filled_count"/>
 		<item value="compute_slips"/>
@@ -16,8 +18,6 @@
 		<item value="occ_map"/>
 		<item value="NUM_LIDAR_POINTS"/>
 		<item value="OBJECT_INFRONT"/>
-		<item value="map_size"/>
-		<item value="aligned"/>
 	</list>
 	<list key="replacehistory">
 		<item value="float"/>

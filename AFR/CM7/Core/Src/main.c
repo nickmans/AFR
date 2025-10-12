@@ -184,8 +184,8 @@ static void control_reset_all(void)
 static inline void rot(double theta,double x_in, double y_in,double *x_out, double *y_out)
 {
     double c = cos(theta), s = sin(theta);
-    *x_out = c * x_in - s * y_in;
-    *y_out = s * x_in + c * y_in;
+    *x_out = c * x_in + s * y_in;
+    *y_out = -s * x_in + c * y_in;
 }
 
 // Convert robot→world using pose (x,y,psi)
@@ -792,15 +792,16 @@ void CONTROL(void *argument)
 				osDelay(2000);
 				step_counter = 0;
 				juststarted = 0;
+				notmoved = 0;
 				last_wake = xTaskGetTickCount();   // realign the vTaskDelayUntil baseline
 			}
 			/*waypoint_count = 1;
-			double rawwx = 0.5;//SHARED_MEM->tag_pos[1];
+			double rawwx = 1;//SHARED_MEM->tag_pos[1];
 			double rawwy = 0;//SHARED_MEM->tag_pos[0];
 			double wx,wy;
 			robot_to_world(rawwx,rawwy,acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],&wx,&wy);
-			waypoints[0].x = wx;
-			waypoints[0].y = wy;*/
+			waypoints[0].x = 1.2;
+			waypoints[0].y = 0;*/
 
 			if (waypoint_count<1)
 			{
@@ -880,7 +881,7 @@ void CONTROL(void *argument)
 
 			ukf_update(xhat,P,z,dt_real,Q,R);
 
-			if (acadoVariables.x0[0] == xhat[0] && acadoVariables.x0[1] == xhat[1])
+			if (xhat[2] < 0.05)
 			{
 				notmoved++;
 			}
@@ -927,7 +928,7 @@ void CONTROL(void *argument)
 			uint32_t t_elapsed = HAL_GetTick() - tt;
 
 			if (t_elapsed > 60)
-				printf("t %lu\n",t_elapsed);
+				//printf("t %lu\n",t_elapsed);
 
 			//if (OBJECT_INFRONT)
 			{
@@ -947,7 +948,7 @@ void CONTROL(void *argument)
 				printf("c %lu\n",c_elapsed);
 			}
 
-			if (status!=0 || isnan(acadoVariables.u[0]) || OBJECT_INFRONT)
+			if (status!=0 || isnan(acadoVariables.u[0]) || OBJECT_INFRONT || notmoved > 10)
 			{
 				/*if (status!=0)
 					printf("status %d\n",status);
@@ -956,8 +957,8 @@ void CONTROL(void *argument)
 				if (notmoved > 50)
 					printf("not moved\n");*/
 
-				if (OBJECT_INFRONT)
-					printf("BLOCK\n");
+				//if (OBJECT_INFRONT)
+					//printf("BLOCK\n");
 
 				//printf("terminal: %.3f %.3f %.3f %.3f, x0: %.3f %.3f %.3f %.3f\n",acadoVariables.yN[0],acadoVariables.yN[1],acadoVariables.yN[2],acadoVariables.yN[3],acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],acadoVariables.x0[3]);
 				control_reset_all();
@@ -1075,7 +1076,8 @@ void CONTROL(void *argument)
 
 
 			measurements[0] = BN0055heading_to_yaw(heading);
-			measurements[1] = -yawrate;
+			//printf("%.3f\n", measurements[0]);
+			measurements[1] = yawrate;
 			measurements[2] = ax;
 							// yaw			   yawrate 		    accel_x			 encoder robot v_x
 			double z[4] = {measurements[0], measurements[1], measurements[2], rw*(measurements[3]+measurements[4]+measurements[5]+measurements[6])/4};
@@ -1263,7 +1265,7 @@ void wayreceive(void *argument)
 			double wy;
 
 			double rawwx = SHARED_MEM->tag_pos[1];
-			double rawwy = SHARED_MEM->tag_pos[0];
+			double rawwy = -SHARED_MEM->tag_pos[0];
 
 			//printf("%.3f %.3f %.3f %.3f\n",acadoVariables.u[0],acadoVariables.u[1],acadoVariables.u[2],acadoVariables.u[3]);
 
@@ -1272,7 +1274,7 @@ void wayreceive(void *argument)
 
 			robot_to_world(rawwx,rawwy,acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],&wx,&wy);
 
-			//printf("world frame: %.3f %.3f\n",wx,wy);
+			//printf("%.3f %.3f %.3f\n",wx,wy,acadoVariables.x0[2]);
 			//printf("%.3f %.3f %.3f %.3f\n",acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],acadoVariables.x0[3]);
 
 

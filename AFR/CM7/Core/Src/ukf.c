@@ -251,8 +251,8 @@ void ukf_update(double            xhat[NX],
         const double y   = X[1][j];
         const double vx  = X[2][j];
 
-        double x_pos = x + vx * cosf(-psi) * dt;
-        double y_pos = y + vx * sinf(-psi) * dt;
+        double x_pos = x + vx * cosf(psi) * dt;
+        double y_pos = y - vx * sinf(psi) * dt;	// CW positive
         double v_new = vx + ax * dt;
 
         Xp[0][j] = x_pos;
