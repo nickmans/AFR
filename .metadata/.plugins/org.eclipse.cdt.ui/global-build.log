@@ -1,17 +1,33 @@
-22:58:38 **** Incremental Build of configuration Debug for project AFR_CM7 ****
+19:14:11 **** Incremental Build of configuration Debug for project AFR_CM7 ****
 make -j16 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DCORE_CM7 -DUSE_HAL_DRIVER -DSTM32H755xx -DUSE_PWR_DIRECT_SMPS_SUPPLY -DUSE_NUCLEO_64 -DSTM32_THREAD_SAFE_STRATEGY=4 -c -I../Core/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../../Middlewares/Third_Party/FreeRTOS/Source/include -I../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I../../Drivers/BSP/STM32H7xx_Nucleo -I../../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../../Drivers/CMSIS/Include -I../Core/ThreadSafe -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include/dsp" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/INCLUDE" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-../Core/Src/main.c:766:12: warning: 'waiting_counter' defined but not used [-Wunused-variable]
-  766 | static int waiting_counter = 0;
-      |            ^~~~~~~~~~~~~~~
+arm-none-eabi-gcc "../Core/Src/trajectory.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DCORE_CM7 -DUSE_HAL_DRIVER -DSTM32H755xx -DUSE_PWR_DIRECT_SMPS_SUPPLY -DUSE_NUCLEO_64 -DSTM32_THREAD_SAFE_STRATEGY=4 -c -I../Core/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../../Middlewares/Third_Party/FreeRTOS/Source/include -I../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I../../Drivers/BSP/STM32H7xx_Nucleo -I../../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../../Drivers/CMSIS/Include -I../Core/ThreadSafe -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include/dsp" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/INCLUDE" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/trajectory.d" -MT"Core/Src/trajectory.o" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "Core/Src/trajectory.o"
+../Core/Src/trajectory.c:55: warning: "SET_BIT" redefined
+   55 | #define SET_BIT(arr,i)  ((arr)[(i)>>3] |=  (1U<<((i)&7)))
+      | 
+In file included from ../../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_def.h:29,
+                 from ../../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_rcc.h:27,
+                 from ../Core/Inc/stm32h7xx_hal_conf.h:246,
+                 from ../../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h:29,
+                 from ../Core/Inc/main.h:30,
+                 from ../Core/Inc/trajectory.h:7,
+                 from ../Core/Src/trajectory.c:8:
+../../Drivers/CMSIS/Device/ST/STM32H7xx/Include/stm32h7xx.h:207: note: this is the location of the previous definition
+  207 | #define SET_BIT(REG, BIT)     ((REG) |= (BIT))
+      | 
+../Core/Inc/main.h:80:15: warning: 'rtotag' defined but not used [-Wunused-variable]
+   80 | static double rtotag = 0.5;             // min. radius to tag
+      |               ^~~~~~
+../Core/Inc/main.h:79:15: warning: 'rtoothers' defined but not used [-Wunused-variable]
+   79 | static double rtoothers = 0.3;  // min. radius to other waypoints
+      |               ^~~~~~~~~
 arm-none-eabi-g++ -o "AFR_CM7.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\STM32H755ZITX_FLASH.ld" -Wl,-Map="AFR_CM7.map" -Wl,--gc-sections -static -Wl,-Map=AFR_CM7.map,--print-memory-usage --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 Memory region         Used Size  Region Size  %age Used
-          RAM_D1:      360416 B       512 KB     68.74%
-           FLASH:      461408 B         1 MB     44.00%
-         DTCMRAM:        3600 B       128 KB      2.75%
+          RAM_D1:      493000 B       512 KB     94.03%
+           FLASH:      591224 B         1 MB     56.38%
+         DTCMRAM:        6400 B       128 KB      4.88%
           SHARED:           0 B        256 B      0.00%
          SHARED2:           0 B        256 B      0.00%
-          RAM_D2:       57600 B     163328 B     35.27%
+          RAM_D2:        100 KB     163328 B     62.70%
           RAM_D3:           0 B        64 KB      0.00%
          ITCMRAM:           0 B        64 KB      0.00%
 Finished building target: AFR_CM7.elf
@@ -19,39 +35,45 @@ Finished building target: AFR_CM7.elf
 arm-none-eabi-size  AFR_CM7.elf 
 arm-none-eabi-objdump -h -S AFR_CM7.elf  > "AFR_CM7.list"
    text	   data	    bss	    dec	    hex	filename
- 288000	 173396	 248216	 709612	  ad3ec	AFR_CM7.elf
+ 283416	 307796	 294000	 885212	  d81dc	AFR_CM7.elf
 Finished building: default.size.stdout
  
 Finished building: AFR_CM7.list
  
-22:58:41 **** Incremental Build of configuration Debug for project AFR_CM7 ****
-make -j16 all 
-arm-none-eabi-size  AFR_CM7.elf 
-   text	   data	    bss	    dec	    hex	filename
- 288000	 173396	 248216	 709612	  ad3ec	AFR_CM7.elf
-Finished building: default.size.stdout
- 
-22:59:17 **** Incremental Build of configuration Debug for project AFR_CM7 ****
-make -j16 all 
-arm-none-eabi-size  AFR_CM7.elf 
-   text	   data	    bss	    dec	    hex	filename
- 288000	 173396	 248216	 709612	  ad3ec	AFR_CM7.elf
-Finished building: default.size.stdout
- 
-23:06:11 **** Incremental Build of configuration Debug for project AFR_CM7 ****
+20:49:05 **** Incremental Build of configuration Debug for project AFR_CM7 ****
 make -j16 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DCORE_CM7 -DUSE_HAL_DRIVER -DSTM32H755xx -DUSE_PWR_DIRECT_SMPS_SUPPLY -DUSE_NUCLEO_64 -DSTM32_THREAD_SAFE_STRATEGY=4 -c -I../Core/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../../Middlewares/Third_Party/FreeRTOS/Source/include -I../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I../../Drivers/BSP/STM32H7xx_Nucleo -I../../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../../Drivers/CMSIS/Include -I../Core/ThreadSafe -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include/dsp" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/INCLUDE" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc "../Core/Src/trajectory.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DCORE_CM7 -DUSE_HAL_DRIVER -DSTM32H755xx -DUSE_PWR_DIRECT_SMPS_SUPPLY -DUSE_NUCLEO_64 -DSTM32_THREAD_SAFE_STRATEGY=4 -c -I../Core/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../../Middlewares/Third_Party/FreeRTOS/Source/include -I../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I../../Drivers/BSP/STM32H7xx_Nucleo -I../../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../../Drivers/CMSIS/Include -I../Core/ThreadSafe -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include/dsp" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/INCLUDE" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/trajectory.d" -MT"Core/Src/trajectory.o" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "Core/Src/trajectory.o"
+../Core/Src/trajectory.c:55: warning: "SET_BIT" redefined
+   55 | #define SET_BIT(arr,i)  ((arr)[(i)>>3] |=  (1U<<((i)&7)))
+      | 
+In file included from ../../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_def.h:29,
+                 from ../../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_rcc.h:27,
+                 from ../Core/Inc/stm32h7xx_hal_conf.h:246,
+                 from ../../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h:29,
+                 from ../Core/Inc/main.h:30,
+                 from ../Core/Inc/trajectory.h:7,
+                 from ../Core/Src/trajectory.c:8:
+../../Drivers/CMSIS/Device/ST/STM32H7xx/Include/stm32h7xx.h:207: note: this is the location of the previous definition
+  207 | #define SET_BIT(REG, BIT)     ((REG) |= (BIT))
+      | 
+../Core/Inc/main.h:80:15: warning: 'rtotag' defined but not used [-Wunused-variable]
+   80 | static double rtotag = 0.5;             // min. radius to tag
+      |               ^~~~~~
+../Core/Inc/main.h:79:15: warning: 'rtoothers' defined but not used [-Wunused-variable]
+   79 | static double rtoothers = 0.3;  // min. radius to other waypoints
+      |               ^~~~~~~~~
 ../Core/Src/main.c:766:12: warning: 'waiting_counter' defined but not used [-Wunused-variable]
   766 | static int waiting_counter = 0;
       |            ^~~~~~~~~~~~~~~
 arm-none-eabi-g++ -o "AFR_CM7.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\STM32H755ZITX_FLASH.ld" -Wl,-Map="AFR_CM7.map" -Wl,--gc-sections -static -Wl,-Map=AFR_CM7.map,--print-memory-usage --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 Memory region         Used Size  Region Size  %age Used
-          RAM_D1:      360416 B       512 KB     68.74%
-           FLASH:      461408 B         1 MB     44.00%
-         DTCMRAM:        3600 B       128 KB      2.75%
+          RAM_D1:      493008 B       512 KB     94.03%
+           FLASH:      591288 B         1 MB     56.39%
+         DTCMRAM:        6400 B       128 KB      4.88%
           SHARED:           0 B        256 B      0.00%
          SHARED2:           0 B        256 B      0.00%
-          RAM_D2:       57600 B     163328 B     35.27%
+          RAM_D2:        100 KB     163328 B     62.70%
           RAM_D3:           0 B        64 KB      0.00%
          ITCMRAM:           0 B        64 KB      0.00%
 Finished building target: AFR_CM7.elf
@@ -59,38 +81,19 @@ Finished building target: AFR_CM7.elf
 arm-none-eabi-size  AFR_CM7.elf 
 arm-none-eabi-objdump -h -S AFR_CM7.elf  > "AFR_CM7.list"
    text	   data	    bss	    dec	    hex	filename
- 288000	 173396	 248216	 709612	  ad3ec	AFR_CM7.elf
+ 283480	 307796	 294008	 885284	  d8224	AFR_CM7.elf
 Finished building: default.size.stdout
  
 Finished building: AFR_CM7.list
  
-23:10:18 **** Incremental Build of configuration Debug for project AFR_CM7 ****
+20:49:54 **** Incremental Build of configuration Debug for project AFR_CM7 ****
 make -j16 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DCORE_CM7 -DUSE_HAL_DRIVER -DSTM32H755xx -DUSE_PWR_DIRECT_SMPS_SUPPLY -DUSE_NUCLEO_64 -DSTM32_THREAD_SAFE_STRATEGY=4 -c -I../Core/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../../Middlewares/Third_Party/FreeRTOS/Source/include -I../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I../../Drivers/BSP/STM32H7xx_Nucleo -I../../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../../Drivers/CMSIS/Include -I../Core/ThreadSafe -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include/dsp" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/INCLUDE" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-../Core/Src/main.c:766:12: warning: 'waiting_counter' defined but not used [-Wunused-variable]
-  766 | static int waiting_counter = 0;
-      |            ^~~~~~~~~~~~~~~
-arm-none-eabi-g++ -o "AFR_CM7.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\STM32H755ZITX_FLASH.ld" -Wl,-Map="AFR_CM7.map" -Wl,--gc-sections -static -Wl,-Map=AFR_CM7.map,--print-memory-usage --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-Memory region         Used Size  Region Size  %age Used
-          RAM_D1:      360416 B       512 KB     68.74%
-           FLASH:      461480 B         1 MB     44.01%
-         DTCMRAM:        3600 B       128 KB      2.75%
-          SHARED:           0 B        256 B      0.00%
-         SHARED2:           0 B        256 B      0.00%
-          RAM_D2:       57600 B     163328 B     35.27%
-          RAM_D3:           0 B        64 KB      0.00%
-         ITCMRAM:           0 B        64 KB      0.00%
-Finished building target: AFR_CM7.elf
- 
 arm-none-eabi-size  AFR_CM7.elf 
-arm-none-eabi-objdump -h -S AFR_CM7.elf  > "AFR_CM7.list"
    text	   data	    bss	    dec	    hex	filename
- 288072	 173396	 248216	 709684	  ad434	AFR_CM7.elf
+ 283480	 307796	 294008	 885284	  d8224	AFR_CM7.elf
 Finished building: default.size.stdout
  
-Finished building: AFR_CM7.list
- 
-23:15:08 **** Incremental Build of configuration Debug for project AFR_CM7 ****
+20:52:10 **** Incremental Build of configuration Debug for project AFR_CM7 ****
 make -j16 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DCORE_CM7 -DUSE_HAL_DRIVER -DSTM32H755xx -DUSE_PWR_DIRECT_SMPS_SUPPLY -DUSE_NUCLEO_64 -DSTM32_THREAD_SAFE_STRATEGY=4 -c -I../Core/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../../Middlewares/Third_Party/FreeRTOS/Source/include -I../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I../../Drivers/BSP/STM32H7xx_Nucleo -I../../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../../Drivers/CMSIS/Include -I../Core/ThreadSafe -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include/dsp" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/INCLUDE" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
 ../Core/Src/main.c:766:12: warning: 'waiting_counter' defined but not used [-Wunused-variable]
@@ -98,12 +101,12 @@ arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -D
       |            ^~~~~~~~~~~~~~~
 arm-none-eabi-g++ -o "AFR_CM7.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\STM32H755ZITX_FLASH.ld" -Wl,-Map="AFR_CM7.map" -Wl,--gc-sections -static -Wl,-Map=AFR_CM7.map,--print-memory-usage --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 Memory region         Used Size  Region Size  %age Used
-          RAM_D1:      360416 B       512 KB     68.74%
-           FLASH:      461512 B         1 MB     44.01%
-         DTCMRAM:        3600 B       128 KB      2.75%
+          RAM_D1:      493008 B       512 KB     94.03%
+           FLASH:      591288 B         1 MB     56.39%
+         DTCMRAM:        6400 B       128 KB      4.88%
           SHARED:           0 B        256 B      0.00%
          SHARED2:           0 B        256 B      0.00%
-          RAM_D2:       57600 B     163328 B     35.27%
+          RAM_D2:        100 KB     163328 B     62.70%
           RAM_D3:           0 B        64 KB      0.00%
          ITCMRAM:           0 B        64 KB      0.00%
 Finished building target: AFR_CM7.elf
@@ -111,189 +114,7 @@ Finished building target: AFR_CM7.elf
 arm-none-eabi-size  AFR_CM7.elf 
 arm-none-eabi-objdump -h -S AFR_CM7.elf  > "AFR_CM7.list"
    text	   data	    bss	    dec	    hex	filename
- 288104	 173396	 248216	 709716	  ad454	AFR_CM7.elf
-Finished building: default.size.stdout
- 
-Finished building: AFR_CM7.list
- 
-23:19:22 **** Incremental Build of configuration Debug for project AFR_CM7 ****
-make -j16 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DCORE_CM7 -DUSE_HAL_DRIVER -DSTM32H755xx -DUSE_PWR_DIRECT_SMPS_SUPPLY -DUSE_NUCLEO_64 -DSTM32_THREAD_SAFE_STRATEGY=4 -c -I../Core/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../../Middlewares/Third_Party/FreeRTOS/Source/include -I../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I../../Drivers/BSP/STM32H7xx_Nucleo -I../../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../../Drivers/CMSIS/Include -I../Core/ThreadSafe -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include/dsp" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/INCLUDE" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-../Core/Src/main.c:766:12: warning: 'waiting_counter' defined but not used [-Wunused-variable]
-  766 | static int waiting_counter = 0;
-      |            ^~~~~~~~~~~~~~~
-arm-none-eabi-g++ -o "AFR_CM7.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\STM32H755ZITX_FLASH.ld" -Wl,-Map="AFR_CM7.map" -Wl,--gc-sections -static -Wl,-Map=AFR_CM7.map,--print-memory-usage --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-Memory region         Used Size  Region Size  %age Used
-          RAM_D1:      360416 B       512 KB     68.74%
-           FLASH:      461488 B         1 MB     44.01%
-         DTCMRAM:        3600 B       128 KB      2.75%
-          SHARED:           0 B        256 B      0.00%
-         SHARED2:           0 B        256 B      0.00%
-          RAM_D2:       57600 B     163328 B     35.27%
-          RAM_D3:           0 B        64 KB      0.00%
-         ITCMRAM:           0 B        64 KB      0.00%
-Finished building target: AFR_CM7.elf
- 
-arm-none-eabi-size  AFR_CM7.elf 
-arm-none-eabi-objdump -h -S AFR_CM7.elf  > "AFR_CM7.list"
-   text	   data	    bss	    dec	    hex	filename
- 288080	 173396	 248216	 709692	  ad43c	AFR_CM7.elf
-Finished building: default.size.stdout
- 
-Finished building: AFR_CM7.list
- 
-23:20:33 **** Incremental Build of configuration Debug for project AFR_CM7 ****
-make -j16 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DCORE_CM7 -DUSE_HAL_DRIVER -DSTM32H755xx -DUSE_PWR_DIRECT_SMPS_SUPPLY -DUSE_NUCLEO_64 -DSTM32_THREAD_SAFE_STRATEGY=4 -c -I../Core/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../../Middlewares/Third_Party/FreeRTOS/Source/include -I../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I../../Drivers/BSP/STM32H7xx_Nucleo -I../../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../../Drivers/CMSIS/Include -I../Core/ThreadSafe -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include/dsp" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/INCLUDE" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-../Core/Src/main.c:766:12: warning: 'waiting_counter' defined but not used [-Wunused-variable]
-  766 | static int waiting_counter = 0;
-      |            ^~~~~~~~~~~~~~~
-arm-none-eabi-g++ -o "AFR_CM7.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\STM32H755ZITX_FLASH.ld" -Wl,-Map="AFR_CM7.map" -Wl,--gc-sections -static -Wl,-Map=AFR_CM7.map,--print-memory-usage --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-Memory region         Used Size  Region Size  %age Used
-          RAM_D1:      360416 B       512 KB     68.74%
-           FLASH:      461376 B         1 MB     44.00%
-         DTCMRAM:        3600 B       128 KB      2.75%
-          SHARED:           0 B        256 B      0.00%
-         SHARED2:           0 B        256 B      0.00%
-          RAM_D2:       57600 B     163328 B     35.27%
-          RAM_D3:           0 B        64 KB      0.00%
-         ITCMRAM:           0 B        64 KB      0.00%
-Finished building target: AFR_CM7.elf
- 
-arm-none-eabi-size  AFR_CM7.elf 
-arm-none-eabi-objdump -h -S AFR_CM7.elf  > "AFR_CM7.list"
-   text	   data	    bss	    dec	    hex	filename
- 287968	 173396	 248216	 709580	  ad3cc	AFR_CM7.elf
-Finished building: default.size.stdout
- 
-Finished building: AFR_CM7.list
- 
-23:26:51 **** Incremental Build of configuration Debug for project AFR_CM7 ****
-make -j16 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DCORE_CM7 -DUSE_HAL_DRIVER -DSTM32H755xx -DUSE_PWR_DIRECT_SMPS_SUPPLY -DUSE_NUCLEO_64 -DSTM32_THREAD_SAFE_STRATEGY=4 -c -I../Core/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../../Middlewares/Third_Party/FreeRTOS/Source/include -I../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I../../Drivers/BSP/STM32H7xx_Nucleo -I../../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../../Drivers/CMSIS/Include -I../Core/ThreadSafe -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include/dsp" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/INCLUDE" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-../Core/Src/main.c:766:12: warning: 'waiting_counter' defined but not used [-Wunused-variable]
-  766 | static int waiting_counter = 0;
-      |            ^~~~~~~~~~~~~~~
-arm-none-eabi-g++ -o "AFR_CM7.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\STM32H755ZITX_FLASH.ld" -Wl,-Map="AFR_CM7.map" -Wl,--gc-sections -static -Wl,-Map=AFR_CM7.map,--print-memory-usage --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-Memory region         Used Size  Region Size  %age Used
-          RAM_D1:      360416 B       512 KB     68.74%
-           FLASH:      461416 B         1 MB     44.00%
-         DTCMRAM:        3600 B       128 KB      2.75%
-          SHARED:           0 B        256 B      0.00%
-         SHARED2:           0 B        256 B      0.00%
-          RAM_D2:       57600 B     163328 B     35.27%
-          RAM_D3:           0 B        64 KB      0.00%
-         ITCMRAM:           0 B        64 KB      0.00%
-Finished building target: AFR_CM7.elf
- 
-arm-none-eabi-size  AFR_CM7.elf 
-arm-none-eabi-objdump -h -S AFR_CM7.elf  > "AFR_CM7.list"
-   text	   data	    bss	    dec	    hex	filename
- 288008	 173396	 248216	 709620	  ad3f4	AFR_CM7.elf
-Finished building: default.size.stdout
- 
-Finished building: AFR_CM7.list
- 
-23:32:03 **** Incremental Build of configuration Debug for project AFR_CM7 ****
-make -j16 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DCORE_CM7 -DUSE_HAL_DRIVER -DSTM32H755xx -DUSE_PWR_DIRECT_SMPS_SUPPLY -DUSE_NUCLEO_64 -DSTM32_THREAD_SAFE_STRATEGY=4 -c -I../Core/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../../Middlewares/Third_Party/FreeRTOS/Source/include -I../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I../../Drivers/BSP/STM32H7xx_Nucleo -I../../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../../Drivers/CMSIS/Include -I../Core/ThreadSafe -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include/dsp" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/INCLUDE" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-../Core/Src/main.c:766:12: warning: 'waiting_counter' defined but not used [-Wunused-variable]
-  766 | static int waiting_counter = 0;
-      |            ^~~~~~~~~~~~~~~
-arm-none-eabi-g++ -o "AFR_CM7.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\STM32H755ZITX_FLASH.ld" -Wl,-Map="AFR_CM7.map" -Wl,--gc-sections -static -Wl,-Map=AFR_CM7.map,--print-memory-usage --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-Memory region         Used Size  Region Size  %age Used
-          RAM_D1:      360416 B       512 KB     68.74%
-           FLASH:      461440 B         1 MB     44.01%
-         DTCMRAM:        3600 B       128 KB      2.75%
-          SHARED:           0 B        256 B      0.00%
-         SHARED2:           0 B        256 B      0.00%
-          RAM_D2:       57600 B     163328 B     35.27%
-          RAM_D3:           0 B        64 KB      0.00%
-         ITCMRAM:           0 B        64 KB      0.00%
-Finished building target: AFR_CM7.elf
- 
-arm-none-eabi-size  AFR_CM7.elf 
-arm-none-eabi-objdump -h -S AFR_CM7.elf  > "AFR_CM7.list"
-   text	   data	    bss	    dec	    hex	filename
- 288032	 173396	 248216	 709644	  ad40c	AFR_CM7.elf
-Finished building: default.size.stdout
- 
-Finished building: AFR_CM7.list
- 
-23:33:11 **** Incremental Build of configuration Debug for project AFR_CM7 ****
-make -j16 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DCORE_CM7 -DUSE_HAL_DRIVER -DSTM32H755xx -DUSE_PWR_DIRECT_SMPS_SUPPLY -DUSE_NUCLEO_64 -DSTM32_THREAD_SAFE_STRATEGY=4 -c -I../Core/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../../Middlewares/Third_Party/FreeRTOS/Source/include -I../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I../../Drivers/BSP/STM32H7xx_Nucleo -I../../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../../Drivers/CMSIS/Include -I../Core/ThreadSafe -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include/dsp" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/INCLUDE" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-../Core/Src/main.c:766:12: warning: 'waiting_counter' defined but not used [-Wunused-variable]
-  766 | static int waiting_counter = 0;
-      |            ^~~~~~~~~~~~~~~
-arm-none-eabi-g++ -o "AFR_CM7.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\STM32H755ZITX_FLASH.ld" -Wl,-Map="AFR_CM7.map" -Wl,--gc-sections -static -Wl,-Map=AFR_CM7.map,--print-memory-usage --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-Memory region         Used Size  Region Size  %age Used
-          RAM_D1:      360416 B       512 KB     68.74%
-           FLASH:      461496 B         1 MB     44.01%
-         DTCMRAM:        3600 B       128 KB      2.75%
-          SHARED:           0 B        256 B      0.00%
-         SHARED2:           0 B        256 B      0.00%
-          RAM_D2:       57600 B     163328 B     35.27%
-          RAM_D3:           0 B        64 KB      0.00%
-         ITCMRAM:           0 B        64 KB      0.00%
-Finished building target: AFR_CM7.elf
- 
-arm-none-eabi-size  AFR_CM7.elf 
-arm-none-eabi-objdump -h -S AFR_CM7.elf  > "AFR_CM7.list"
-   text	   data	    bss	    dec	    hex	filename
- 288088	 173396	 248216	 709700	  ad444	AFR_CM7.elf
-Finished building: default.size.stdout
- 
-Finished building: AFR_CM7.list
- 
-23:34:52 **** Incremental Build of configuration Debug for project AFR_CM7 ****
-make -j16 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DCORE_CM7 -DUSE_HAL_DRIVER -DSTM32H755xx -DUSE_PWR_DIRECT_SMPS_SUPPLY -DUSE_NUCLEO_64 -DSTM32_THREAD_SAFE_STRATEGY=4 -c -I../Core/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../../Middlewares/Third_Party/FreeRTOS/Source/include -I../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I../../Drivers/BSP/STM32H7xx_Nucleo -I../../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../../Drivers/CMSIS/Include -I../Core/ThreadSafe -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include/dsp" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/INCLUDE" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-../Core/Src/main.c:766:12: warning: 'waiting_counter' defined but not used [-Wunused-variable]
-  766 | static int waiting_counter = 0;
-      |            ^~~~~~~~~~~~~~~
-arm-none-eabi-g++ -o "AFR_CM7.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\STM32H755ZITX_FLASH.ld" -Wl,-Map="AFR_CM7.map" -Wl,--gc-sections -static -Wl,-Map=AFR_CM7.map,--print-memory-usage --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-Memory region         Used Size  Region Size  %age Used
-          RAM_D1:      360416 B       512 KB     68.74%
-           FLASH:      461376 B         1 MB     44.00%
-         DTCMRAM:        3600 B       128 KB      2.75%
-          SHARED:           0 B        256 B      0.00%
-         SHARED2:           0 B        256 B      0.00%
-          RAM_D2:       57600 B     163328 B     35.27%
-          RAM_D3:           0 B        64 KB      0.00%
-         ITCMRAM:           0 B        64 KB      0.00%
-Finished building target: AFR_CM7.elf
- 
-arm-none-eabi-size  AFR_CM7.elf 
-arm-none-eabi-objdump -h -S AFR_CM7.elf  > "AFR_CM7.list"
-   text	   data	    bss	    dec	    hex	filename
- 287968	 173396	 248216	 709580	  ad3cc	AFR_CM7.elf
-Finished building: default.size.stdout
- 
-Finished building: AFR_CM7.list
- 
-23:45:28 **** Incremental Build of configuration Debug for project AFR_CM7 ****
-make -j16 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DCORE_CM7 -DUSE_HAL_DRIVER -DSTM32H755xx -DUSE_PWR_DIRECT_SMPS_SUPPLY -DUSE_NUCLEO_64 -DSTM32_THREAD_SAFE_STRATEGY=4 -c -I../Core/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../../Middlewares/Third_Party/FreeRTOS/Source/include -I../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I../../Drivers/BSP/STM32H7xx_Nucleo -I../../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../../Drivers/CMSIS/Include -I../Core/ThreadSafe -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include/dsp" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/INCLUDE" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-../Core/Src/main.c:766:12: warning: 'waiting_counter' defined but not used [-Wunused-variable]
-  766 | static int waiting_counter = 0;
-      |            ^~~~~~~~~~~~~~~
-arm-none-eabi-g++ -o "AFR_CM7.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\STM32H755ZITX_FLASH.ld" -Wl,-Map="AFR_CM7.map" -Wl,--gc-sections -static -Wl,-Map=AFR_CM7.map,--print-memory-usage --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-Memory region         Used Size  Region Size  %age Used
-          RAM_D1:      360416 B       512 KB     68.74%
-           FLASH:      461408 B         1 MB     44.00%
-         DTCMRAM:        3600 B       128 KB      2.75%
-          SHARED:           0 B        256 B      0.00%
-         SHARED2:           0 B        256 B      0.00%
-          RAM_D2:       57600 B     163328 B     35.27%
-          RAM_D3:           0 B        64 KB      0.00%
-         ITCMRAM:           0 B        64 KB      0.00%
-Finished building target: AFR_CM7.elf
- 
-arm-none-eabi-size  AFR_CM7.elf 
-arm-none-eabi-objdump -h -S AFR_CM7.elf  > "AFR_CM7.list"
-   text	   data	    bss	    dec	    hex	filename
- 288000	 173396	 248216	 709612	  ad3ec	AFR_CM7.elf
+ 283480	 307796	 294008	 885284	  d8224	AFR_CM7.elf
 Finished building: default.size.stdout
  
 Finished building: AFR_CM7.list

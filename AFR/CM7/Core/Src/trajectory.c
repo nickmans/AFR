@@ -18,14 +18,14 @@
 #define dt 0.1
 #define v_des 0.5
 #define N 25
-#define map_size 6
+#define map_size 8
 #define map_res 0.05
-#define MAP_DIM_CELLS 120
+#define MAP_DIM_CELLS 160
 #define robot_radius 0.2
 #define MAP_FREE 0
 #define MAP_SOFT 1
 #define MAP_HARD 2
-#define MAX_MAP_SIZE_CELLS 120  // adjust for your resolution
+#define MAX_MAP_SIZE_CELLS 160  // adjust for your resolution
 #define INF 1e9f
 #define MAX_PATH_POINTS 200
 #define MAX_NODES MAP_DIM_CELLS
@@ -139,7 +139,7 @@ void plan_local_trajectory(
     Point2D* waypoints,
     int wp_count
 );
-static inline void rot(float theta,			// ASSUMES CCW THETA, PASS -CW
+static inline void rot(float theta,
 		float x_in, float y_in,
 		float *x_out, float *y_out)
 {
@@ -154,7 +154,7 @@ static inline void world_to_robot(float xw, float yw,
 {
 	float dx = xw - x;
 	float dy = yw - y;
-    rot(-psi, dx, dy, xr, yr);
+    rot(psi, dx, dy, xr, yr);
 }
 static inline int world_to_cell(float coord) {
     int idx = (int)((coord + map_size / 2.0f) / map_res);
@@ -221,7 +221,7 @@ static void move_wp(Point2D *wp, const float robot[3])
 
     // March in ~half-cell steps to avoid skipping narrow gaps
     const float step = 0.5f * map_res;
-    const int   max_steps = (int)fminf(300, (L / step) + 10);
+    const int   max_steps = (int)fminf(500, (L / step) + 10);
 
     float xw = wp->x, yw = wp->y;
     for (int s = 0; s < max_steps; ++s) {
@@ -375,9 +375,10 @@ void trajectory(const real_t ax0[4])
 
     lidar_to_costmap(pos, lidar_pts, cnt);
 
-    //for (int i = 0; i < waypoint_count && i < 2; ++i) {
-       // move_wp(&waypoints[i], pos);  // pos is your float state[3]
-    //}
+    for (int i = 0; i < waypoint_count && i < 2; ++i)
+    {
+    	move_wp(&waypoints[i], pos);  // pos is your float state[3]
+    }
 
     near_waypoint(pos[0], pos[1]);
 
@@ -562,6 +563,7 @@ void plan_local_trajectory(
     Point2D waypoints[],              // array of waypoints
     int wp_count                     // total waypoints remaining
 ) {
+
     // --- Early exit: no waypoints left → hold pose, v = 0 ---
     if (wp_count <= 0) {
         for (int k = 0; k < N; ++k) {
@@ -573,13 +575,14 @@ void plan_local_trajectory(
         return;
     }
 
+
     // 1) Build a combined grid‐cell path for up to 3 waypoints
     Node   full_cells[MAX_PATH_POINTS];
     int    full_len = 0;
     float  cur_x = state[0], cur_y = state[1];
     int    sx, sy, gx, gy;
 
-    // PRINT MAP TO SERIAL (over &hcom_uart[COM1])
+    /*// PRINT MAP TO SERIAL (over &hcom_uart[COM1])
     world_to_map(state[0], state[1], &sx, &sy);
     world_to_map(waypoints[0].x, waypoints[0].y, &gx, &gy);
         const char divider1[] = "---- FULL MAP (digits) ----\r\n";
@@ -620,8 +623,7 @@ void plan_local_trajectory(
             if (len > 0) {
                 HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)buf, (uint16_t)len, HAL_MAX_DELAY);
             }
-        }
-
+        }*/
 
     for (int w = 0; w < wp_count && w < 2; ++w) {
         world_to_map(cur_x, cur_y, &sx, &sy);
@@ -666,7 +668,7 @@ void plan_local_trajectory(
         float dx = path_pts[i].x - x;
         float dy = path_pts[i].y - y;
         float seg_len = sqrtf(dx*dx + dy*dy);
-        float seg_yaw = -atan2f(dy, dx);
+        float seg_yaw = atan2f(dy, dx);
 
         // adjust speed by curvature at this segment
         float vk = v_des;
@@ -768,7 +770,7 @@ void lidar_to_costmap(
             continue; // skip this point
         }
 
-        float world_x =  cosyaw*rx + sinyaw*ry + state[0];
+        float world_x =  cosyaw*rx + sinyaw*ry + state[0];		// ROTATE CW (YAW IS CCW) TO GET ZERO'D MAP
         float world_y =  -sinyaw*rx + cosyaw*ry + state[1];
 
         /*// Ignore points within 0.30 m of the last waypoint
@@ -835,7 +837,6 @@ void shift_Xref_left(int i_xref) {
 }
 
 void prune_Xref_if_needed(float state0,float state1) {
-    if (PRUNE_LEN >= N) return;  // Sanity check
 
     float dists[PRUNE_LEN - 1];
     float total = 0.0f;

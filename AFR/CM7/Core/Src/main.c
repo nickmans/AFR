@@ -154,7 +154,7 @@ double wrap_to_pi(double rad) {
 }
 static inline double BN0055heading_to_yaw(double heading_deg) {
 
-    double psi = heading_deg * M_PI/180.0;
+    double psi = -heading_deg * M_PI/180.0;
     return wrap_to_pi(psi);
 }
 //double init_yaw = 0;
@@ -184,8 +184,8 @@ static void control_reset_all(void)
 static inline void rot(double theta,double x_in, double y_in,double *x_out, double *y_out)
 {
     double c = cos(theta), s = sin(theta);
-    *x_out = c * x_in + s * y_in;
-    *y_out = -s * x_in + c * y_in;
+    *x_out = c * x_in - s * y_in;
+    *y_out = s * x_in + c * y_in;
 }
 
 // Convert robot→world using pose (x,y,psi)
@@ -234,10 +234,10 @@ static inline void compute_slips(double velocity,double yawrate,const double u[4
 
     // wheel longitudinal velocities
 	double vw[4];
-    vw[0] = velocity + yawrate * halfW;  // wheel 1
-    vw[1] = velocity - yawrate * halfW;  // wheel 2
-    vw[2] = velocity + yawrate * halfW;  // wheel 3
-    vw[3] = velocity - yawrate * halfW;  // wheel 4
+    vw[0] = velocity - yawrate * halfW;  // wheel 1
+    vw[1] = velocity + yawrate * halfW;  // wheel 2
+    vw[2] = velocity - yawrate * halfW;  // wheel 3
+    vw[3] = velocity + yawrate * halfW;  // wheel 4
 
     for (int i = 0; i < 4; i++)
     {
@@ -797,11 +797,12 @@ void CONTROL(void *argument)
 			}
 			/*waypoint_count = 1;
 			double rawwx = 1;//SHARED_MEM->tag_pos[1];
-			double rawwy = 0;//SHARED_MEM->tag_pos[0];
+			double rawwy = -0.5;//SHARED_MEM->tag_pos[0];
 			double wx,wy;
-			robot_to_world(rawwx,rawwy,acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],&wx,&wy);
-			waypoints[0].x = 1.2;
-			waypoints[0].y = 0;*/
+			robot_to_world(rawwx,rawwy,acadoVariables.x0[0],acadoVariables.x0[1],-acadoVariables.x0[2],&wx,&wy);	// ROTATE BACKWARDS (CW) TO WORLD
+			//printf("%.3f %.3f\n",wx,wy);
+			waypoints[0].x = wx;
+			waypoints[0].y = wy;*/
 
 			if (waypoint_count<1)
 			{
@@ -818,7 +819,7 @@ void CONTROL(void *argument)
 				measurements[5] =  SHARED2_MEM->encoders[2];
 				measurements[6] =  SHARED2_MEM->encoders[3];
 
-				if (minutecoonter > 100)
+				if (minutecoonter > 200)
 				{
 					if (coonter<NUM_VSAMPLES)
 					{
@@ -859,7 +860,7 @@ void CONTROL(void *argument)
 
 
 			measurements[0] = BN0055heading_to_yaw(heading);
-			measurements[1] = -yawrate;
+			measurements[1] = yawrate;
 			measurements[2] = ax;
 							// yaw			   yawrate 		    accel_x			 encoder robot v_x
 			double z[4] = {measurements[0], measurements[1], measurements[2], rw*(measurements[3]+measurements[4]+measurements[5]+measurements[6])/4};
@@ -1107,6 +1108,7 @@ void CONTROL(void *argument)
 			double enc[4] = {measurements[3],measurements[4],measurements[5],measurements[6]};
 			compute_slips(xhat[2],measurements[1],enc,slips);
 
+			static int timcount = 0;
 			// Wait to send new control inputs
 			while (SHARED_MEM->flagm7)
 			{
@@ -1142,6 +1144,12 @@ void CONTROL(void *argument)
 						SHARED_MEM->control_u[1] = speed*leftturn; //RL
 						SHARED_MEM->control_u[2] = speed*rightturn; //FR
 						SHARED_MEM->control_u[3] = speed*rightturn; //RR
+						timcount++;
+						if (timcount>1)
+						{
+							following = 0;
+							timcount = 0;
+						}
 					}
 					else if (medforward)
 					{
