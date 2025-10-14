@@ -41,19 +41,20 @@ Point2D waypoints[15];
 
  ACADOvariables acadoVariables;
  ACADOworkspace acadoWorkspace;
-static const double Q[3][3] = {
-    { 1e-6,    0.0,    0.0 },
-    { 0.0,    1e-6,    0.0 },
-    { 0.0,     0.0,   1e3  }
+static const double Q[4][4] = {		// higher means less model trust (imu)
+    { 1e-6,    0.0,    0.0,  0.0},
+    { 0.0,    1e-6,    0.0,  0.0,},
+    { 0.0,     0.0,   1e-4,  0.0,},		// vx
+	{ 0.0,     0.0,    0.0,  1e-4}		// enc_bias
 };
 static const double R[4][4] = {
     //   ψ    ψ̇    aₓ   v_enc
     { 3e-4,  0.0,  0.0,  0.0  },  // yaw noise variance
     { 0.0,  3e-2,  0.0,  0.0  },  // yaw-rate noise variance
     { 0.0,   0.0,  1e-1,  0.0 },  // accel noise variance
-    { 0.0,   0.0,  0.0,  1e-3 }   // encoder‐velocity noise variance
+    { 0.0,   0.0,  0.0,  3e-2 }   // encoder‐velocity noise variance
 };
-static double P    [3][3];       // covariance
+static double P    [4][4];       // covariance
 const double dt = 0.1;    // 1/10 Hz
 const double rw = 0.033;
 double halfW = 0.175 * 0.5;
@@ -136,11 +137,13 @@ static void filter_init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+double b_v = 0; // velocity state bias
 static void filter_init(void) {
     // initialize P
-    P[0][0] = 1e-6;  P[0][1]=0;  P[0][2]=0;
-    P[1][0] = 0;  P[1][1]=1e-6;  P[1][2]=0;
-    P[2][0] = 0;  P[2][1]=0;  P[2][2]=1e-1;
+    P[0][0] = 1e-6;  P[0][1]=0;  	P[0][2]=0; 		P[0][2]=0;
+    P[1][0] = 0;  	 P[1][1]=1e-6;  P[1][2]=0; 		P[0][2]=0;
+    P[2][0] = 0;  	 P[2][1]=0;  	P[2][2]=1e-1; 	P[0][2]=0;
+    P[3][0] = 0;  	 P[3][1]=0;  	P[3][2]=0; 		P[3][2]=1e-1;
 }
 double wrap_to_pi(double rad) {
     // Convert degrees to radians
@@ -179,6 +182,7 @@ static void control_reset_all(void)
 
     // --- Any filter/averagers you keep ---
     filter_init();                 // you already call this once at CONTROL start:
+    b_v = 0;
 }
 // Rotate (x,y) by angle theta radians
 static inline void rot(double theta,double x_in, double y_in,double *x_out, double *y_out)
@@ -244,7 +248,7 @@ static inline void compute_slips(double velocity,double yawrate,const double u[4
     	double u_lin = u[i] * rw;   // encoder linear speed
         if (vw[i] > SLIP_VW_TH)
         {
-            slips[i] = fmin(abs((u_lin - vw[i]) / vw[i]), 1);
+            slips[i] = fmin(fabs((u_lin - vw[i]) / vw[i]), 1);
         }
         else if ((u_lin > SLIP_U_TH) && (vw[i] <= SLIP_VW_TH))
         {
@@ -763,7 +767,7 @@ static double measurements[7] = {0, 0, 0, 0, 0, 0, 0};
 const double g = 9.80665;
 const double pion180 = 0.01745329251;
 float BATTERY_VOLTAGE;
-static int waiting_counter = 0;
+//static int waiting_counter = 0;
 static int notmoved = 0;	// robot not moving while waypoint active counter
 void CONTROL(void *argument)
 {
@@ -865,7 +869,7 @@ void CONTROL(void *argument)
 							// yaw			   yawrate 		    accel_x			 encoder robot v_x
 			double z[4] = {measurements[0], measurements[1], measurements[2], rw*(measurements[3]+measurements[4]+measurements[5]+measurements[6])/4};
 
-			double xhat[3] = {acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[3]};
+			double xhat[4] = {acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[3],b_v};
 
 		    uint32_t t_now = HAL_GetTick();
 		    double dt_real;
@@ -882,7 +886,7 @@ void CONTROL(void *argument)
 
 			ukf_update(xhat,P,z,dt_real,Q,R);
 
-			if (xhat[2] < 0.05)
+			if (z[3] < 0.05)
 			{
 				notmoved++;
 			}
@@ -1030,10 +1034,10 @@ void CONTROL(void *argument)
 			__DSB();   // ensure memory order
 			if (SHARED2_MEM->flagencoders)				// CHECK FOR NEW ENCODER COUNT - IS UPDATED IN 25ms PWM LOOP ON M4
 			{
-				measurements[3] =  SHARED2_MEM->encoders[0];
-				measurements[4] =  SHARED2_MEM->encoders[1];
-				measurements[5] =  SHARED2_MEM->encoders[2];
-				measurements[6] =  SHARED2_MEM->encoders[3];
+				measurements[3] =  1.5f*SHARED2_MEM->encoders[0];
+				measurements[4] =  1.5f*SHARED2_MEM->encoders[1];
+				measurements[5] =  1.5f*SHARED2_MEM->encoders[2];
+				measurements[6] =  1.5f*SHARED2_MEM->encoders[3];
 
 				if (minutecoonter > 100)
 				{
@@ -1075,15 +1079,30 @@ void CONTROL(void *argument)
 			BNO055_ReadYawRate(&yawrate);
 			//printf("%.3f %.3f %.3f %.3f\n",measurements[3],measurements[4],measurements[5],measurements[6]);
 
-
+			double v_enc = rw*(measurements[3]+measurements[4]+measurements[5]+measurements[6])/4;
 			measurements[0] = BN0055heading_to_yaw(heading);
-			//printf("%.3f\n", measurements[0]);
 			measurements[1] = yawrate;
+
+			if (fabs(ax) <= 0.1 && fabs(v_enc) < 0.01)
+			{
+				notmoved++;
+			}
+			if (fabs(ax) > 0.1 || fabs(v_enc) > 0.01)
+			{
+				notmoved = 0;
+			}
+			if (notmoved>5)
+			{
+				acadoVariables.x0[3] = 0;
+				ax = 0;
+				b_v = 0;
+				filter_init();
+			}
 			measurements[2] = ax;
 							// yaw			   yawrate 		    accel_x			 encoder robot v_x
-			double z[4] = {measurements[0], measurements[1], measurements[2], rw*(measurements[3]+measurements[4]+measurements[5]+measurements[6])/4};
+			double z[4] = {measurements[0], measurements[1], measurements[2], v_enc};
 
-			double xhat[3] = {acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[3]};
+			double xhat[4] = {acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[3],b_v};
 
 		    uint32_t t_now = HAL_GetTick();
 		    double dt_real;
@@ -1103,12 +1122,12 @@ void CONTROL(void *argument)
 			acadoVariables.x0[1] = xhat[1];
 			acadoVariables.x0[2] = measurements[0];
 			acadoVariables.x0[3] = xhat[2];
+			b_v = xhat[3];
 
 			double slips[4] = {0, 0, 0, 0};
 			double enc[4] = {measurements[3],measurements[4],measurements[5],measurements[6]};
 			compute_slips(xhat[2],measurements[1],enc,slips);
 
-			static int timcount = 0;
 			// Wait to send new control inputs
 			while (SHARED_MEM->flagm7)
 			{
@@ -1127,7 +1146,7 @@ void CONTROL(void *argument)
 				}
 				else
 				{
-					printf("%.2f %.2f %.2f %.2f\n",acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],acadoVariables.x0[3]);
+					printf("%.2f %.2f %.2f %.2f\n",z[3],acadoVariables.x0[3],b_v,ax);
 					float speed = 0.0f;
 					if (fastforward)
 					{
@@ -1144,12 +1163,6 @@ void CONTROL(void *argument)
 						SHARED_MEM->control_u[1] = speed*leftturn; //RL
 						SHARED_MEM->control_u[2] = speed*rightturn; //FR
 						SHARED_MEM->control_u[3] = speed*rightturn; //RR
-						timcount++;
-						if (timcount>1)
-						{
-							following = 0;
-							timcount = 0;
-						}
 					}
 					else if (medforward)
 					{

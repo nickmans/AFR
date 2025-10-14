@@ -16,47 +16,22 @@
 //--------------------------------------------------------------
 // CONFIGURATION (state and measurement dimensions)
 //--------------------------------------------------------------
-#define NX   3                 // state dimension (x, y, v_x)
+#define NX   4                 // state dimension (x, y, v_x, b_enc)
 #define NZ   4                 // measurement dimension
 #define NSIG (2*NX + 1)        // sigma‑point count (7)
 
 //--------------------------------------------------------------
 // Small linear‑algebra helpers (3×3 and 4×4 only)
 //--------------------------------------------------------------
-static void mat33_add(const double A[NX][NX], const double B[NX][NX], double C[NX][NX])
-{
-    for (int i = 0; i < NX; ++i)
-        for (int j = 0; j < NX; ++j)
-            C[i][j] = A[i][j] + B[i][j];
-}
 
-static void mat33_sub(const double A[NX][NX], const double B[NX][NX], double C[NX][NX])
-{
-    for (int i = 0; i < NX; ++i)
-        for (int j = 0; j < NX; ++j)
-            C[i][j] = A[i][j] - B[i][j];
-}
-
-static void mat33_mul(const double A[NX][NX], const double B[NX][NX], double C[NX][NX])
-{
-    for (int i = 0; i < NX; ++i) {
-        for (int j = 0; j < NX; ++j) {
-            double s = 0.0;
-            for (int k = 0; k < NX; ++k)
-                s += A[i][k] * B[k][j];
-            C[i][j] = s;
-        }
-    }
-}
-
-static void mat33_copy(const double A[NX][NX], double B[NX][NX])
+static void mat44_copy(const double A[NX][NX], double B[NX][NX])
 {
     for (int i = 0; i < NX; ++i)
         for (int j = 0; j < NX; ++j)
             B[i][j] = A[i][j];
 }
 
-static void mat33_transpose(const double A[NX][NX], double AT[NX][NX])
+static void mat44_transpose(const double A[NX][NX], double AT[NX][NX])
 {
     for (int i = 0; i < NX; ++i)
         for (int j = 0; j < NX; ++j)
@@ -64,7 +39,7 @@ static void mat33_transpose(const double A[NX][NX], double AT[NX][NX])
 }
 
 // C = A * B^T  (A: 3×1, B: 4×1  → C: 3×4)  ; helper for Pxz update
-static void outer3x4(const double a[NX], const double b[NZ], double C[NX][NZ])
+static void outer4x4(const double a[NX], const double b[NZ], double C[NX][NZ])
 {
     for (int i = 0; i < NX; ++i)
         for (int j = 0; j < NZ; ++j)
@@ -82,13 +57,14 @@ static void outer4(const double a[NZ], const double b[NZ], double C[NZ][NZ])
 //--------------------------------------------------------------
 // Cholesky decomposition (lower‑triangular) for 3×3 SPD matrix
 //--------------------------------------------------------------
-static bool chol3(const double A[NX][NX], double L[NX][NX])
+static bool chol4(const double A[NX][NX], double L[NX][NX])
 {
     // Unrolled, robust to small negative round‑off on diagonal
     double a11 = A[0][0];
     if (a11 <= 0.0) return false;
     L[0][0] = sqrtf(a11);
     L[0][1] = L[0][2] = 0.0;
+    L[0][3] = 0.0;
 
     double a21 = A[1][0];
     L[1][0] = a21 / L[0][0];
@@ -96,6 +72,7 @@ static bool chol3(const double A[NX][NX], double L[NX][NX])
     if (a22 <= 0.0) return false;
     L[1][1] = sqrtf(a22);
     L[1][2] = 0.0;
+    L[1][3] = 0.0;
 
     double a31 = A[2][0];
     double a32 = A[2][1];
@@ -104,6 +81,21 @@ static bool chol3(const double A[NX][NX], double L[NX][NX])
     double a33 = A[2][2] - L[2][0]*L[2][0] - L[2][1]*L[2][1];
     if (a33 <= 0.0) return false;
     L[2][2] = sqrtf(a33);
+
+    double a41 = A[3][0];
+    double a42 = A[3][1];
+    double a43 = A[3][2];
+
+    L[3][0] = a41 / L[0][0];
+    L[3][1] = (a42 - L[3][0]*L[1][0]) / L[1][1];
+    L[3][2] = (a43 - L[3][0]*L[2][0] - L[3][1]*L[2][1]) / L[2][2];
+
+    double a44 = A[3][3]
+               - L[3][0]*L[3][0]
+               - L[3][1]*L[3][1]
+               - L[3][2]*L[3][2];
+    if (a44 <= 0.0) return false;
+    L[3][3] = sqrt(a44);
 
     return true;
 }
@@ -126,10 +118,10 @@ static void inv4(const double A[NZ][NZ], double Ainv[NZ][NZ])
     // Forward elimination
     for (int k = 0; k < NZ; ++k) {
         // Pivot
-        double max = fabsf(M[k][k]);
+        double max = fabs(M[k][k]);
         int piv = k;
         for (int i = k+1; i < NZ; ++i) {
-            double val = fabsf(M[i][k]);
+            double val = fabs(M[i][k]);
             if (val > max) { max = val; piv = i; }
         }
         if (piv != k) {
@@ -205,7 +197,7 @@ void ukf_update(double            xhat[NX],
     //--------------------------------------------------
     double P_sym[NX][NX];
     double PT[NX][NX];
-    mat33_transpose(P, PT);
+    mat44_transpose(P, PT);
     for (int i = 0; i < NX; ++i)
         for (int j = 0; j < NX; ++j)
             P_sym[i][j] = 0.5 * (P[i][j] + PT[i][j]);
@@ -219,7 +211,7 @@ void ukf_update(double            xhat[NX],
     // 3) Compute sigma points   X = [x, x+γS, x‑γS]
     //--------------------------------------------------
     double S[NX][NX];
-    if (!chol3(P_sym, S)) {
+    if (!chol4(P_sym, S)) {
         // Force diagonal if Cholesky fails
         for (int i = 0; i < NX; ++i) {
             for (int j = 0; j < NX; ++j)
@@ -250,14 +242,17 @@ void ukf_update(double            xhat[NX],
         const double x   = X[0][j];
         const double y   = X[1][j];
         const double vx  = X[2][j];
+        //const double b_v = X[3][j];
 
         double x_pos = x + vx * cosf(psi) * dt;
         double y_pos = y + vx * sinf(psi) * dt;	// CCW positive
         double v_new = vx + ax * dt;
+       // double b_new = b_v;
 
         Xp[0][j] = x_pos;
         Xp[1][j] = y_pos;
         Xp[2][j] = v_new;
+        Xp[3][j] = X[3][j];
     }
 
     //--------------------------------------------------
@@ -270,7 +265,7 @@ void ukf_update(double            xhat[NX],
     }
 
     double P_pred[NX][NX];
-    mat33_copy(Q, P_pred);            // start with process noise
+    mat44_copy(Q, P_pred);            // start with process noise
     for (int j = 0; j < NSIG; ++j) {
         double dx[NX];
         for (int i = 0; i < NX; ++i)
@@ -289,11 +284,10 @@ void ukf_update(double            xhat[NX],
     //--------------------------------------------------
     double Zp[NZ][NSIG];
     for (int j = 0; j < NSIG; ++j) {
-        const double vx = Xp[2][j];
         Zp[0][j] = z[0];   // psi (direct IMU)
         Zp[1][j] = z[1];   // dotpsi
         Zp[2][j] = z[2];   // ax
-        Zp[3][j] = vx;     // encoder‑fused forward velocity
+        Zp[3][j] = Xp[2][j] + Xp[3][j];     // encoder‑fused forward velocity
     }
 
     double z_pred[NZ] = {0};
@@ -330,7 +324,7 @@ void ukf_update(double            xhat[NX],
         for (int k = 0; k < NZ; ++k)
             dz[k] = Zp[k][j] - z_pred[k];
         double outer[NX][NZ];
-        outer3x4(dx, dz, outer);
+        outer4x4(dx, dz, outer);
         for (int r = 0; r < NX; ++r)
             for (int c = 0; c < NZ; ++c)
                 Pxz[r][c] += wc[j] * outer[r][c];

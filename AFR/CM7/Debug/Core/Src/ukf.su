@@ -1,10 +1,7 @@
-../Core/Src/ukf.c:26:13:mat33_add	32	static
-../Core/Src/ukf.c:33:13:mat33_sub	32	static
-../Core/Src/ukf.c:40:13:mat33_mul	48	static
-../Core/Src/ukf.c:52:13:mat33_copy	24	static
-../Core/Src/ukf.c:59:13:mat33_transpose	24	static
-../Core/Src/ukf.c:67:13:outer3x4	32	static
-../Core/Src/ukf.c:75:13:outer4	32	static
-../Core/Src/ukf.c:85:13:chol3	64	static
-../Core/Src/ukf.c:115:13:inv4	384	static
-../Core/Src/ukf.c:177:6:ukf_update	2280	static
+../Core/Src/ukf.c:27:13:mat44_copy	24	static
+../Core/Src/ukf.c:34:13:mat44_transpose	24	static
+../Core/Src/ukf.c:42:13:outer4x4	32	static
+../Core/Src/ukf.c:50:13:outer4	32	static
+../Core/Src/ukf.c:60:13:chol4	104	static
+../Core/Src/ukf.c:107:13:inv4	384	static
+../Core/Src/ukf.c:169:6:ukf_update	2976	static

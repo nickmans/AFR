@@ -1,13 +1,10 @@
-20:52:10 **** Incremental Build of configuration Debug for project AFR_CM7 ****
+01:59:32 **** Incremental Build of configuration Debug for project AFR_CM7 ****
 make -j16 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DCORE_CM7 -DUSE_HAL_DRIVER -DSTM32H755xx -DUSE_PWR_DIRECT_SMPS_SUPPLY -DUSE_NUCLEO_64 -DSTM32_THREAD_SAFE_STRATEGY=4 -c -I../Core/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc -I../../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../../Middlewares/Third_Party/FreeRTOS/Source/include -I../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -I../../Drivers/BSP/STM32H7xx_Nucleo -I../../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../../Drivers/CMSIS/Include -I../Core/ThreadSafe -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Include/dsp" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/INCLUDE" -I"C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update_MPC/qpoases/SRC" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-../Core/Src/main.c:766:12: warning: 'waiting_counter' defined but not used [-Wunused-variable]
-  766 | static int waiting_counter = 0;
-      |            ^~~~~~~~~~~~~~~
 arm-none-eabi-g++ -o "AFR_CM7.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\nicks\STM32CubeIDE\workspace_1.19.0\AFR\AFR\CM7\STM32H755ZITX_FLASH.ld" -Wl,-Map="AFR_CM7.map" -Wl,--gc-sections -static -Wl,-Map=AFR_CM7.map,--print-memory-usage --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 Memory region         Used Size  Region Size  %age Used
-          RAM_D1:      493008 B       512 KB     94.03%
-           FLASH:      591288 B         1 MB     56.39%
+          RAM_D1:      493064 B       512 KB     94.04%
+           FLASH:      592016 B         1 MB     56.46%
          DTCMRAM:        6400 B       128 KB      4.88%
           SHARED:           0 B        256 B      0.00%
          SHARED2:           0 B        256 B      0.00%
@@ -19,11 +16,11 @@ Finished building target: AFR_CM7.elf
 arm-none-eabi-size  AFR_CM7.elf 
 arm-none-eabi-objdump -h -S AFR_CM7.elf  > "AFR_CM7.list"
    text	   data	    bss	    dec	    hex	filename
- 283480	 307796	 294008	 885284	  d8224	AFR_CM7.elf
+ 284208	 307796	 294064	 886068	  d8534	AFR_CM7.elf
 Finished building: default.size.stdout
  
 Finished building: AFR_CM7.list
  
 
-20:52:11 Build Finished. 0 errors, 1 warnings. (took 1s.566ms)
+01:59:33 Build Finished. 0 errors, 0 warnings. (took 1s.612ms)
 
