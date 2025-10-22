@@ -93,7 +93,9 @@ void pwmgo(void *arg)
 {
 	TickType_t last = xTaskGetTickCount();
 	const TickType_t period = pdMS_TO_TICKS(25);
-	const double dt = (double)period * 1e-3;   // 0.025 s, fixed
+	//const double dt = (double)period * 1e-3;   // 0.025 s, fixed
+	uint32_t t_prev =  HAL_GetTick();
+	osDelay(25);
 	for (;;)
 	{
 		// 1) block until NEW_SP_FLAG arrives OR 25 ms elapses
@@ -120,29 +122,37 @@ void pwmgo(void *arg)
 		  memset((void*)encoder_count, 0, sizeof encoder_count);
 		__enable_irq();
 
+		uint32_t t_now = HAL_GetTick();
+		double dtr = (t_now - t_prev) / 1000.0;
+		t_prev = t_now;
 		// 5) compute actual RPM
-		const double k_rpm = 60.0/(CPR*dt);
+		const double k_rpm = 60.0/(CPR*dtr);
 		double rpm[4];
 		for (int i = 0; i < 4; i++)
 			rpm[i] = counts[i]*k_rpm;
 
-		if (!SHARED2_MEM->flagencoders)
+
+		//if (!SHARED2_MEM->flagencoders)
 		{
+			SHARED2_MEM->flagencoders = 0;
+
 			SHARED2_MEM->encoders[0] = dirL_state*rpm[0]*twopi60; //convert to rad/s
 			SHARED2_MEM->encoders[2] = dirL_state*rpm[1]*twopi60;
 			SHARED2_MEM->encoders[1] = dirR_state*rpm[2]*twopi60;
 			SHARED2_MEM->encoders[3] = dirR_state*rpm[3]*twopi60;
 
 			HAL_ADC_Start(&hadc1);
-			HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+			HAL_ADC_PollForConversion(&hadc1, 5);
 			uint16_t raw = HAL_ADC_GetValue(&hadc1);
 			HAL_ADC_Stop(&hadc1);
 			float vadc  = (raw * 3.19) / 65535.0f;      // volts at PA3
 			vin   = vadc * 5.7619048f;                 // your 47k/9.87k divider scale
 			SHARED2_MEM->BATT_V = vin;
 
-			SHARED2_MEM->flagencoders  = 1;
-			__DSB();
+			SHARED2_MEM->flagencoders = 1;
+
+			//SHARED2_MEM->flagencoders  = 1;
+			//__DSB();
 		}
 
 		// 5c) choose side directions from pair setpoints (with deadband)
@@ -227,7 +237,7 @@ void pwmgo(void *arg)
 		    bool drives_deeper = (sat_lo && err < 0.0) || (sat_hi && err > 0.0);
 
 		    if (!drives_deeper) {
-		        integ[i] += err * dt;     // integrate only when it won't push deeper into saturation
+		        integ[i] += err * dtr;     // integrate only when it won't push deeper into saturation
 		    }
 
 		    // cap integrator

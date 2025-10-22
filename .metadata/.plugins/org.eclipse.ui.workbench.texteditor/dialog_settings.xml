@@ -3,21 +3,21 @@
 	<item key="hasShownOverlayPopupBefore" value="true"/>
 	<item key="replaceBarOpen" value="true"/>
 	<list key="searchhistory">
-		<item value="robot_to_world"/>
-		<item value="robot"/>
-		<item value="lidar_to_costmap"/>
-		<item value="dt"/>
-		<item value="steps"/>
-		<item value="int steps"/>
-		<item value="v_des"/>
-		<item value="step_counter"/>
-		<item value="R"/>
-		<item value="bins_filled_count"/>
-		<item value="compute_slips"/>
-		<item value="near_waypoint"/>
-		<item value="occ_map"/>
-		<item value="NUM_LIDAR_POINTS"/>
-		<item value="OBJECT_INFRONT"/>
+		<item value="ax"/>
+		<item value="BNO055_PrintAllOffsets"/>
+		<item value="BNO055_CalibrateAccelOnce"/>
+		<item value="timeout_ms"/>
+		<item value="abs"/>
+		<item value="v_enc"/>
+		<item value="a_x"/>
+		<item value="chol3"/>
+		<item value="outer3x4"/>
+		<item value="outer4x4"/>
+		<item value="mat33"/>
+		<item value="vx"/>
+		<item value="x"/>
+		<item value="proccess"/>
+		<item value="ukf_update"/>
 	</list>
 	<list key="replacehistory">
 		<item value="float"/>

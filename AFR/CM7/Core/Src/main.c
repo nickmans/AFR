@@ -41,18 +41,18 @@ Point2D waypoints[15];
 
  ACADOvariables acadoVariables;
  ACADOworkspace acadoWorkspace;
-static const double Q[4][4] = {		// higher means less model trust (imu)
+static double Q[4][4] = {		// higher means less model trust (imu)
     { 1e-6,    0.0,    0.0,  0.0},
     { 0.0,    1e-6,    0.0,  0.0,},
-    { 0.0,     0.0,   1e-4,  0.0,},		// vx
-	{ 0.0,     0.0,    0.0,  1e-4}		// enc_bias
+    { 0.0,     0.0,   1e-3,  0.0,},		// vx
+	{ 0.0,     0.0,    0.0,  1e-2}		// enc_bias
 };
-static const double R[4][4] = {
+static double R[4][4] = {
     //   ψ    ψ̇    aₓ   v_enc
     { 3e-4,  0.0,  0.0,  0.0  },  // yaw noise variance
     { 0.0,  3e-2,  0.0,  0.0  },  // yaw-rate noise variance
-    { 0.0,   0.0,  1e-1,  0.0 },  // accel noise variance
-    { 0.0,   0.0,  0.0,  3e-2 }   // encoder‐velocity noise variance
+    { 0.0,   0.0,  5e-1,  0.0 },  // accel noise variance
+    { 0.0,   0.0,  0.0,  1e-2 }   // encoder‐velocity noise variance
 };
 static double P    [4][4];       // covariance
 const double dt = 0.1;    // 1/10 Hz
@@ -385,7 +385,7 @@ Error_Handler();
 
 	acado_initializeSolver();
 	init_controller_weights();
-	//bno055_CONFIG();
+
 	bno055_NDOF();
 	BNO055_ApplyAllCalibration();
 
@@ -412,7 +412,7 @@ Error_Handler();
 
   /* Create the thread(s) */
   /* creation of defaultTask */
-  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+  //defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   UART5_Comm_Init();    // creates queue + starts RX DMA
@@ -443,6 +443,10 @@ Error_Handler();
   {
     Error_Handler();
   }
+
+	//bno055_CONFIG();
+	//uint8_t offsetts[6] = {0};
+	//BNO055_CalibrateAccelOnce(offsetts,1000000);
 
   /* Start scheduler */
   osKernelStart();
@@ -767,6 +771,7 @@ static double measurements[7] = {0, 0, 0, 0, 0, 0, 0};
 const double g = 9.80665;
 const double pion180 = 0.01745329251;
 float BATTERY_VOLTAGE;
+float ay_sum = 0, ax_sum=0, yawrate_sum=0, az_sum=0; uint32_t n=0;
 //static int waiting_counter = 0;
 static int notmoved = 0;	// robot not moving while waypoint active counter
 void CONTROL(void *argument)
@@ -786,6 +791,10 @@ void CONTROL(void *argument)
 	static int juststarted = 1;
 	static int step_counter = 0;
 	uint32_t t_prev = 0;
+    double ax, ay, az;
+    BNO055_ReadLinAccel_D(&ax, &ay, &az);
+	BNO055_ReadYawRate(&yawrate);
+    ax_sum += ax; yawrate_sum += yawrate; n++;
 	for(;;)
 	{
 		while(started)
@@ -816,8 +825,15 @@ void CONTROL(void *argument)
 
 			SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED2_MEM, sizeof(*SHARED2_MEM));
 			__DSB();   // ensure memory order
-			if (SHARED2_MEM->flagencoders)				// CHECK FOR NEW ENCODER COUNT - IS UPDATED IN 25ms PWM LOOP ON M4
+			//if (SHARED2_MEM->flagencoders)				// CHECK FOR NEW ENCODER COUNT - IS UPDATED IN 25ms PWM LOOP ON M4
 			{
+				while (!SHARED2_MEM->flagencoders)
+				{
+					SCB_InvalidateDCache_by_Addr((uint32_t*)SHARED2_MEM, sizeof(*SHARED2_MEM));
+					__DSB();   // ensure memory order
+					osDelay(1);
+				}
+				//SHARED2_MEM->flagencoders = 1;
 				measurements[3] =  SHARED2_MEM->encoders[0];
 				measurements[4] =  SHARED2_MEM->encoders[1];
 				measurements[5] =  SHARED2_MEM->encoders[2];
@@ -1034,12 +1050,12 @@ void CONTROL(void *argument)
 			__DSB();   // ensure memory order
 			if (SHARED2_MEM->flagencoders)				// CHECK FOR NEW ENCODER COUNT - IS UPDATED IN 25ms PWM LOOP ON M4
 			{
-				measurements[3] =  1.5f*SHARED2_MEM->encoders[0];
-				measurements[4] =  1.5f*SHARED2_MEM->encoders[1];
-				measurements[5] =  1.5f*SHARED2_MEM->encoders[2];
-				measurements[6] =  1.5f*SHARED2_MEM->encoders[3];
+				measurements[3] =  SHARED2_MEM->encoders[0];
+				measurements[4] =  SHARED2_MEM->encoders[1];
+				measurements[5] =  SHARED2_MEM->encoders[2];
+				measurements[6] =  SHARED2_MEM->encoders[3];
 
-				if (minutecoonter > 100)
+				if (minutecoonter > 200)
 				{
 
 					if (coonter<NUM_VSAMPLES)
@@ -1075,13 +1091,24 @@ void CONTROL(void *argument)
 			}
 
 			BNO055_ReadEuler(&heading, &pitch, &roll);
-			BNO055_ReadLinAccel_D(&ax, &ay, &az);
-			BNO055_ReadYawRate(&yawrate);
+			//BNO055_ReadLinAccel_D(&ax, &ay, &az);
+			ax = ax_sum/n;
+			ay = ay_sum/n;
+			//BNO055_ReadYawRate(&yawrate_sum/n);
 			//printf("%.3f %.3f %.3f %.3f\n",measurements[3],measurements[4],measurements[5],measurements[6]);
 
 			double v_enc = rw*(measurements[3]+measurements[4]+measurements[5]+measurements[6])/4;
 			measurements[0] = BN0055heading_to_yaw(heading);
-			measurements[1] = yawrate;
+			measurements[1] = yawrate_sum/n;
+
+			R[2][2] = R[2][2]+100*fabs(measurements[1]);
+			Q[3][3] = Q[3][3]/(1+100*fabs(measurements[1]));
+
+			static double b_ax = 0.0;
+
+
+			if (slowforward || medforward || fastforward)
+				goto skippy;
 
 			if (fabs(ax) <= 0.1 && fabs(v_enc) < 0.01)
 			{
@@ -1093,14 +1120,20 @@ void CONTROL(void *argument)
 			}
 			if (notmoved>5)
 			{
+				const double alpha = 0.1;
+				b_ax = (1.0 - alpha)*b_ax + alpha*ax;   // learn bias at rest
 				acadoVariables.x0[3] = 0;
 				ax = 0;
 				b_v = 0;
 				filter_init();
 			}
-			measurements[2] = ax;
+			skippy:
+			measurements[2] = ax-b_ax;
 							// yaw			   yawrate 		    accel_x			 encoder robot v_x
 			double z[4] = {measurements[0], measurements[1], measurements[2], v_enc};
+
+			//if (yawrate > 0.15)	//
+			//	b_v = 0;
 
 			double xhat[4] = {acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[3],b_v};
 
@@ -1113,7 +1146,6 @@ void CONTROL(void *argument)
 			else
 			{
 				dt_real = (t_now - t_prev) / 1000.0;   // convert to seconds
-
 			}
 		    t_prev = t_now;
 
@@ -1146,7 +1178,7 @@ void CONTROL(void *argument)
 				}
 				else
 				{
-					printf("%.2f %.2f %.2f %.2f\n",z[3],acadoVariables.x0[3],b_v,ax);
+					printf("%.2f %.2f %.2f\n",acadoVariables.x0[3],z[3],(slips[0]+slips[1]+slips[2]+slips[3])/4);
 					float speed = 0.0f;
 					if (fastforward)
 					{
@@ -1184,8 +1216,23 @@ void CONTROL(void *argument)
 				SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
 				__DSB();
 			}
-
-			vTaskDelayUntil(&last_wake, period);   // align to 100 ms
+			TimeOut_t to;									// SAMPLE IMU DURING TASK WAIT
+			TickType_t remaining = period;                 // e.g. 100 ms in ticks
+			const TickType_t sample_step = pdMS_TO_TICKS(10);
+			vTaskSetTimeOutState(&to);
+			yawrate_sum = 0; ax_sum = 0; ay_sum = 0; n = 0;
+			while (remaining > 0) {
+			    TickType_t step = (remaining < sample_step) ? remaining : sample_step;
+			    if (step == 0) break;
+			    vTaskDelay(step);                          // sleep up to deadline slice
+			    xTaskCheckForTimeOut(&to, &remaining);     // update remaining after sleep
+			    if (remaining == 0) break;                 // don't take a late sample
+			    double ax, ay, az;
+			    BNO055_ReadLinAccel_D(&ax, &ay, &az);
+				BNO055_ReadYawRate(&yawrate);
+			    ax_sum += ax; ay_sum += ay; yawrate_sum += yawrate; n++;
+			}
+			//vTaskDelayUntil(&last_wake, period);   // align to 100 ms
 		}
 	}
 }

@@ -2,10 +2,10 @@
 ../Core/Src/PWM.c:71:6:NotifyNewSetpoint	8	static
 ../Core/Src/PWM.c:76:6:M7control	16	static
 ../Core/Src/PWM.c:92:6:pwmgo	376	static,ignoring_inline_asm
-../Core/Src/PWM.c:250:6:pwm_init	8	static
-../Core/Src/PWM.c:266:6:FORWARD12	8	static
-../Core/Src/PWM.c:272:6:FORWARD34	8	static
-../Core/Src/PWM.c:278:6:REVERSE12	8	static
-../Core/Src/PWM.c:284:6:REVERSE34	8	static
-../Core/Src/PWM.c:291:19:sign_with_deadband	32	static
-../Core/Src/PWM.c:297:13:set_side_dirs	16	static
+../Core/Src/PWM.c:260:6:pwm_init	8	static
+../Core/Src/PWM.c:276:6:FORWARD12	8	static
+../Core/Src/PWM.c:282:6:FORWARD34	8	static
+../Core/Src/PWM.c:288:6:REVERSE12	8	static
+../Core/Src/PWM.c:294:6:REVERSE34	8	static
+../Core/Src/PWM.c:301:19:sign_with_deadband	32	static
+../Core/Src/PWM.c:307:13:set_side_dirs	16	static
