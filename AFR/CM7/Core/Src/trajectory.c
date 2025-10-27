@@ -18,14 +18,14 @@
 #define dt 0.1
 #define v_des 0.5
 #define N 25
-#define map_size 8
-#define map_res 0.05
-#define MAP_DIM_CELLS 160
+#define map_size 10
+#define map_res 0.1
+#define MAP_DIM_CELLS 100
 #define robot_radius 0.2
 #define MAP_FREE 0
 #define MAP_SOFT 1
 #define MAP_HARD 2
-#define MAX_MAP_SIZE_CELLS 160  // adjust for your resolution
+#define MAX_MAP_SIZE_CELLS 100  // adjust for your resolution
 #define INF 1e9f
 #define MAX_PATH_POINTS 200
 #define MAX_NODES MAP_DIM_CELLS
@@ -249,7 +249,7 @@ static void move_wp(Point2D *wp, const float robot[3])
     float best_cost = 1e30f;
     float best_xw = wp->x, best_yw = wp->y;
 
-    const int R = 10; // ~50 cm if map_res=0.05
+    const int R = 5; // ~50 cm if map_res=0.1
     for (int dr = -R; dr <= R; ++dr) {
         for (int dc = -R; dc <= R; ++dc) {
             int rr = gy + dr, cc = gx + dc;
@@ -440,7 +440,8 @@ void trajectory(const real_t ax0[4])
     }*/
 }
 
-#define ASTAR_TIME_BUDGET 30 //ms
+#define TOTAL_ASTAR_TIME 60 //ms
+int32_t ASTAR_TIME_BUDGET = TOTAL_ASTAR_TIME;
 // -----------------------------------------------------------------------------
 // A* PATHFINDING ON AN 8-WAY GRID WITH SOFT/HARD COSTS
 // -----------------------------------------------------------------------------
@@ -625,16 +626,18 @@ void plan_local_trajectory(
             }
         }*/
 
-    for (int w = 0; w < wp_count && w < 2; ++w) {
+    ASTAR_TIME_BUDGET = TOTAL_ASTAR_TIME;
+    for (int w = 0; w < wp_count && w < 3; ++w)
+    {
+    	uint32_t t0 = HAL_GetTick();
         world_to_map(cur_x, cur_y, &sx, &sy);
         world_to_map(waypoints[w].x, waypoints[w].y, &gx, &gy);
 
         Node segment[MAX_PATH_POINTS];
         int  seg_len = 0;
-        if (!astar(occ_map, MAP_DIM_CELLS, MAP_DIM_CELLS,
-                   (Node){sy,sx}, (Node){gy,gx},
-                   segment, &seg_len, MAX_PATH_POINTS))
-            continue;
+        int astard = astar(occ_map,MAP_DIM_CELLS,MAP_DIM_CELLS,(Node){sy,sx},(Node){gy,gx},segment, &seg_len,MAX_PATH_POINTS);
+		if (!astard || astard == 2)
+			break;
 
         // skip duplicate start cell except for the very first
         int start_i = (w==0 ? 0 : 1);
@@ -643,6 +646,9 @@ void plan_local_trajectory(
 
         cur_x = waypoints[w].x;
         cur_y = waypoints[w].y;
+        ASTAR_TIME_BUDGET = ASTAR_TIME_BUDGET - (HAL_GetTick()-t0);
+        if (ASTAR_TIME_BUDGET <= 0)
+        	break;
     }
 
     // 2) Convert cell list to world‐coordinates polyline

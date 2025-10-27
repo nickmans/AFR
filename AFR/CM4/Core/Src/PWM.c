@@ -14,7 +14,7 @@
 #include <stdbool.h>
 #define CPR               330u
 #define MAX_CURR_A        1
-#define HARDMAX_CURR_A    1.5
+#define HARDMAX_CURR_A    1.8
 #define PWM_MAX           (__HAL_TIM_GET_AUTORELOAD(&htim1))
 #define CONTROL_TIMEOUT   pdMS_TO_TICKS(25u)
 #define NEW_SP_FLAG       (1U<<0)
@@ -22,21 +22,21 @@
 #define ZERO_GUARD_RPM  1.0   // treat |setpoint| < 1 RPM as "zero command"
 
 // ---- DIRECTION CONFIG----
-const double DB_RPM       = 5.0;   // sign deadband
-const double LOSER_SCALE  = 0.20;  // scale wheel magnitude if it wants opposite sign
+const float DB_RPM       = 5.0f;   // sign deadband
+const float LOSER_SCALE  = 0.20f;  // scale wheel magnitude if it wants opposite sign
 
 // gains
-static const double Kp = 0.1, Ki = 0.3;
-static const double RPM_FS[4] = { 312.727, 312.727, 312.727, 312.727 };
+static const float Kp = 0.1f, Ki = 0.3f;
+static const float RPM_FS[4] = { 312.727f, 312.727f, 312.727f, 312.727f };
 
 // state
-static double integ[4] = {0};
-static double sp_rpm[4] = {0};      // most-recent setpoint in RPM
+static float integ[4] = {0};
+static float sp_rpm[4] = {0};      // most-recent setpoint in RPM
 static const uint32_t CH[4] = { TIM_CHANNEL_1, TIM_CHANNEL_2, TIM_CHANNEL_3, TIM_CHANNEL_4 };
 
 static int dirL_state = +1;   // +1=fwd, -1=rev
 static int dirR_state = +1;
-static inline int sign_with_deadband(double v, double db);
+static inline int sign_with_deadband(float v, float db);
 static void set_side_dirs(int dirL, int dirR);
 void pwmgo(void *argument);
 osThreadId_t  pwm_id;
@@ -85,15 +85,15 @@ void M7control(void *arg)
 		osDelay(1);
 	}
 }
-const double twopi60 = 0.10471975512;
-const double sixty2pi = 9.54929658551;
+const float twopi60 = 0.10471975512f;
+const float sixty2pi = 9.54929658551f;
 static int firstflag = 0;
 float vin = 0;
 void pwmgo(void *arg)
 {
 	TickType_t last = xTaskGetTickCount();
 	const TickType_t period = pdMS_TO_TICKS(25);
-	//const double dt = (double)period * 1e-3;   // 0.025 s, fixed
+	//const float dt = (float)period * 1e-3;   // 0.025 s, fixed
 	uint32_t t_prev =  HAL_GetTick();
 	osDelay(25);
 	for (;;)
@@ -123,14 +123,13 @@ void pwmgo(void *arg)
 		__enable_irq();
 
 		uint32_t t_now = HAL_GetTick();
-		double dtr = (t_now - t_prev) / 1000.0;
+		float dtr = (t_now - t_prev) / 1000.0f;
 		t_prev = t_now;
 		// 5) compute actual RPM
-		const double k_rpm = 60.0/(CPR*dtr);
-		double rpm[4];
+		const float k_rpm = 60.0f/(CPR*dtr);
+		float rpm[4];
 		for (int i = 0; i < 4; i++)
 			rpm[i] = counts[i]*k_rpm;
-
 
 		//if (!SHARED2_MEM->flagencoders)
 		{
@@ -145,7 +144,7 @@ void pwmgo(void *arg)
 			HAL_ADC_PollForConversion(&hadc1, 5);
 			uint16_t raw = HAL_ADC_GetValue(&hadc1);
 			HAL_ADC_Stop(&hadc1);
-			float vadc  = (raw * 3.19) / 65535.0f;      // volts at PA3
+			float vadc  = (raw * 3.19f) / 65535.0f;      // volts at PA3
 			vin   = vadc * 5.7619048f;                 // your 47k/9.87k divider scale
 			SHARED2_MEM->BATT_V = vin;
 
@@ -156,13 +155,13 @@ void pwmgo(void *arg)
 		}
 
 		// 5c) choose side directions from pair setpoints (with deadband)
-		int req_dirL = sign_with_deadband(0.5*(sp_rpm[0] + sp_rpm[1]), DB_RPM);
-		int req_dirR = sign_with_deadband(0.5*(sp_rpm[2] + sp_rpm[3]), DB_RPM);
+		int req_dirL = sign_with_deadband(0.5f*(sp_rpm[0] + sp_rpm[1]), DB_RPM);
+		int req_dirR = sign_with_deadband(0.5f*(sp_rpm[2] + sp_rpm[3]), DB_RPM);
 
 		// 5d) only allow flipping when that side is slow enough (protect hardware)
-		const double SIDE_RPM = fmax(fabs(rpm[0]), fabs(rpm[1])); // left
-		const double SIDE_RPM_R = fmax(fabs(rpm[2]), fabs(rpm[3])); // right
-		const double FLIP_THRESH_RPM = 20.0; // require near-stop to reverse
+		const float SIDE_RPM = fmaxf(fabsf(rpm[0]), fabsf(rpm[1])); // left
+		const float SIDE_RPM_R = fmaxf(fabsf(rpm[2]), fabsf(rpm[3])); // right
+		const float FLIP_THRESH_RPM = 20.0f; // require near-stop to reverse
 
 		int new_dirL = dirL_state;
 		int new_dirR = dirR_state;
@@ -184,64 +183,74 @@ void pwmgo(void *arg)
 		    // side direction already chosen earlier this cycle
 		    const int chosen_dir = (i < 2) ? dirL_state : dirR_state;
 
-		    const double sp      = sp_rpm[i];
-		    const int want_dir   = (fabs(sp) > DB_RPM) ? (sp >= 0.0 ? +1 : -1) : chosen_dir;
+		    const float sp      = sp_rpm[i];
+		    const int want_dir   = (fabsf(sp) > DB_RPM) ? (sp >= 0.0f ? +1 : -1) : chosen_dir;
 
 		    // magnitude the controller will track (optionally brake the loser)
-		    double sp_mag = fabs(sp);
+		    float sp_mag = fabsf(sp);
 		    if (want_dir != chosen_dir) {
 		        // This wheel asked for the opposite direction; de-rate to avoid torque fighting.
 		        sp_mag *= LOSER_SCALE;               // or set to 0.0 if you prefer hard brake
 		    }
 
 		    if (sp_mag < ZERO_GUARD_RPM) {
-		        integ[i] = 0.0;                               // dump stored torque
-		        if (firstflag) __HAL_TIM_SET_COMPARE(&htim1, CH[i], 0);  // PWM=0
-		        continue;                                     // skip PI for this wheel
+		        integ[i] = 0.0f;                               // dump stored torque
+		        //if (firstflag) __HAL_TIM_SET_COMPARE(&htim1, CH[i], 0);  // PWM=0
+		        //continue;                                     // skip PI for this wheel
 		    }
 
 		    // measured speed magnitude (you’re using EXTI ticks, so signless anyway)
-		    const double y_meas = fabs(rpm[i]);
+		    const float y_meas = fabsf(rpm[i]);
 
 		    // PI on magnitude
-		    const double err      = sp_mag - y_meas;
-		    const double u_ff     = (sp_mag / (RPM_FS[i])*vin/11.8) * PWM_MAX;
-		    const double u_fb     = Kp*err + Ki*integ[i];
-		    const double duty_raw = u_ff + u_fb;
+		    const float err      = sp_mag - y_meas;
+		    const float u_ff     = (sp_mag / (RPM_FS[i])*vin/11.8f) * PWM_MAX;
+		    const float u_fb     = Kp*err + Ki*integ[i];
+		    const float duty_raw = u_ff + u_fb;
 
 		    // current limiting
-		    double duty = duty_raw;
-		    const double cur = motor_current[i];          // your current read
+		    float duty = duty_raw;
+		    const float cur = motor_current[i];          // your current read
 
-	        if (fabs(cur) > 2)
+	        if (fabsf(cur) > 2)
 	        {
 	            HAL_GPIO_WritePin(GPIOG, GPIO_PIN_8, 0);
 	            HAL_GPIO_WritePin(GPIOG, GPIO_PIN_6, 0);
 	        }
-		    if (fabs(cur) > HARDMAX_CURR_A)
+		    if (fabsf(cur) > HARDMAX_CURR_A)
 		    {			//hard limit
-		        duty = 0;
+		        duty = 0.0f;
 		    }
-		    if (fabs(cur) > MAX_CURR_A)
+		    if (fabsf(cur) > MAX_CURR_A)
 		    {				//soft limit, ratio duty down
-		        duty *= (MAX_CURR_A / fabs(cur));
+		        duty *= (MAX_CURR_A / fabsf(cur));
 		    }
 
+		    // --- Duty slew limiter ---
+		    static float duty_prev[4] = {0};
+		    const float SLEW_DOWN = PWM_MAX * 0.025f;  // slower decay rate
+
+		    float delta = duty - duty_prev[i];
+		    if (delta < -SLEW_DOWN) duty = duty_prev[i] - SLEW_DOWN;
+		    if (duty < 0.0f)        duty = 0.0f;
+		    if (duty > PWM_MAX)     duty = PWM_MAX;
+		    duty_prev[i] = duty;
+
 		    // clamp to [0, PWM_MAX]
-		    if (duty < 0.0) duty = 0.0;
+		    if (duty < 0.0f) duty = 0.0f;
 		    if (duty > PWM_MAX) duty = PWM_MAX;
 
 		    // after you computed: err, duty (clamped to [0, PWM_MAX])
-		    bool sat_lo = (duty <= 0.0);
+		    bool sat_lo = (duty <= 0.0f);
 		    bool sat_hi = (duty >= PWM_MAX);
-		    bool drives_deeper = (sat_lo && err < 0.0) || (sat_hi && err > 0.0);
+		    bool drives_deeper = (sat_lo && err < 0.0f) || (sat_hi && err > 0.0f);
 
 		    if (!drives_deeper) {
 		        integ[i] += err * dtr;     // integrate only when it won't push deeper into saturation
 		    }
 
 		    // cap integrator
-		    const double INTEG_CAP = (0.20 * PWM_MAX) / fmax(1e-6, Ki);
+		    const float INTEG_CAP = (0.20f * PWM_MAX) / fmaxf(1e-6f, Ki);
 		    if (integ[i] >  INTEG_CAP) integ[i] =  INTEG_CAP;
 		    if (integ[i] < -INTEG_CAP) integ[i] = -INTEG_CAP;
 
@@ -298,7 +307,7 @@ void REVERSE34(void)
 }
 
 
-static inline int sign_with_deadband(double v, double db)
+static inline int sign_with_deadband(float v, float db)
 {
     if (v >  db) return +1;
     if (v < -db) return -1;

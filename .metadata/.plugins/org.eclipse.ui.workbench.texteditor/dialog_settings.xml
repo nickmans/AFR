@@ -3,21 +3,21 @@
 	<item key="hasShownOverlayPopupBefore" value="true"/>
 	<item key="replaceBarOpen" value="true"/>
 	<list key="searchhistory">
-		<item value="ax"/>
-		<item value="BNO055_PrintAllOffsets"/>
-		<item value="BNO055_CalibrateAccelOnce"/>
-		<item value="timeout_ms"/>
-		<item value="abs"/>
-		<item value="v_enc"/>
-		<item value="a_x"/>
-		<item value="chol3"/>
-		<item value="outer3x4"/>
-		<item value="outer4x4"/>
-		<item value="mat33"/>
-		<item value="vx"/>
-		<item value="x"/>
-		<item value="proccess"/>
-		<item value="ukf_update"/>
+		<item value="encoder"/>
+		<item value="MAX_CURR_A"/>
+		<item value="curr"/>
+		<item value="yawrate"/>
+		<item value="FORWARD12"/>
+		<item value="fabsf"/>
+		<item value="fabs"/>
+		<item value="double"/>
+		<item value="ay_sum"/>
+		<item value="ax_sum"/>
+		<item value="BNO055_ReadEuler"/>
+		<item value="BNO055_ReadLinAccel_D"/>
+		<item value="ukf"/>
+		<item value="flagencoder"/>
+		<item value="flagencoders"/>
 	</list>
 	<list key="replacehistory">
 		<item value="float"/>

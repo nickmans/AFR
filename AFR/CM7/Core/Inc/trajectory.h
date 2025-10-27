@@ -20,11 +20,11 @@ extern uint8_t waypoint_count;
 extern int OBJECT_INFRONT;
 void trajectory(const real_t ax0[4]);
 void xreffer(float x, float y, real_t ay[ACADO_N*ACADO_NY], real_t ayN[ACADO_NYN]);
-void ukf_update(double            xhat[4],
-                double            P[4][4],
+void ukf_update(double            xhat[3],
+                double            P[3][3],
                 const double      z[4],
                 double            dt,
-                const double      Q[4][4],
+                const double      Q[3][3],
                 const double      R[4][4]);
 
 #endif /* INC_TRAJECTORY_H_ */

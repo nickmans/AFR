@@ -1,7 +1,7 @@
-../Core/Src/ukf.c:27:13:mat44_copy	24	static
-../Core/Src/ukf.c:34:13:mat44_transpose	24	static
-../Core/Src/ukf.c:42:13:outer4x4	32	static
+../Core/Src/ukf.c:27:13:mat33_copy	24	static
+../Core/Src/ukf.c:34:13:mat33_transpose	24	static
+../Core/Src/ukf.c:42:13:outer3x4	32	static
 ../Core/Src/ukf.c:50:13:outer4	32	static
-../Core/Src/ukf.c:60:13:chol4	104	static
-../Core/Src/ukf.c:107:13:inv4	384	static
-../Core/Src/ukf.c:169:6:ukf_update	2976	static
+../Core/Src/ukf.c:60:13:chol3	72	static
+../Core/Src/ukf.c:90:13:inv4	384	static
+../Core/Src/ukf.c:152:6:ukf_update	2272	static

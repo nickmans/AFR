@@ -74,10 +74,10 @@ void Error_Handler(void);
 #define LIDAR_RX_GPIO_Port GPIOD
 
 /* USER CODE BEGIN Private defines */
-#define WAYPOINT_CLOSE 0.3f
-#define LAST_WAYPOINT_CLOSE 0.6
-static double rtoothers = 0.3;  // min. radius to other waypoints
-static double rtotag = 0.5;		// min. radius to tag
+#define WAYPOINT_CLOSE 0.15f
+#define LAST_WAYPOINT_CLOSE 1
+static double rtoothers = 0.6;  // min. radius to other waypoints
+static double rtotag = 0.6;		// min. radius to tag
 #define MAX_WAYPOINTS 15		// MAX STORED WAYPOINTS
 #define SOFT_VOLTAGE 10.5		// give warnings
 #define HARD_VOLTAGE 10			// stop
