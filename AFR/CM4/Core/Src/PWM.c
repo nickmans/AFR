@@ -228,7 +228,7 @@ void pwmgo(void *arg)
 
 		    // --- Duty slew limiter ---
 		    static float duty_prev[4] = {0};
-		    const float SLEW_DOWN = PWM_MAX * 0.025f;  // slower decay rate
+		    const float SLEW_DOWN = PWM_MAX * 0.035f;  // slower decay rate
 
 		    float delta = duty - duty_prev[i];
 		    if (delta < -SLEW_DOWN) duty = duty_prev[i] - SLEW_DOWN;

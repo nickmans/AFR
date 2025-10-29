@@ -96,7 +96,7 @@ void rplidar_parser_feed(uint8_t b) {
 			.angle_deg = angle_deg,
 			.dist_m    = dist_m,
 			.x         = dist_m * cos_tbl[bin],
-			.y         = dist_m * sin_tbl[bin],
+			.y         = -dist_m * sin_tbl[bin],
 			.quality   = quality
 		};
 

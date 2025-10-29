@@ -44,14 +44,14 @@ Point2D waypoints[15];
 static double Q[3][3] = {		// higher means less model trust (imu)
     { 1e-6,    0.0,    0.0},
     { 0.0,    1e-6,    0.0},
-    { 0.0,     0.0,   1e-4},		// vx
+    { 0.0,     0.0,   1e-3},		// vx
 };
 static double R[4][4] = {
     //   ψ    ψ̇    aₓ   v_enc
     { 3e-4,  0.0,  0.0,  0.0  },  // yaw noise variance
     { 0.0,  3e-2,  0.0,  0.0  },  // yaw-rate noise variance
-    { 0.0,   0.0,  1e-2,  0.0 },  // accel noise variance
-    { 0.0,   0.0,  0.0,  1e-1 }   // encoder‐velocity noise variance
+    { 0.0,   0.0,  1e0,  0.0 },  // accel noise variance
+    { 0.0,   0.0,  0.0,  1e-3 }   // encoder‐velocity noise variance
 };
 static double P    [3][3];       // covariance
 const double dt = 0.1;    // 1/10 Hz
@@ -209,7 +209,8 @@ float averageVIN(float *VIN_ARRAY) {
 }
 static inline void online_data(double meas[7], double slips[4])
 {
-    for (int i = 0; i < ACADO_N+1; i++) {
+    for (int i = 0; i < ACADO_N+1; i++)
+    {
         int c = 0;
         int base = i * ACADO_NOD;  // offset in flat array
 
@@ -227,8 +228,8 @@ static inline void online_data(double meas[7], double slips[4])
             acadoVariables.od[base + c++] = slips[j];
     }
 }
-#define SLIP_VW_TH   (1e-2)	// minimum robot velocity for slip calc
-#define SLIP_U_TH    (1e-2) // minimum encoder velocity for slip calc
+#define SLIP_VW_TH   (1e-1)	// minimum robot velocity for slip calc
+#define SLIP_U_TH    (1e-1) // minimum encoder velocity for slip calc
 static inline void compute_slips(double velocity,double yawrate,const double u[4],double slips[4]
 ) {
 
@@ -246,10 +247,10 @@ static inline void compute_slips(double velocity,double yawrate,const double u[4
         {
             slips[i] = fmin(fabs((u_lin - vw[i]) / vw[i]), 1);
         }
-        else if ((u_lin > SLIP_U_TH) && (vw[i] <= SLIP_VW_TH))
+        /*else if ((u_lin > SLIP_U_TH) && (vw[i] <= SLIP_VW_TH))
         {
             slips[i] = 1.0;
-        }
+        }*/
         else
         {
             slips[i] = 0.0;
@@ -770,7 +771,7 @@ float ay_sum = 0, ax_sum=0, yawrate_sum=0, az_sum=0; uint32_t n=0;
 //static int waiting_counter = 0;
 static int notmoved = 0;	// robot not moving while waypoint active counter
 static int axswitch = 0;
-static double b_enc = 1;
+static double b_enc = 1.2;
 static double b_ax = 0.0;
 void CONTROL(void *argument)
 {
@@ -798,17 +799,20 @@ void CONTROL(void *argument)
 			{
 				get_lidar();
 				osDelay(2000);
+				control_reset_all();
 				step_counter = 0;
 				juststarted = 0;
 				notmoved = 0;
 				last_wake = xTaskGetTickCount();   // realign the vTaskDelayUntil baseline
 			}
+		    vTaskDelayUntil(&last_wake, period);   // returns exactly at next 100 ms tick boundary
+		    TickType_t frame_start = last_wake;    // absolute frame start time
 
 			/*waypoint_count = 1;
 			double rawwx = 1;//SHARED_MEM->tag_pos[1];
 			double rawwy = -0.5;//SHARED_MEM->tag_pos[0];
 			double wx,wy;
-			robot_to_world(rawwx,rawwy,acadoVariables.x0[0],acadoVariables.x0[1],-acadoVariables.x0[2],&wx,&wy);	// ROTATE BACKWARDS (CW) TO WORLD
+			robot_to_world(rawwx,rawwy,acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[2],&wx,&wy);	// ROTATE BACKWARDS (CW) TO WORLD
 			//printf("%.3f %.3f\n",wx,wy);
 			waypoints[0].x = wx;
 			waypoints[0].y = wy;*/
@@ -830,10 +834,10 @@ void CONTROL(void *argument)
 					osDelay(1);
 				}
 				//SHARED2_MEM->flagencoders = 1;
-				measurements[3] =  SHARED2_MEM->encoders[0];
-				measurements[4] =  SHARED2_MEM->encoders[1];
-				measurements[5] =  SHARED2_MEM->encoders[2];
-				measurements[6] =  SHARED2_MEM->encoders[3];
+				measurements[3] =  b_enc*SHARED2_MEM->encoders[0];
+				measurements[4] =  b_enc*SHARED2_MEM->encoders[1];
+				measurements[5] =  b_enc*SHARED2_MEM->encoders[2];
+				measurements[6] =  b_enc*SHARED2_MEM->encoders[3];
 
 				if (minutecoonter > 200)
 				{
@@ -870,8 +874,18 @@ void CONTROL(void *argument)
 			}
 
 			BNO055_ReadEuler(&heading, &pitch, &roll);
-			BNO055_ReadLinAccel_D(&ax, &ay, &az);
-			BNO055_ReadYawRate(&measurements[1]);
+			//BNO055_ReadLinAccel_D(&ax, &ay, &az);
+			//BNO055_ReadYawRate(&measurements[1]);
+			if (n>0)
+			{
+				ax = ax_sum/n;
+				measurements[1] = yawrate_sum/n;
+			}
+			else
+			{
+				BNO055_ReadLinAccel_D(&ax, &ay, &az);
+				BNO055_ReadYawRate(&measurements[1]);
+			}
 
 			if (fabs(measurements[1])>=0.1)		 // accelerometer - yawrate leakage
 				ax = ax-measurements[1];
@@ -895,7 +909,7 @@ void CONTROL(void *argument)
 			}
 
 							// yaw			   yawrate 		    accel_x			 encoder robot v_x
-			double z[4] = {measurements[0], measurements[1], measurements[2], b_enc*v_enc};
+			double z[4] = {measurements[0], measurements[1], measurements[2], v_enc};
 
 			double xhat[3] = {acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[3]};
 
@@ -919,7 +933,7 @@ void CONTROL(void *argument)
 			acadoVariables.x0[2] = measurements[0];
 			acadoVariables.x0[3] = xhat[2];
 
-			static double encbiashist[20] = {0};
+			/*static double encbiashist[20] = {0};
 			static double encbias = 0;
 			static int done1s = 0;
 			if (notmoved>5)
@@ -948,13 +962,15 @@ void CONTROL(void *argument)
 					b_enc = encbias/10.0;
 					done1s = 1;
 				}
-				R[2][2] = 1e0;			// distrust accelerometer after 2s
+				R[2][2] = 1e0;			// distrust accelerometer after 1s
 				R[3][3] = 1e-3;
-			}
+			}*/
 
 			double slips[4] = {0, 0, 0, 0};
 			double enc[4] = {measurements[3],measurements[4],measurements[5],measurements[6]};
 			compute_slips(xhat[2],measurements[1],enc,slips);
+			if ((slips[0]+slips[1]+slips[2]+slips[3])/4 > 0.8)
+				printf("s\n");
 
 			online_data(measurements,slips);
 
@@ -965,6 +981,7 @@ void CONTROL(void *argument)
 			if (step_counter++ % 10 == 0)			//every 10 steps new trajectory
 			{
 				trajectory(acadoVariables.x0);
+				xreffer(acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.y, acadoVariables.yN);		// Update existing trajectory
 			}
 			else
 				xreffer(acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.y, acadoVariables.yN);		// Update existing trajectory
@@ -972,7 +989,7 @@ void CONTROL(void *argument)
 			uint32_t t_elapsed = HAL_GetTick() - tt;
 
 			if (t_elapsed > 60)
-				//printf("t %lu\n",t_elapsed);
+				printf("t %lu\n",t_elapsed);
 
 			//if (OBJECT_INFRONT)
 			{
@@ -1002,12 +1019,12 @@ void CONTROL(void *argument)
 
 			if (status!=0 || isnan(acadoVariables.u[0]) || OBJECT_INFRONT || notmoved > 50)
 			{
-				/*if (status!=0)
-					printf("status %d\n",status);
+				if (status!=0)
+					printf("s %d\n",status);
 				if (isnan(acadoVariables.u[0]))
 						printf("nan\n");
 				if (notmoved > 50)
-					printf("not moved\n");*/
+					printf("not moved\n");
 
 				if (OBJECT_INFRONT && blockedint == 1)
 				{
@@ -1023,6 +1040,15 @@ void CONTROL(void *argument)
 				//notmoved = 0;
 				//vTaskDelayUntil(&last_wake, period);   // align to 100 ms
 				//continue;
+			}
+
+			if (notmoved>10)
+			{
+			    for (int i = 0; i < waypoint_count - 1; i++)
+			    {
+			        waypoints[i] = waypoints[i + 1];
+			    }
+			    waypoint_count--;
 			}
 
 			//static int done = 0;
@@ -1065,12 +1091,34 @@ void CONTROL(void *argument)
 				SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
 				__DSB();
 			}
+			ax_sum = 0;yawrate_sum = 0;n=0;
+		    for (;;)
+		    {
+		        TickType_t now = xTaskGetTickCount();
+		        TickType_t elapsed   = now - frame_start;
+		        TickType_t remaining = (elapsed < period) ? (period - elapsed) : 0;
+
+		        if (remaining == 0) break;
+
+		        TickType_t step = (remaining < pdMS_TO_TICKS(5)) ? remaining : pdMS_TO_TICKS(5);
+		        if (step == 0) break;
+
+		        double ax, ay, az, yawrate;
+		        BNO055_ReadLinAccel_D(&ax, &ay, &az);
+		        BNO055_ReadYawRate(&yawrate);
+		        ax_sum += ax; yawrate_sum += yawrate; n++;
+
+		        vTaskDelay(step);   // sleep a small slice but never run past the frame boundary
+		    }
 			//printf("%lu\n",t_elapsed);
-			vTaskDelayUntil(&last_wake, period);   // align to 100 ms
+			//vTaskDelayUntil(&last_wake, period);   // align to 100 ms
 		}
 		// IDLING
 		while(!started)
 		{
+		    vTaskDelayUntil(&last_wake, period);   // returns exactly at next 100 ms tick boundary
+		    TickType_t frame_start = last_wake;    // absolute frame start time
+
 			juststarted = 1;
 			//printf("dma_rx_buf @ %p\r\n", dma_rx_buf);
 			get_lidar();
@@ -1084,10 +1132,10 @@ void CONTROL(void *argument)
 			__DSB();   // ensure memory order
 			if (SHARED2_MEM->flagencoders)				// CHECK FOR NEW ENCODER COUNT - IS UPDATED IN 25ms PWM LOOP ON M4
 			{
-				measurements[3] =  SHARED2_MEM->encoders[0];
-				measurements[4] =  SHARED2_MEM->encoders[1];
-				measurements[5] =  SHARED2_MEM->encoders[2];
-				measurements[6] =  SHARED2_MEM->encoders[3];
+				measurements[3] =  b_enc*SHARED2_MEM->encoders[0];
+				measurements[4] =  b_enc*SHARED2_MEM->encoders[1];
+				measurements[5] =  b_enc*SHARED2_MEM->encoders[2];
+				measurements[6] =  b_enc*SHARED2_MEM->encoders[3];
 
 				if (minutecoonter > 200)
 				{
@@ -1125,13 +1173,36 @@ void CONTROL(void *argument)
 			}
 
 			BNO055_ReadEuler(&heading, &pitch, &roll);
-			BNO055_ReadLinAccel_D(&ax, &ay, &az);
-			BNO055_ReadYawRate(&measurements[1]);
+			//BNO055_ReadLinAccel_D(&ax, &ay, &az);
+			//BNO055_ReadYawRate(&measurements[1]);
+			if (n>0)
+			{
+				ax = ax_sum/n;
+				measurements[1] = yawrate_sum/n;
+			}
+			else
+			{
+				BNO055_ReadLinAccel_D(&ax, &ay, &az);
+				BNO055_ReadYawRate(&measurements[1]);
+			}
 
 			double v_enc = rw*(measurements[3]+measurements[4]+measurements[5]+measurements[6])/4;
 
 			//BNO055_ReadYawRate(&yawrate_sum/n);
 			//printf("%.3f %.3f %.3f %.3f\n",measurements[3],measurements[4],measurements[5],measurements[6]);
+
+			uint32_t t_now = HAL_GetTick();
+			double dt_real;
+			if (t_prev == 0)
+			{
+				dt_real = 0.1;
+			}
+			else
+			{
+				dt_real = (t_now - t_prev) / 1000.0;   // convert to seconds
+			}
+			t_prev = t_now;
+
 			if (following)
 			{
 				const double alpha = 0.1;
@@ -1166,21 +1237,9 @@ void CONTROL(void *argument)
 				skippy:
 				measurements[2] = ax-b_ax;
 								// yaw			   yawrate 		    accel_x			 encoder robot v_x
-				double z[4] = {measurements[0], measurements[1], measurements[2], b_enc*v_enc};
+				double z[4] = {measurements[0], measurements[1], measurements[2], v_enc};
 
 				double xhat[4] = {acadoVariables.x0[0],acadoVariables.x0[1],acadoVariables.x0[3]};
-
-				uint32_t t_now = HAL_GetTick();
-				double dt_real;
-				if (t_prev == 0)
-				{
-					dt_real = 0.1;
-				}
-				else
-				{
-					dt_real = (t_now - t_prev) / 1000.0;   // convert to seconds
-				}
-				t_prev = t_now;
 
 				ukf_update(xhat,P,z,dt_real,Q,R);
 				acadoVariables.x0[0] = xhat[0];
@@ -1188,7 +1247,7 @@ void CONTROL(void *argument)
 				acadoVariables.x0[2] = measurements[0];
 				acadoVariables.x0[3] = xhat[2];
 
-				static double encbiashist[20] = {0};
+				/*static double encbiashist[20] = {0};
 				static double encbias = 0;
 				static int done2s = 0;
 				if (stop)
@@ -1221,7 +1280,7 @@ void CONTROL(void *argument)
 					R[3][3] = 1e-3;
 					//if (fabs(measurements[1])>=0.15)		 // kill the accelerometer while turning (1e-2)^(1-10*0.1)
 						//ax-measurments[1];//R[2][2] = 1e4;
-				}
+				}*/
 
 				double slips[4] = {0, 0, 0, 0};
 				double enc[4] = {measurements[3],measurements[4],measurements[5],measurements[6]};
@@ -1246,7 +1305,7 @@ void CONTROL(void *argument)
 				}
 				else
 				{
-					printf("%.2f %.2f %.2f %.2f %.2f\n",acadoVariables.x0[0],acadoVariables.x0[2],acadoVariables.x0[3],v_enc,b_enc);
+					//printf("%.2f %.2f %.2f\n",ax,acadoVariables.x0[3],v_enc);
 					float speed = 0.0f;
 					if (fastforward)
 					{
@@ -1284,8 +1343,27 @@ void CONTROL(void *argument)
 				SCB_CleanDCache_by_Addr((uint32_t*)SHARED_MEM, sizeof(*SHARED_MEM));
 				__DSB();
 			}
+			ax_sum = 0;yawrate_sum = 0;n=0;
+		    for (;;)
+		    {
+		        TickType_t now = xTaskGetTickCount();
+		        TickType_t elapsed   = now - frame_start;
+		        TickType_t remaining = (elapsed < period) ? (period - elapsed) : 0;
+
+		        if (remaining == 0) break;
+
+		        TickType_t step = (remaining < pdMS_TO_TICKS(5)) ? remaining : pdMS_TO_TICKS(5);
+		        if (step == 0) break;
+
+		        double ax, ay, az, yawrate;
+		        BNO055_ReadLinAccel_D(&ax, &ay, &az);
+		        BNO055_ReadYawRate(&yawrate);
+		        ax_sum += ax; yawrate_sum += yawrate; n++;
+
+		        vTaskDelay(step);   // sleep a small slice but never run past the frame boundary
+		    }
+			//vTaskDelayUntil(&last_wake, period);
 		}
-		vTaskDelayUntil(&last_wake, period);
 	}
 }
 int _write(int file, char *ptr, int len) {
@@ -1318,8 +1396,8 @@ void init_controller_weights(void)
 {
     const double W_diag[12] = {
         1e4, 1e4, 1e-3, 1e-1,
-        5e-1, 5e-1, 5e-1, 5e-1,
-        1e4,  1e4,  1e4,  1e4
+        1e-1, 1e-1, 1e-1, 1e-1,
+        1e1, 1e1, 1e1, 1e1,
     };
 
     const double WN_diag[4] = {

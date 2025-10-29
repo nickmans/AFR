@@ -2146,7 +2146,7 @@ __STATIC_FORCEINLINE void __DSB(void)
 
 		    // --- Duty slew limiter ---
 		    static float duty_prev[4] = {0};
-		    const float SLEW_DOWN = PWM_MAX * 0.025f;  // slower decay rate
+		    const float SLEW_DOWN = PWM_MAX * 0.035f;  // slower decay rate
  81017ca:	4b62      	ldr	r3, [pc, #392]	@ (8101954 <pwmgo+0x70c>)
  81017cc:	681b      	ldr	r3, [r3, #0]
  81017ce:	6adb      	ldr	r3, [r3, #44]	@ 0x2c
@@ -2289,7 +2289,7 @@ __STATIC_FORCEINLINE void __DSB(void)
  810195c:	3e99999a 	.word	0x3e99999a
  8101960:	10000550 	.word	0x10000550
  8101964:	58021800 	.word	0x58021800
- 8101968:	3ccccccd 	.word	0x3ccccccd
+ 8101968:	3d0f5c29 	.word	0x3d0f5c29
  810196c:	100002c0 	.word	0x100002c0
  8101970:	2300      	movs	r3, #0
  8101972:	f887 3031 	strb.w	r3, [r7, #49]	@ 0x31

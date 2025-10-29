@@ -9,7 +9,7 @@
 ../Core/Src/trajectory.c:278:21:fast_hypotf	3
 ../Core/Src/trajectory.c:289:21:heuristic	2
 ../Core/Src/trajectory.c:302:6:xreffer	10
-../Core/Src/trajectory.c:342:6:trajectory	9
+../Core/Src/trajectory.c:342:6:trajectory	4
 ../Core/Src/trajectory.c:448:5:astar	35
 ../Core/Src/trajectory.c:562:6:plan_local_trajectory	21
 ../Core/Src/trajectory.c:723:7:estimate_curvature_c	2

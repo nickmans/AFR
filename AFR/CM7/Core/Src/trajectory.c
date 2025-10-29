@@ -25,7 +25,7 @@
 #define MAP_FREE 0
 #define MAP_SOFT 1
 #define MAP_HARD 2
-#define MAX_MAP_SIZE_CELLS 100  // adjust for your resolution
+#define MAX_MAP_SIZE_CELLS 100
 #define INF 1e9f
 #define MAX_PATH_POINTS 200
 #define MAX_NODES MAP_DIM_CELLS
@@ -380,7 +380,7 @@ void trajectory(const real_t ax0[4])
     	move_wp(&waypoints[i], pos);  // pos is your float state[3]
     }
 
-    near_waypoint(pos[0], pos[1]);
+    //near_waypoint(pos[0], pos[1]);
 
     //printf("%.3f\n",ax0[0]);
     //uint32_t t0 = HAL_GetTick();
@@ -410,7 +410,7 @@ void trajectory(const real_t ax0[4])
 
 	//prune_Xref_if_needed(pos[0],pos[1]);
 
-	int FOUND = 0;
+	/*int FOUND = 0;
     for (size_t i = 0; i < cnt; i++)
     {
         if (pts[i].x >= FRONT_X_MIN && pts[i].x <= FRONT_X_MAX && fabsf(pts[i].y) <= FRONT_Y_HALF)
@@ -422,7 +422,7 @@ void trajectory(const real_t ax0[4])
     if (FOUND == 1)
     	OBJECT_INFRONT = 1;
     else
-    	OBJECT_INFRONT = 0;
+    	OBJECT_INFRONT = 0; */
     //uint32_t t_elapsed = HAL_GetTick() - t0;
     /*for (int i=0;i<2;++i)
     {
@@ -440,7 +440,7 @@ void trajectory(const real_t ax0[4])
     }*/
 }
 
-#define TOTAL_ASTAR_TIME 60 //ms
+#define TOTAL_ASTAR_TIME 50 //ms
 int32_t ASTAR_TIME_BUDGET = TOTAL_ASTAR_TIME;
 // -----------------------------------------------------------------------------
 // A* PATHFINDING ON AN 8-WAY GRID WITH SOFT/HARD COSTS
@@ -583,8 +583,8 @@ void plan_local_trajectory(
     float  cur_x = state[0], cur_y = state[1];
     int    sx, sy, gx, gy;
 
-    /*// PRINT MAP TO SERIAL (over &hcom_uart[COM1])
-    world_to_map(state[0], state[1], &sx, &sy);
+    // PRINT MAP TO SERIAL (over &hcom_uart[COM1])
+    /*world_to_map(state[0], state[1], &sx, &sy);
     world_to_map(waypoints[0].x, waypoints[0].y, &gx, &gy);
         const char divider1[] = "---- FULL MAP (digits) ----\r\n";
         HAL_UART_Transmit(&hcom_uart[COM1], (uint8_t*)divider1, sizeof(divider1)-1, HAL_MAX_DELAY);
@@ -776,8 +776,8 @@ void lidar_to_costmap(
             continue; // skip this point
         }
 
-        float world_x =  cosyaw*rx + sinyaw*ry + state[0];		// ROTATE CW (YAW IS CCW) TO GET ZERO'D MAP
-        float world_y =  -sinyaw*rx + cosyaw*ry + state[1];
+        float world_x =  cosyaw*rx - sinyaw*ry + state[0];		// ROTATE CW (YAW IS CCW) TO GET ZERO'D MAP
+        float world_y =  sinyaw*rx + cosyaw*ry + state[1];
 
         /*// Ignore points within 0.30 m of the last waypoint
         if (waypoint_count > 0)

@@ -43,7 +43,7 @@ C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update
 ../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:203:13:returnValue QProblem::reset()	48	static
 ../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:237:13:returnValue QProblem::init(const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, int&, const real_t*, real_t*)	48	static
 ../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:251:13:returnValue QProblem::init(const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, int&, const real_t*, real_t*)	48	static
-../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:269:13:returnValue QProblem::hotstart(const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, int&, real_t*)	1280	static
+../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:269:13:returnValue QProblem::hotstart(const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, int&, real_t*)	1160	static
 ../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:481:5:int QProblem::getNZ()	24	static
 ../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:491:13:returnValue QProblem::getDualSolution(real_t*) const	32	static
 ../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:521:13:returnValue QProblem::setupSubjectToType()	48	static
@@ -51,7 +51,7 @@ C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update
 ../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:763:13:returnValue QProblem::setupTQfactorisation()	104	static
 ../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:845:16:void __tcf_0()	8	static
 ../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:849:21:void __tcf_1()	8	static
-../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:796:13:returnValue QProblem::solveInitialQP(const real_t*, const real_t*, const Bounds*, const Constraints*, int&, real_t*)	560	static
+../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:796:13:returnValue QProblem::solveInitialQP(const real_t*, const real_t*, const Bounds*, const Constraints*, int&, real_t*)	512	static
 ../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:944:13:returnValue QProblem::obtainAuxiliaryWorkingSet(const real_t*, const real_t*, const Bounds*, const Constraints*, Bounds*, Constraints*) const	56	static
 ../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:1087:13:returnValue QProblem::setupAuxiliaryWorkingSet(const Bounds*, const Constraints*, BooleanType)	56	static
 ../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:1203:13:returnValue QProblem::setupAuxiliaryQPsolution(const real_t*, const real_t*)	40	static
@@ -59,18 +59,18 @@ C:/Users/nicks/STM32CubeIDE/workspace_1.19.0/AFR/AFR/CM7/Core/Src/control_update
 ../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:1285:13:returnValue QProblem::setupAuxiliaryQPbounds(const Bounds*, const Constraints*, BooleanType)	56	static
 ../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:1426:13:returnValue QProblem::addConstraint(int, SubjectToStatus, BooleanType)	336	static
 ../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:1580:13:returnValue QProblem::addConstraint_checkLI(int)	112	static
-../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:1614:13:returnValue QProblem::addConstraint_ensureLI(int, SubjectToStatus)	528	static
-../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:1874:13:returnValue QProblem::addBound(int, SubjectToStatus, BooleanType)	344	static
+../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:1614:13:returnValue QProblem::addConstraint_ensureLI(int, SubjectToStatus)	472	static
+../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:1874:13:returnValue QProblem::addBound(int, SubjectToStatus, BooleanType)	320	static
 ../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:2040:13:returnValue QProblem::addBound_checkLI(int)	24	static
-../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:2062:13:returnValue QProblem::addBound_ensureLI(int, SubjectToStatus)	528	static
+../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:2062:13:returnValue QProblem::addBound_ensureLI(int, SubjectToStatus)	464	static
 ../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:2288:13:returnValue QProblem::removeConstraint(int, BooleanType)	448	static
 ../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:2438:13:returnValue QProblem::removeBound(int, BooleanType)	456	static
 ../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:2601:13:returnValue QProblem::backsolveR(const real_t*, BooleanType, real_t*)	32	static
 ../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:2613:13:returnValue QProblem::backsolveR(const real_t*, BooleanType, BooleanType, real_t*)	64	static
 ../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:2673:13:returnValue QProblem::backsolveT(const real_t*, BooleanType, real_t*)	64	static
 ../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:2726:13:returnValue QProblem::hotstart_determineDataShift(const int*, const int*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, real_t*, real_t*, real_t*, real_t*, real_t*, BooleanType&, BooleanType&)	64	static
-../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:2784:13:returnValue QProblem::hotstart_determineStepDirection(const int*, const int*, const int*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, BooleanType, BooleanType, real_t*, real_t*, real_t*, real_t*)	848	static
-../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:3139:13:returnValue QProblem::hotstart_determineStepLength(const int*, const int*, const int*, const int*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, real_t*, int&, SubjectToStatus&, BooleanType&)	560	static
+../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:2784:13:returnValue QProblem::hotstart_determineStepDirection(const int*, const int*, const int*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, BooleanType, BooleanType, real_t*, real_t*, real_t*, real_t*)	824	static
+../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:3139:13:returnValue QProblem::hotstart_determineStepLength(const int*, const int*, const int*, const int*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, real_t*, int&, SubjectToStatus&, BooleanType&)	512	static
 ../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:3405:13:returnValue QProblem::hotstart_performStep(const int*, const int*, const int*, const int*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, int, SubjectToStatus, BooleanType)	80	static
 ../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:3583:13:BooleanType QProblem::areBoundsConsistent(const real_t*, const real_t*, const real_t*, const real_t*) const	32	static
 ../Core/Src/control_update_MPC/qpoases/SRC/QProblem.cpp:3607:13:returnValue QProblem::setupQPdata(const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*, const real_t*)	56	static

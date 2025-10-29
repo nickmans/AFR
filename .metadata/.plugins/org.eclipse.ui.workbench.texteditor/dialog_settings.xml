@@ -3,21 +3,21 @@
 	<item key="hasShownOverlayPopupBefore" value="true"/>
 	<item key="replaceBarOpen" value="true"/>
 	<list key="searchhistory">
-		<item value="encoder"/>
-		<item value="MAX_CURR_A"/>
-		<item value="curr"/>
-		<item value="yawrate"/>
-		<item value="FORWARD12"/>
-		<item value="fabsf"/>
-		<item value="fabs"/>
-		<item value="double"/>
-		<item value="ay_sum"/>
-		<item value="ax_sum"/>
-		<item value="BNO055_ReadEuler"/>
-		<item value="BNO055_ReadLinAccel_D"/>
-		<item value="ukf"/>
-		<item value="flagencoder"/>
-		<item value="flagencoders"/>
+		<item value="0.8"/>
+		<item value="v_des"/>
+		<item value="near_waypoint"/>
+		<item value="robot_to_world"/>
+		<item value="sin_tbl"/>
+		<item value="b_enc"/>
+		<item value="b_v"/>
+		<item value="return"/>
+		<item value="ASTAR_TIME_BUDGET"/>
+		<item value="encbiashist"/>
+		<item value="ax-measurements[1]"/>
+		<item value="measurements[1]"/>
+		<item value="sp_rpm_f"/>
+		<item value="sp_rpm"/>
+		<item value="peakax"/>
 	</list>
 	<list key="replacehistory">
 		<item value="float"/>
